@@ -1,0 +1,74 @@
+import {ActionTypes, BaseModuleHandlers, effect, reducer, LoadingState, IStore, RouteActionTypes} from '@elux/<%= elux %>';
+import {CustomError, CommonErrorCode} from '@/utils/errors';
+import {Pagenames, GetRouter} from '@/Global';
+import {CurUser, SubView, LoginParams, api} from './entity';
+
+export interface RouteParams {
+  subView: SubView;
+}
+
+export const defaultRouteParams: RouteParams = {
+  subView: '',
+};
+
+export interface ModuleState {
+  loading?: {global: LoadingState};
+  curUser?: CurUser;
+}
+
+export class ModuleHandlers extends BaseModuleHandlers<ModuleState, {}> {
+  constructor(moduleName: string, store: IStore, latestData: any) {
+    super(moduleName, store, latestData[moduleName]);
+  }
+
+  @reducer
+  public putCurUser(curUser: CurUser): ModuleState {
+    return {...this.getState(), curUser};
+  }
+
+  @effect()
+  public async login(args: LoginParams): Promise<void> {
+    const curUser = await api.login(args);
+    this.dispatch(this.actions.putCurUser(curUser));
+    GetRouter().relaunch('/index');
+  }
+
+  @effect()
+  public async logout(): Promise<void> {
+    const curUser = await api.logout();
+    this.dispatch(this.actions.putCurUser(curUser));
+    GetRouter().relaunch('/login');
+  }
+
+  @effect(null)
+  protected async [ActionTypes.Error](error: CustomError): Promise<void> {
+    //注意错误处理中不要抛出新的错误，以防止无穷递归
+    if (error.code === CommonErrorCode.unauthorized) {
+      GetRouter().push('/login', true, true);
+    } else if (!error.quiet) {
+      // eslint-disable-next-line no-alert
+<% if (platform==='ssr') { -%>
+      typeof window === 'object' && window.alert(error.message);
+<% } else { -%>
+      window.alert(error.message);
+<% } -%>
+    }
+    throw error;
+  }
+
+  // 支持路由守卫
+  @effect(null)
+  protected async [RouteActionTypes.TestRouteChange]({pagename}: {pagename: string}): Promise<void> {
+    if (pagename === Pagenames['/my'] && !this.getState().curUser!.hasLogin) {
+      throw new CustomError(CommonErrorCode.unauthorized, '请登录！', null, true);
+    }
+  }
+
+  @effect(null)
+  protected async ['this.Init'](initState: ModuleState): Promise<void> {
+    if (!initState.curUser) {
+      const curUser = await api.getCurUser();
+      this.dispatch(this.actions.putCurUser(curUser));
+    }
+  }
+}

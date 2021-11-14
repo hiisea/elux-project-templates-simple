@@ -1,0 +1,16 @@
+import {getApp, Facade, GetApp} from '@elux/<%= elux %>';
+import type {ModuleGetter} from './Project';
+
+type APP = GetApp<Facade<ModuleGetter>>;
+
+export type RouteParams = APP['RouteParams'];
+export type RouteState = APP['RouteState'];
+export type APPState = APP['State'];
+export type Router = APP['Router'];
+
+export const {Modules, Pagenames, LoadComponent, GetActions, GetRouter, useStore, useRouter} = getApp<APP>();
+
+export const {StaticPrefix, ApiPrefix} = process.env.PROJ_ENV as {
+  StaticPrefix: string;
+  ApiPrefix: string;
+};

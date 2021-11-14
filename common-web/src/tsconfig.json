@@ -1,0 +1,15 @@
+{
+  "extends": "@elux/babel-preset/tsconfig.esm.json",
+  "compilerOptions": {
+    "types": ["../typings/assets"],
+    "lib": ["es2020", "DOM"],
+    "emitDeclarationOnly": true,
+    "outDir": "../dist",
+    "rootDir": "./",
+    "baseUrl": "./",
+    "paths": {
+      "@/*": ["./*"]
+    }
+  },
+  "include": ["./"]
+}

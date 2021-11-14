@@ -1,0 +1,41 @@
+/* eslint-disable no-console */
+const path = require('path');
+const express = require('express');
+const chalk = require('chalk');
+const {createProxyMiddleware} = require('http-proxy-middleware');
+const config = require('./config');
+
+const {proxy, port} = config || {};
+const serverUrl = `http://localhost:${port}`;
+const staticPath = path.join(__dirname, './client');
+
+const app = express();
+Object.keys(proxy).forEach((key) => {
+  app.use(key, createProxyMiddleware(proxy[key]));
+});
+app.use('/client', express.static(staticPath<%= platform==='ssr'?', {fallthrough: false}':'' %>));
+<% if(platform==='ssr'){ %>
+const serverBundle = require('./server/main');
+app.use((req, res) => {
+  try {
+    serverBundle
+      .default(req, res)
+      .then((str) => {
+        res.end(str);
+      })
+      .catch((e) => {
+        console.log(e);
+        res.status(500).end(e.toString());
+      });
+  } catch (e) {
+    console.log(e);
+    res.status(500).end(e.toString());
+  }
+});
+<% }else{ %>
+const fallback = require('express-history-api-fallback');
+app.use(fallback('index.html', {root: staticPath}));
+<% } %>
+app.listen(port, () =>
+  console.info(`\n \n.....${new Date().toLocaleString()} starting ${chalk.redBright('Server')} on ${chalk.underline.redBright(serverUrl)} \n`)
+);

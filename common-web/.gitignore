@@ -1,0 +1,6 @@
+.DS_Store
+.stylelintcache
+.eslintcache
+*.log
+dist/
+node_modules/

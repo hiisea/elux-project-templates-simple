@@ -1,0 +1,43 @@
+import React, {useState} from 'react';
+import styles from './index.module.<%= css %>';
+
+interface Props {
+  keyword: string;
+  onSubmit: (keyword: string) => void;
+  onCreate: () => void;
+}
+
+const Component: React.FC<Props> = ({keyword, onSubmit, onCreate}) => {
+  const [_keyword, _setKeyword] = useState(keyword);
+  const [value, setValue] = useState(keyword);
+  if (keyword !== _keyword) {
+    _setKeyword(keyword);
+    setValue(keyword);
+  }
+  return (
+    <form
+      className={styles.root}
+      onSubmit={(e) => {
+        e.preventDefault();
+        onSubmit(value);
+      }}
+    >
+      <input
+        className="keyword"
+        name="keyword"
+        type="text"
+        placeholder="请输入搜索关键字..."
+        value={value || ''}
+        onChange={(e) => setValue(e.target.value)}
+      />
+      <button className="search" type="submit">
+        搜索
+      </button>
+      <div className="add" onClick={onCreate}>
+        +新增
+      </div>
+    </form>
+  );
+};
+
+export default React.memo(Component);

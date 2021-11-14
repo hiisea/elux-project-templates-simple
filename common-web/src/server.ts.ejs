@@ -1,0 +1,6 @@
+import {createSSR, <%= framework ==='reactRedux' ? 'createRedux' : 'createVuex' %>} from '@elux/<%= elux %>';
+import {moduleGetter} from './Project';
+
+export default function server(request: {url: string}, response: any): Promise<any> {
+  return createSSR(moduleGetter, request.url, {request, response}).useStore(<%= framework ==='reactRedux' ? 'createRedux' : 'createVuex' %>()).render();
+}

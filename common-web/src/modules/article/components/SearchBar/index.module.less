@@ -1,0 +1,45 @@
+:global {
+  :local(.root) {
+    display: flex;
+    flex: none;
+    height: 42px;
+    padding: 14px;
+    color: #000;
+
+    .keyword {
+      flex: 1;
+      min-width: 20px;
+      padding: 0 20px;
+      font-size: 14px;
+      background: #f7f7f7;
+      border: #aaa 2px solid;
+      border-right: 0;
+      border-radius: 42px 0 0 42px;
+      outline: none;
+    }
+
+    .search {
+      flex: none;
+      padding: 0 25px;
+      color: #fff;
+      font-size: 14px;
+      background-color: #005ed8;
+      border: #005ed8 2px solid;
+      border-radius: 0 42px 42px 0;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .add {
+      flex: none;
+      margin-left: 10px;
+      padding: 0 25px;
+      color: #005ed8;
+      font-size: 14px;
+      line-height: 42px;
+      background-color: #d5e7ff;
+      border-radius: 42px;
+      cursor: pointer;
+    }
+  }
+}

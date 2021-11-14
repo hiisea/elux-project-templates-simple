@@ -1,0 +1,22 @@
+import React from 'react';
+import {GetRouter} from '@/Global';
+import styles from './index.module.<%= css %>';
+
+interface Props {
+  title: string;
+  onBack?: Boolean | (() => void);
+}
+
+const defaultOnBack = () => GetRouter().back(1, true);
+
+const Component: React.FC<Props> = ({title, onBack}) => {
+  const callback = typeof onBack === 'function' ? onBack : onBack === true ? defaultOnBack : null;
+  return (
+    <div className={styles.root}>
+      {callback && <div className="back" onClick={callback} />}
+      <div className="title">{title}</div>
+    </div>
+  );
+};
+
+export default React.memo(Component);

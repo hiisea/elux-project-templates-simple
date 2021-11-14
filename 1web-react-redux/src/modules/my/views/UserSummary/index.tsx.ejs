@@ -1,0 +1,52 @@
+import React, {useCallback} from 'react';
+import {Dispatch, DocumentHead, connectRedux} from '@elux/react-redux-web';
+import {CurUser} from '@/modules/stage/entity';
+import {Modules, StaticPrefix, GetRouter, APPState} from '@/Global';
+import TabBar from '@/components/TabBar';
+import styles from './index.module.<%= css %>';
+
+export interface StoreProps {
+  curUser: CurUser;
+}
+
+function mapStateToProps(appState: APPState): StoreProps {
+  const stage = appState.stage;
+  return {curUser: stage.curUser!};
+}
+
+export interface DispatchProps {
+  dispatch: Dispatch;
+}
+
+const Component: React.FC<StoreProps & DispatchProps> = ({curUser, dispatch}) => {
+  const onLogin = useCallback(() => GetRouter().push('/login'), []);
+  const onLogout = useCallback(() => dispatch(Modules.stage.actions.logout()), [dispatch]);
+  return (
+    <>
+      <DocumentHead title="个人中心" />
+      <div className={`${styles.root} g-page-content`}>
+        <div className="title">个人中心</div>
+        <div className="avatar" style={{backgroundImage: `url(${StaticPrefix + curUser.avatar})`}} />
+        {curUser.hasLogin ? (
+          <>
+            <div className="nickname">{curUser.username}</div>
+            <div className="score">✆ {curUser.mobile}</div>
+            <div className="logout" onClick={onLogout}>
+              退出登录
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="nickname">游客</div>
+            <div className="login" onClick={onLogin}>
+              登 录
+            </div>
+          </>
+        )}
+      </div>
+      <TabBar selected="my" />
+    </>
+  );
+};
+
+export default connectRedux(mapStateToProps)(Component);

@@ -1,0 +1,91 @@
+import React, {useState, useCallback} from 'react';
+import {DocumentHead, Dispatch} from '@elux/react-redux-web';
+import {Modules, GetRouter} from '@/Global';
+import NavBar from '@/components/NavBar';
+import {ItemDetail} from '../../entity';
+import styles from './index.module.<%= css %>';
+
+interface OwnerProps {
+  itemDetail: ItemDetail;
+  dispatch: Dispatch;
+}
+
+const Component: React.FC<OwnerProps> = ({itemDetail, dispatch}) => {
+  const onCancel = useCallback(() => GetRouter().back(1, true), []);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [title, setTitle] = useState(itemDetail.title);
+  const [summary, setsummary] = useState(itemDetail.summary);
+  const [content, setcontent] = useState(itemDetail.content);
+  const onSubmit = () => {
+    if (!title || !summary || !content) {
+      setErrorMessage('请输入文章标题、摘要、内容');
+    } else {
+      const item = {id: itemDetail.id, title, summary, content};
+      if (itemDetail.id) {
+        dispatch(Modules.article.actions.updateItem(item));
+      } else {
+        dispatch(Modules.article.actions.createItem(item));
+      }
+    }
+  };
+  return (
+    <>
+      <DocumentHead title="编辑文章" />
+      <NavBar title={itemDetail.id ? '修改文章' : '新建文章'} />
+      <div className={`${styles.root} g-page-content`}>
+        <div className="form-body">
+          <div className="form-item">
+            <div className="label">标题</div>
+            <div className="item">
+              <input
+                name="title"
+                className="g-input"
+                type="text"
+                placeholder="请输入"
+                onChange={(e) => setTitle(e.target.value.trim())}
+                value={title}
+              />
+            </div>
+          </div>
+          <div className="form-item">
+            <div className="label">摘要</div>
+            <div className="item">
+              <textarea
+                name="summary"
+                className="g-input"
+                placeholder="请输入"
+                rows={2}
+                onChange={(e) => setsummary(e.target.value.trim())}
+                value={summary}
+              />
+            </div>
+          </div>
+          <div className="form-item">
+            <div className="label">内容</div>
+            <div className="item">
+              <textarea
+                name="content"
+                className="g-input"
+                placeholder="请输入"
+                rows={10}
+                onChange={(e) => setcontent(e.target.value.trim())}
+                value={content}
+              />
+            </div>
+          </div>
+        </div>
+        {errorMessage && <div className="form-error">* {errorMessage}</div>}
+        <div className="form-control">
+          <button type="submit" className="g-button primary" onClick={onSubmit}>
+            提 交
+          </button>
+          <button type="button" className="g-button" onClick={onCancel}>
+            取 消
+          </button>
+        </div>
+      </div>
+    </>
+  );
+};
+
+export default React.memo(Component);

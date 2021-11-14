@@ -1,0 +1,5 @@
+import {exportModule} from '@elux/<%= elux %>';
+import main from './views/Main';
+import {ModuleHandlers, defaultRouteParams} from './model';
+
+export default exportModule('my', ModuleHandlers, defaultRouteParams, {main});

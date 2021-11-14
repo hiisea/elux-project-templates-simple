@@ -1,0 +1,98 @@
+import {BaseModuleHandlers, reducer, effect, IStore} from '@elux/<%= elux %>';
+import fastEqual from 'fast-deep-equal';
+import {GetRouter} from '@/Global';
+import {ListView, ListSearch, ItemView, ListItem, ListSummary, ItemDetail, api} from './entity';
+
+export interface RouteParams {
+  listSearch: ListSearch;
+  listView: ListView;
+  itemId: string;
+  itemView: ItemView;
+}
+
+export const defaultRouteParams: RouteParams = {
+  listSearch: {
+    pageCurrent: 1,
+    keyword: '',
+  },
+  listView: '',
+  itemId: '',
+  itemView: '',
+};
+
+export interface ModuleState {
+  listSearch?: ListSearch;
+  list?: ListItem[];
+  listSummary?: ListSummary;
+  itemId?: string;
+  itemDetail?: ItemDetail;
+}
+
+export class ModuleHandlers extends BaseModuleHandlers<ModuleState, {}> {
+  constructor(moduleName: string, store: IStore<%= platform==='ssr' ? ', latestData: any, ssrData: any' : '' %>) {
+    super(moduleName, store, <%= platform==='ssr' ? 'ssrData[moduleName]' : '{}' %>);
+  }
+
+  @reducer
+  public putList(listSearch: ListSearch, list: ListItem[], listSummary: ListSummary): ModuleState {
+    return {...this.getState(), listSearch, list, listSummary};
+  }
+
+  @reducer
+  public putCurrentItem(itemId = '', itemDetail: ItemDetail): ModuleState {
+    return {...this.getState(), itemId, itemDetail};
+  }
+
+  @effect()
+  public async deleteItem(id: string): Promise<void> {
+    await api.deleteItem({id});
+    this.dispatch(this.actions.fetchList({}));
+  }
+
+  @effect()
+  public async updateItem(item: ItemDetail): Promise<void> {
+    await api.updateItem(item);
+    await GetRouter().back(1, true);
+    this.dispatch(this.actions.fetchList({}));
+  }
+
+  @effect()
+  public async createItem(item: ItemDetail): Promise<void> {
+    await api.createItem(item);
+    GetRouter().relaunch('/article/page/1', true);
+  }
+
+  @effect()
+  public async fetchList(args: Partial<ListSearch>): Promise<void> {
+    const listSearch = {...defaultRouteParams.listSearch, ...this.getState().listSearch, ...args};
+    const {list, listSummary} = await api.getList(listSearch);
+    this.dispatch(this.actions.putList(listSearch, list, listSummary));
+  }
+
+  @effect()
+  public async fetchItem(itemId: string): Promise<void> {
+    let item: ItemDetail;
+    if (itemId === '0') {
+      item = {id: '', title: '', summary: '', content: ''};
+    } else {
+      item = await api.getItem({id: itemId});
+    }
+    this.dispatch(this.actions.putCurrentItem(itemId, item));
+  }
+
+  @effect(null)
+  protected async ['this.Init, this.RouteChange'](): Promise<void> {
+    const {listView, listSearch, itemView, itemId} = this.getRouteParams() as RouteParams;
+    const state = this.getState();
+    if (listView) {
+      if (!fastEqual(listSearch, state.listSearch)) {
+        <%= platform==='ssr' ? 'await ' : '' %>this.dispatch(this.actions.fetchList(listSearch));
+      }
+    }
+    if (itemView) {
+      if (itemId && itemId !== state.itemId) {
+        <%= platform==='ssr' ? 'await ' : '' %>this.dispatch(this.actions.fetchItem(itemId));
+      }
+    }
+  }
+}

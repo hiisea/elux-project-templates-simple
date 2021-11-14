@@ -1,0 +1,4 @@
+import {createApp, <%= framework ==='reactRedux' ? 'createRedux' : 'createVuex' %>} from '@elux/<%= elux %>';
+import {moduleGetter} from './Project';
+
+createApp(moduleGetter).useStore(<%= framework ==='reactRedux' ? 'createRedux' : 'createVuex' %>()).render();

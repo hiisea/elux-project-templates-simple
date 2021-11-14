@@ -1,0 +1,48 @@
+:global {
+  :local(.root) {
+    padding: 35px;
+    overflow: auto;
+    font-size: 16px;
+
+    .form-body {
+      padding-top: 20px;
+      padding-bottom: 20px;
+
+      .error {
+        margin-left: 5.5em;
+        color: red;
+        font-size: 14px;
+      }
+    }
+
+    .form-item {
+      display: flex;
+      margin-bottom: 25px;
+
+      .label {
+        width: 5em;
+        font-weight: bold;
+        line-height: 40px;
+      }
+
+      .item {
+        flex: 1;
+      }
+
+      .g-input {
+        box-sizing: border-box;
+        width: 100%;
+      }
+    }
+
+    .form-control {
+      display: flex;
+      border-top: 1px solid #ddd;
+
+      > .g-button {
+        flex: 1;
+        margin: 30px 10px;
+      }
+    }
+  }
+}

@@ -1,0 +1,51 @@
+:global {
+  :local(.root) {
+    > .hd {
+      position: relative;
+      padding: 20px;
+      padding-left: 52px;
+      background-color: #e7e7e7;
+
+      .back {
+        position: absolute;
+        top: 20px;
+        bottom: 20px;
+        left: 6px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        width: 34px;
+        text-align: center;
+        background-color: #fff;
+        border-radius: 5px 0 0 5px;
+        cursor: pointer;
+
+        &::before {
+          color: #999;
+          font-size: 23px;
+          content: '<';
+        }
+      }
+
+      .title {
+        padding-bottom: 10px;
+        font-weight: bold;
+        font-size: 18px;
+      }
+
+      .summary {
+        color: #666;
+        font-size: 12px;
+        line-height: 1.8;
+      }
+    }
+
+    > .bd {
+      padding: 15px;
+      overflow: auto;
+      font-size: 16px;
+      line-height: 1.8;
+      text-indent: 2em;
+    }
+  }
+}

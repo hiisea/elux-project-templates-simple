@@ -1,0 +1,97 @@
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
+import {createRouteModule, DeepPartial, safeJsonParse} from '@elux/<%= elux %>';
+import {RouteParams} from '@/Global';
+import stage from './modules/stage';
+
+type PartialRouteParams = DeepPartial<RouteParams>;
+
+const pagenameMap = {
+  '/index': {
+    argsToParams() {
+      const pathParams: PartialRouteParams = {
+        stage: {},
+        article: {listView: 'list', listSearch: {pageCurrent: 1}},
+      };
+      return pathParams;
+    },
+    paramsToArgs(params: PartialRouteParams) {
+      return [];
+    },
+  },
+  '/article/page': {
+    argsToParams([pageCurrent]: string[]) {
+      const pathParams: PartialRouteParams = {
+        stage: {},
+        article: {listView: 'list', listSearch: {pageCurrent: parseInt(pageCurrent, 10) || 1}},
+      };
+      return pathParams;
+    },
+    paramsToArgs(params: PartialRouteParams) {
+      const pageCurrent = params.article?.listSearch?.pageCurrent;
+      return [pageCurrent];
+    },
+  },
+  '/article/detail': {
+    argsToParams([id]: string[]) {
+      const pathParams: PartialRouteParams = {
+        stage: {},
+        article: {itemId: id, itemView: 'detail'},
+      };
+      return pathParams;
+    },
+    paramsToArgs(params: PartialRouteParams) {
+      const id = params.article?.itemId;
+      return [id];
+    },
+  },
+  '/article/edit': {
+    argsToParams([id]: string[]) {
+      const pathParams: PartialRouteParams = {
+        stage: {},
+        article: {itemId: id, itemView: 'edit'},
+      };
+      return pathParams;
+    },
+    paramsToArgs(params: PartialRouteParams) {
+      const id = params.article?.itemId;
+      return [id];
+    },
+  },
+  '/my': {
+    argsToParams() {
+      const pathParams: PartialRouteParams = {stage: {}, my: {subView: 'userSummary'}};
+      return pathParams;
+    },
+    paramsToArgs() {
+      return [];
+    },
+  },
+  '/login': {
+    argsToParams() {
+      const pathParams: PartialRouteParams = {stage: {subView: 'login'}};
+      return pathParams;
+    },
+    paramsToArgs() {
+      return [];
+    },
+  },
+};
+const routeModule = createRouteModule(pagenameMap, {
+  in(nativeLocation) {
+    const {pathname, query} = nativeLocation;
+    const args = safeJsonParse(query);
+    return {pathmatch: pathname, args};
+  },
+  out(eluxLocation) {
+    const {pathmatch, args} = eluxLocation;
+    return {pathname: pathmatch, query: Object.keys(args).length ? JSON.stringify(args) : ''};
+  },
+});
+export const moduleGetter = {
+  route: () => routeModule,
+  stage: () => stage,
+  article: () => import('./modules/article'),
+  my: () => import('./modules/my'),
+};
+
+export type ModuleGetter = typeof moduleGetter;
