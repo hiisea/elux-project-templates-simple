@@ -1,0 +1,42 @@
+<% if(framework ==='reactRedux'){ -%>
+import {FC} from 'react';
+import {connectRedux} from '@elux/<%= elux %>';
+<% }else{ -%>
+import {defineComponent} from 'vue';
+import {exportView} from '@elux/<%= elux %>';
+<% } -%>
+import {APPState, RouteParams<%= framework ==='vueVuex' ? ', useStore' : '' %>} from '@/Global';
+import UserSummary from './UserSummary';
+import {SubView} from '../entity';
+
+export interface StoreProps {
+  subView?: SubView;
+}
+
+function mapStateToProps(appState: APPState): StoreProps {
+  const routeParams: RouteParams = appState.route.params;
+  return {subView: routeParams.my?.subView};
+}
+
+<% if(framework ==='reactRedux'){ -%>
+const Component: FC<StoreProps> = ({subView}) => {
+  return <>{subView === 'userSummary' && <UserSummary />}</>;
+};
+
+export default connectRedux(mapStateToProps)(Component);
+<% }else{ -%>
+const Component = defineComponent({
+  setup() {
+    const store = useStore();
+    const appState = store.getState();
+    const storeProps = computed(() => mapStateToProps(appState));
+    return {store, storeProps};
+  },
+  render() {
+    const {subView} = this.storeProps;
+    return <>{subView === 'userSummary' && <UserSummary />}</>;
+  },
+});
+
+export default exportView(Component);
+<% } -%>

@@ -1,0 +1,104 @@
+<% if(framework ==='reactRedux'){ -%>
+import {useCallback, FC} from 'react';
+import {Dispatch, DocumentHead, connectRedux} from '@elux/<%= elux %>';
+<% }else{ -%>
+import {defineComponent} from 'vue';
+import {exportView, DocumentHead} from '@elux/<%= elux %>';
+<% } -%>
+import {CurUser} from '@/modules/stage/entity';
+import {Modules, StaticPrefix, GetRouter, APPState<%= framework ==='vueVuex' ? ', useStore' : '' %>} from '@/Global';
+import TabBar from '@/components/TabBar';
+import styles from './index.module.<%= css %>';
+
+export interface StoreProps {
+  curUser: CurUser;
+}
+
+function mapStateToProps(appState: APPState): StoreProps {
+  const stage = appState.stage;
+  return {curUser: stage.curUser!};
+}
+
+<% if(framework ==='reactRedux'){ -%>
+export interface DispatchProps {
+  dispatch: Dispatch;
+}
+
+const Component: FC<StoreProps & DispatchProps> = ({curUser, dispatch}) => {
+  const onLogin = useCallback(() => GetRouter().push('/login'), []);
+  const onLogout = useCallback(() => dispatch(Modules.stage.actions.logout()), [dispatch]);
+
+  return (
+    <>
+      <DocumentHead title="个人中心" />
+      <div className={`${styles.root} g-page-content`}>
+        <div className="title">个人中心</div>
+        <div className="avatar" style={{backgroundImage: `url(${StaticPrefix + curUser.avatar})`}} />
+        {curUser.hasLogin ? (
+          <>
+            <div className="nickname">{curUser.username}</div>
+            <div className="score">✆ {curUser.mobile}</div>
+            <div className="logout" onClick={onLogout}>
+              退出登录
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="nickname">游客</div>
+            <div className="login" onClick={onLogin}>
+              登 录
+            </div>
+          </>
+        )}
+      </div>
+      <TabBar selected="my" />
+    </>
+  );
+};
+
+export default connectRedux(mapStateToProps)(Component);
+<% }else{ -%>
+const Component = defineComponent({
+  setup() {
+    const store = useStore();
+    const appState = store.getState();
+    const storeProps = computed(() => mapStateToProps(appState));
+    const onLogin = () => GetRouter().push('/login');
+    const onLogout = () => store.dispatch(accountActions.logout());
+    return {store, storeProps, onLogin, onLogout};
+  },
+  render() {
+    const {onLogin, onLogout} = this;
+    const {curUser} = this.storeProps;
+
+    return (
+      <>
+        <DocumentHead title="个人中心" />
+        <div class={`${styles.root} g-page-content`}>
+          <div class="title">个人中心</div>
+          <div class="avatar" style={{backgroundImage: `url(${StaticPrefix + curUser.avatar})`}} />
+          {curUser.hasLogin ? (
+            <>
+              <div class="nickname">{curUser.username}</div>
+              <div class="score">✆ {curUser.mobile}</div>
+              <div class="logout" onClick={onLogout}>
+                退出登录
+              </div>
+            </>
+          ) : (
+            <>
+              <div class="nickname">游客</div>
+              <div class="login" onClick={onLogin}>
+                登 录
+              </div>
+            </>
+          )}
+        </div>
+        <TabBar selected="my" />
+      </>
+    );
+  },
+});
+
+export default exportView(Component);
+<% } -%>

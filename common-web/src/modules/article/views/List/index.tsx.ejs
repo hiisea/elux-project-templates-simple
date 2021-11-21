@@ -1,0 +1,158 @@
+<% if(framework ==='reactRedux'){ -%>
+import {useCallback, useEffect, useRef, FC} from 'react';
+import {DocumentHead, connectRedux, Link, Dispatch} from '@elux/<%= elux %>';
+<% }else{ -%>
+import {defineComponent} from 'vue';
+import {exportView} from '@elux/<%= elux %>';
+<% } -%>
+import {APPState, GetRouter, Modules<%= framework ==='vueVuex' ? ', useStore' : '' %>} from '@/Global';
+import TabBar from '@/components/TabBar';
+import NavBar from '@/components/NavBar';
+import SearchBar from '../../components/SearchBar';
+import Pagination from '../../components/Pagination';
+import {ListItem, ListSearch, ListSummary} from '../../entity';
+import styles from './index.module.<%= css %>';
+
+interface StoreProps {
+  listSearch?: ListSearch;
+  list?: ListItem[];
+  listSummary?: ListSummary;
+}
+
+function mapStateToProps(appState: APPState): StoreProps {
+  const {listSearch, list, listSummary} = appState.article;
+  return {listSearch, list, listSummary};
+}
+
+<% if(framework ==='reactRedux'){ -%>
+const Component: FC<StoreProps & {dispatch: Dispatch}> = ({listSearch, list, listSummary, dispatch}) => {
+  const onPageChange = useCallback((pageCurrent: number) => {
+    GetRouter().push(`/article/page/${pageCurrent}`);
+  }, []);
+  const onSearch = useCallback((keyword: string) => {
+    const loction = GetRouter().extendCurrent({article: {listSearch: {pageCurrent: 1, keyword}}});
+    GetRouter().push(loction);
+  }, []);
+  const onDeleteItem = useCallback(
+    (id) => {
+      dispatch(Modules.article.actions.deleteItem(id));
+    },
+    [dispatch]
+  );
+  const onEditItem = useCallback((id) => {
+    GetRouter().push(`/article/edit/${id}`, true);
+  }, []);
+  const onCreate = useCallback(() => {
+    GetRouter().push(`/article/edit/0`, true);
+  }, []);
+  const scrollDiv = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (scrollDiv.current) {
+      scrollDiv.current.scrollTop = 0;
+    }
+  }, [listSummary?.pageCurrent]);
+
+  return (
+    <>
+      <DocumentHead title="文章" />
+      <NavBar title="文章列表" />
+      <div className={`${styles.root} g-page-content`}>
+        {listSearch && list && listSummary && (
+          <>
+            <SearchBar keyword={listSearch.keyword} onSubmit={onSearch} onCreate={onCreate} />
+            <div className="article-list" ref={scrollDiv}>
+              {list.map((item) => (
+                <div key={item.id} className="article-item">
+                  <Link className="article-title" route={`/article/detail/${item.id}`} root<%= platform === 'ssr' ? ' href={`/article/detail/${item.id}`}' : '' %>>
+                    {item.title}
+                  </Link>
+                  <Link className="article-summary" route={`/article/detail/${item.id}`} root<%= platform === 'ssr' ? ' href={`/article/detail/${item.id}`}' : '' %>>
+                    {item.summary}
+                  </Link>
+                  <div className="article-operation">
+                    <div className="item" onClick={() => onEditItem(item.id)}>
+                      修改
+                    </div>
+                    <div className="item" onClick={() => onDeleteItem(item.id)}>
+                      删除
+                    </div>
+                  </div>
+                </div>
+              ))}
+              <Pagination totalPages={listSummary.totalPages} pageCurrent={listSummary.pageCurrent} onChange={onPageChange} <%= platform === 'ssr' ? 'baseUrl="/article/page/0"' : '' %>/>
+            </div>
+          </>
+        )}
+      </div>
+      <TabBar selected="article" />
+    </>
+  );
+};
+
+export default connectRedux(mapStateToProps)(Component);
+<% }else{ -%>
+const Component = defineComponent({
+  setup() {
+    const store = useStore();
+    const appState = store.getState();
+    const storeProps = computed(() => mapStateToProps(appState));
+    const onPageChange = (pageCurrent: number) => {
+      GetRouter().push(`/article/page/${pageCurrent}`);
+    };
+    const onSearch = (keyword: string) => {
+      const loction = GetRouter().extendCurrent({article: {listSearch: {pageCurrent: 1, keyword}}});
+      GetRouter().push(loction);
+    };
+    const onDeleteItem = (id: string) => {
+      dispatch(Modules.article.actions.deleteItem(id));
+    };
+    const onEditItem = (id: string) => {
+      GetRouter().push(`/article/edit/${id}`, true);
+    };
+    const onCreate = () => {
+      GetRouter().push(`/article/edit/0`, true);
+    };
+    return {store, storeProps, onPageChange, onSearch, onDeleteItem, onEditItem, onCreate};
+  },
+  render() {
+    const {listSearch, list, listSummary, onPageChange, onSearch, onDeleteItem, onEditItem, onCreate} = this.storeProps;
+    return (
+      <>
+        <DocumentHead title="文章" />
+        <NavBar title="文章列表" />
+        <div className={`${styles.root} g-page-content`}>
+          {listSearch && list && listSummary && (
+            <>
+              <SearchBar keyword={listSearch.keyword} onSubmit={onSearch} onCreate={onCreate} />
+              <div className="article-list" ref={scrollDiv}>
+                {list.map((item) => (
+                  <div key={item.id} className="article-item">
+                    <Link className="article-title" route={`/article/detail/${item.id}`} root<%= platform === 'ssr' ? ' href={`/article/detail/${item.id}`}' : '' %>>
+                      {item.title}
+                    </Link>
+                    <Link className="article-summary" route={`/article/detail/${item.id}`} root<%= platform === 'ssr' ? ' href={`/article/detail/${item.id}`}' : '' %>>
+                      {item.summary}
+                    </Link>
+                    <div className="article-operation">
+                      <div className="item" onClick={() => onEditItem(item.id)}>
+                        修改
+                      </div>
+                      <div className="item" onClick={() => onDeleteItem(item.id)}>
+                        删除
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                <Pagination totalPages={listSummary.totalPages} pageCurrent={listSummary.pageCurrent} onChange={onPageChange} <%= platform === 'ssr' ? 'baseUrl="/article/page/0"' : '' %>/>
+              </div>
+            </>
+          )}
+        </div>
+        <TabBar selected="article" />
+      </>
+    );
+  },
+});
+
+export default exportView(Component);
+<% } -%>

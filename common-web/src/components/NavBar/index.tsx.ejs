@@ -1,0 +1,53 @@
+<% if(framework ==='reactRedux'){ -%>
+import {memo, FC} from 'react';
+<% }else{ -%>
+import {defineComponent, PropType} from 'vue';
+<% } -%>
+import {GetRouter} from '@/Global';
+import styles from './index.module.<%= css %>';
+
+const defaultOnBack = () => GetRouter().back(1, true);
+
+<% if(framework ==='reactRedux'){ -%>
+interface Props {
+  title: string;
+  onBack?: Boolean | (() => void);
+}
+
+const Component: FC<Props> = ({title, onBack}) => {
+  const callback = typeof onBack === 'function' ? onBack : onBack === true ? defaultOnBack : null;
+
+  return (
+    <div className={styles.root}>
+      {callback && <div className="back" onClick={callback} />}
+      <div className="title">{title}</div>
+    </div>
+  );
+};
+
+export default memo(Component);
+<% }else{ -%>
+export default defineComponent({
+  props: {
+    title: {
+      type: String,
+      required: true,
+    },
+    onBack: {
+      type: [Function, Boolean] as PropType<Boolean | (() => void)>,
+    },
+  },
+  setup(props) {
+    return () => {
+      const {title, onBack} = props;
+      const callback = typeof onBack === 'function' ? onBack : onBack === true ? defaultOnBack : null;
+      return (
+        <div class={styles.root}>
+          {callback && <div class="back" onClick={callback} />}
+          <div class="title">{title}</div>
+        </div>
+      );
+    };
+  },
+});
+<% } -%>

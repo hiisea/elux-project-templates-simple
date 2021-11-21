@@ -1,0 +1,39 @@
+<% if(framework ==='reactRedux'){ -%>
+import {memo, FC} from 'react';
+<% }else{ -%>
+import {defineComponent, PropType} from 'vue';
+<% } -%>
+import {LoadingState} from '@elux/<%= elux %>';
+import styles from './index.module.<%= css %>';
+
+<% if(framework ==='reactRedux'){ -%>
+interface Props {
+  loadingState?: LoadingState;
+}
+
+const Component: FC<Props> = ({loadingState}) => {
+  return loadingState === LoadingState.Start || loadingState === LoadingState.Depth ? (
+    <div className={`${styles.root} ${loadingState.toLowerCase()}`}>
+      <div className="loading-icon" />
+    </div>
+  ) : null;
+};
+
+export default memo(Component);
+<% }else{ -%>
+export default defineComponent({
+  props: {
+    loadingState: {
+      type: String as PropType<LoadingState>,
+    },
+  },
+  render() {
+    const {loadingState} = this;
+    return loadingState === LoadingState.Start || loadingState === LoadingState.Depth ? (
+      <div class={`${styles.root} ${loadingState.toLowerCase()}`}>
+        <div class="loading-icon" />
+      </div>
+    ) : null;
+  },
+});
+<% } -%>

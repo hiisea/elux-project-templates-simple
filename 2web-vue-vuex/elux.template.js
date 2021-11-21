@@ -1,10 +1,10 @@
 module.exports = {
-  title: 'web-react-redux',
+  title: 'web-vue3-vuex（使用jsx）',
   platform: ['csr', 'ssr'],
-  framework: ['reactRedux'],
+  framework: ['vueVuex'],
   css: ['less', 'scss'],
   data: (options) => {
-    return {...options, elux: 'react-redux-web'};
+    return {...options, elux: 'vue-vuex-web'};
   },
   include: ['../common-web'],
   rename: {

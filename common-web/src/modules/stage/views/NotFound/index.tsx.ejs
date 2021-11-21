@@ -1,0 +1,35 @@
+<% if(framework ==='reactRedux'){ -%>
+import {memo, FC} from 'react';
+<% }else{ -%>
+import {defineComponent} from 'vue';
+<% } -%>
+import NavBar from '@/components/NavBar';
+import styles from './index.module.<%= css %>';
+
+<% if(framework ==='reactRedux'){ -%>
+const Component: FC = () => {
+  return (
+    <>
+      <NavBar title="Not Found" onBack />
+      <div className={`${styles.root} g-page-content`}>
+        <div>404</div>
+      </div>
+    </>
+  );
+};
+
+export default memo(Component);
+<% }else{ -%>
+export default defineComponent({
+  render() {
+    return (
+      <>
+        <NavBar title="Not Found" onBack />
+        <div class={`${styles.root} g-page-content`}>
+          <div>404</div>
+        </div>
+      </>
+    );
+  },
+});
+<% } -%>

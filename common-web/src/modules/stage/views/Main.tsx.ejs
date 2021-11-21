@@ -1,0 +1,76 @@
+<% if(framework ==='reactRedux'){ -%>
+import {FC} from 'react';
+import {connectRedux} from '@elux/<%= elux %>';
+<% }else{ -%>
+import {defineComponent} from 'vue';
+import {exportView} from '@elux/<%= elux %>';
+<% } -%>
+import {LoadingState, DocumentHead, Switch} from '@elux/<%= elux %>';
+import {LoadComponent, RouteParams, APPState<%= framework ==='vueVuex' ? ', useStore' : '' %>} from '@/Global';
+import NotFound from './NotFound';
+import LoginForm from './LoginForm';
+import LoadingPanel from '../components/LoadingPanel';
+import {SubView} from '../entity';
+import '@/assets/css/global.module.<%= css %>';
+
+const Article = LoadComponent('article', 'main');
+const My = LoadComponent('my', 'main');
+
+export interface StoreProps {
+  subView?: SubView;
+  globalLoading?: LoadingState;
+  routeParams: RouteParams;
+}
+
+function mapStateToProps(appState: APPState): StoreProps {
+  const stage = appState.stage;
+  const routeParams: RouteParams = appState.route.params;
+  return {
+    routeParams,
+    globalLoading: stage.loading?.global,
+    subView: routeParams.stage?.subView,
+  };
+}
+
+<% if(framework ==='reactRedux'){ -%>
+const Component: FC<StoreProps> = ({globalLoading, subView, routeParams}) => {
+  return (
+    <>
+      <DocumentHead title="Elux" />
+      <Switch elseView={<NotFound />}>
+        {subView === 'login' && <LoginForm />}
+        {routeParams.article && <Article />}
+        {routeParams.my && <My />}
+      </Switch>
+      <LoadingPanel loadingState={globalLoading} />
+    </>
+  );
+};
+
+export default connectRedux(mapStateToProps)(Component);
+<% }else{ -%>
+const Component = defineComponent({
+  setup() {
+    const store = useStore();
+    const appState = store.getState();
+    const storeProps = computed(() => mapStateToProps(appState));
+    return {store, storeProps};
+  },
+  render() {
+    const {globalLoading, routeParams, subView} = this.storeProps;
+    return (
+      <>
+        <DocumentHead title="Elux" />
+        <Switch elseView={<NotFound />}>
+          {subView === 'login' && <LoginForm />}
+          {routeParams.article && <Article />}
+          {routeParams.my && <My />}
+        </Switch>
+        <LoadingPanel loadingState={globalLoading} />
+      </>
+    );
+  },
+});
+
+export default exportView(Component);
+<% } -%>

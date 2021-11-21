@@ -1,0 +1,99 @@
+<% if(framework ==='reactRedux'){ -%>
+import {memo, useCallback, useState, FC} from 'react';
+<% }else{ -%>
+import {defineComponent, PropType} from 'vue';
+import {exportView, DocumentHead} from '@elux/<%= elux %>';
+<% } -%>
+import styles from './index.module.<%= css %>';
+
+<% if(framework ==='reactRedux'){ -%>
+interface Props {
+  keyword: string;
+  onSubmit: (keyword: string) => void;
+  onCreate: () => void;
+}
+
+const Component: FC<Props> = ({keyword, onSubmit, onCreate}) => {
+  const [keywordProp, setKeywordProp] = useState(keyword);
+  const [keywordInput, setKeywordInput] = useState(keyword);
+  if (keyword !== keywordProp) {
+    setKeywordProp(keyword);
+    setKeywordInput(keyword);
+  }
+  const onSubmitHandler = useCallback(() => {
+    onSubmit(keywordInput);
+  }, [keywordInput, onSubmit]);
+
+  return (
+    <div className={styles.root}>
+      <input
+        className="keyword"
+        name="keyword"
+        type="text"
+        placeholder="请输入搜索关键字..."
+        value={keywordInput}
+        onChange={(e) => setKeywordInput(e.target.value.trim())}
+      />
+      <button className="search" onClick={onSubmitHandler}>
+        搜索
+      </button>
+      <div className="add" onClick={onCreate}>
+        +新增
+      </div>
+    </div>
+  );
+};
+
+export default memo(Component);
+<% }else{ -%>
+export default defineComponent({
+  props: {
+    keyword: {
+      type: String,
+      required: true,
+    },
+    onSubmit: {
+      type: Function as PropType<(keyword: string) => void>,
+      required: true,
+    },
+    onCreate: {
+      type: Function as PropType<() => void>,
+      required: true,
+    },
+  },
+  emits: ['submit', 'create'],
+  setup(props, {emit}) {
+    const keywordInput = ref(props.keyword);
+    watch(toRef(props, 'keyword'), (value) => {
+      keywordInput.value = value;
+    });
+    const onSubmitHandler = () => {
+      emit('submit', keywordInput.value);
+    };
+    const onCreateHandler = () => {
+      emit('create');
+    };
+    return {keywordInput, onSubmitHandler, onCreateHandler};
+  },
+  render() {
+    const {onSubmitHandler, onCreateHandler, keywordInput} = this;
+    return (
+      <div class={styles.root}>
+        <input
+          class="keyword"
+          name="keyword"
+          type="text"
+          placeholder="请输入搜索关键字..."
+          v-model={keywordInput}
+        />
+        <button class="search" onClick={onSubmitHandler}>
+          搜索
+        </button>
+        <div class="add" onClick={onCreateHandler}>
+          +新增
+        </div>
+      </div>
+    );
+  },
+});
+<% } -%>
