@@ -1,27 +1,42 @@
+<% if(render ==='tpl'){ -%>
+<template>
+  <DocumentHead title="Elux" />
+  <Switch>
+    <LoginForm v-if="subView === 'login'" />
+    <Article v-if="routeParams.article" />
+    <My v-if="routeParams.my" />
+    <template #elseView>
+      <NotFound />
+    </template>
+  </Switch>
+  <LoadingPanel :loadingState="globalLoading" />
+</template>
+<% } -%>
 <% if(framework ==='reactRedux'){ -%>
 import {FC} from 'react';
 import {connectRedux} from '@elux/<%= elux %>';
 <% }else{ -%>
-import {defineComponent} from 'vue';
-import {exportView} from '@elux/<%= elux %>';
+import {defineComponent, computed} from 'vue';
+import {exportView, ComputedStore} from '@elux/<%= elux %>';
 <% } -%>
 import {LoadingState, DocumentHead, Switch} from '@elux/<%= elux %>';
 import {LoadComponent, RouteParams, APPState<%= framework ==='vueVuex' ? ', useStore' : '' %>} from '@/Global';
-import NotFound from './NotFound';
-import LoginForm from './LoginForm';
-import LoadingPanel from '../components/LoadingPanel';
+import NotFound from './NotFound.vue';
+import LoginForm from './LoginForm.vue';
+import LoadingPanel from '../components/LoadingPanel.vue';
 import {SubView} from '../entity';
-import '@/assets/css/global.module.<%= css %>';
+import '@/assets/css/global.module.less';
 
 const Article = LoadComponent('article', 'main');
 const My = LoadComponent('my', 'main');
 
-export interface StoreProps {
+interface StoreProps {
   subView?: SubView;
   globalLoading?: LoadingState;
   routeParams: RouteParams;
 }
 
+<% if(framework ==='reactRedux'){ -%>
 function mapStateToProps(appState: APPState): StoreProps {
   const stage = appState.stage;
   const routeParams: RouteParams = appState.route.params;
@@ -32,7 +47,6 @@ function mapStateToProps(appState: APPState): StoreProps {
   };
 }
 
-<% if(framework ==='reactRedux'){ -%>
 const Component: FC<StoreProps> = ({globalLoading, subView, routeParams}) => {
   return (
     <>
@@ -49,15 +63,38 @@ const Component: FC<StoreProps> = ({globalLoading, subView, routeParams}) => {
 
 export default connectRedux(mapStateToProps)(Component);
 <% }else{ -%>
+function mapStateToProps({stage, route}: APPState): ComputedStore<StoreProps> {
+  return {
+    routeParams: () => route.params,
+    globalLoading: () => stage.loading?.global,
+    subView: () => route.params.stage?.subView,
+  };
+}
+
 const Component = defineComponent({
+  name: 'StageMain',
+  <%_ if(render ==='tpl'){ -%>
+  components: {
+    DocumentHead,
+    Switch,
+    NotFound,
+    LoginForm,
+    LoadingPanel,
+    Article,
+    My,
+  },
+  <%_ } -%>
   setup() {
     const store = useStore();
-    const appState = store.getState();
-    const storeProps = computed(() => mapStateToProps(appState));
-    return {store, storeProps};
+    const computedStore = mapStateToProps(store.getState());
+    const routeParams = computed(computedStore.routeParams);
+    const globalLoading = computed(computedStore.globalLoading);
+    const subView = computed(computedStore.subView);
+    return {globalLoading, routeParams, subView};
   },
+  <%_ if(render !=='tpl'){ -%>
   render() {
-    const {globalLoading, routeParams, subView} = this.storeProps;
+    const {globalLoading, routeParams, subView} = this;
     return (
       <>
         <DocumentHead title="Elux" />
@@ -70,6 +107,7 @@ const Component = defineComponent({
       </>
     );
   },
+  <%_ } -%>
 });
 
 export default exportView(Component);

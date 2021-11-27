@@ -1,10 +1,18 @@
+<% if(render ==='tpl'){ -%>
+<template>
+  <div :class="$style.root">
+    <div v-if="callback" class="back" @click="callback" />
+    <div class="title">{{ title }}</div>
+  </div>
+</template>
+<% } -%>
 <% if(framework ==='reactRedux'){ -%>
 import {memo, FC} from 'react';
 <% }else{ -%>
 import {defineComponent, PropType} from 'vue';
 <% } -%>
 import {GetRouter} from '@/Global';
-import styles from './index.module.<%= css %>';
+import styles from './index.module.less';
 
 const defaultOnBack = () => GetRouter().back(1, true);
 
@@ -28,6 +36,7 @@ const Component: FC<Props> = ({title, onBack}) => {
 export default memo(Component);
 <% }else{ -%>
 export default defineComponent({
+  name: 'NavBar',
   props: {
     title: {
       type: String,
@@ -38,16 +47,21 @@ export default defineComponent({
     },
   },
   setup(props) {
-    return () => {
-      const {title, onBack} = props;
-      const callback = typeof onBack === 'function' ? onBack : onBack === true ? defaultOnBack : null;
-      return (
-        <div class={styles.root}>
-          {callback && <div class="back" onClick={callback} />}
-          <div class="title">{title}</div>
-        </div>
-      );
-    };
+    const callback = typeof props.onBack === 'function' ? props.onBack : props.onBack === true ? defaultOnBack : null;
+    return {callback};
   },
+  <%_ if(render !=='tpl'){ -%>
+  render() {
+    const {title, onBack} = this;
+
+
+    return (
+      <div class={styles.root}>
+        {callback && <div class="back" onClick={callback} />}
+        <div class="title">{title}</div>
+      </div>
+    );
+  },
+  <%_ } -%>
 });
 <% } -%>

@@ -23,7 +23,11 @@ export class ModuleHandlers extends BaseModuleHandlers<ModuleState, {}> {
 
   @reducer
   public putCurUser(curUser: CurUser): ModuleState {
+  <%_ if(framework ==='reactRedux'){ -%>
     return {...this.getState(), curUser};
+  <%_ }else{ -%>
+    Object.assign(this.getState(), {curUser});
+  <%_ } -%>
   }
 
   @effect()

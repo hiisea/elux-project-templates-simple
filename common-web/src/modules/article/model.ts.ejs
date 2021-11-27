@@ -35,12 +35,20 @@ export class ModuleHandlers extends BaseModuleHandlers<ModuleState, {}> {
 
   @reducer
   public putList(listSearch: ListSearch, list: ListItem[], listSummary: ListSummary): ModuleState {
+  <%_ if(framework ==='reactRedux'){ -%>
     return {...this.getState(), listSearch, list, listSummary};
+  <%_ }else{ -%>
+    Object.assign(this.getState(), {listSearch, list, listSummary});
+  <%_ } -%>
   }
 
   @reducer
   public putCurrentItem(itemId = '', itemDetail: ItemDetail): ModuleState {
+  <%_ if(framework ==='reactRedux'){ -%>
     return {...this.getState(), itemId, itemDetail};
+  <%_ }else{ -%>
+    Object.assign(this.getState(), {itemId, itemDetail});
+  <%_ } -%>
   }
 
   @effect()

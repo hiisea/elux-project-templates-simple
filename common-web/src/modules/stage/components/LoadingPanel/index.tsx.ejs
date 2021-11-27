@@ -1,10 +1,17 @@
+<% if(render ==='tpl'){ -%>
+<template>
+  <div v-if="loadingState === LoadingState.Start || loadingState === LoadingState.Depth" :class="[$style.root, loadingState.toLowerCase()]">
+    <div class="loading-icon" />
+  </div>
+</template>
+<% } -%>
 <% if(framework ==='reactRedux'){ -%>
 import {memo, FC} from 'react';
 <% }else{ -%>
 import {defineComponent, PropType} from 'vue';
 <% } -%>
 import {LoadingState} from '@elux/<%= elux %>';
-import styles from './index.module.<%= css %>';
+import styles from './index.module.less';
 
 <% if(framework ==='reactRedux'){ -%>
 interface Props {
@@ -22,11 +29,16 @@ const Component: FC<Props> = ({loadingState}) => {
 export default memo(Component);
 <% }else{ -%>
 export default defineComponent({
+  name: 'StageLoadingPanel',
   props: {
     loadingState: {
       type: String as PropType<LoadingState>,
     },
   },
+  setup() {
+    return {LoadingState};
+  },
+  <%_ if(render !=='tpl'){ -%>
   render() {
     const {loadingState} = this;
     return loadingState === LoadingState.Start || loadingState === LoadingState.Depth ? (
@@ -35,5 +47,6 @@ export default defineComponent({
       </div>
     ) : null;
   },
+  <%_ } -%>
 });
 <% } -%>

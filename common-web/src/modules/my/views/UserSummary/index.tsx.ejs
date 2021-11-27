@@ -1,27 +1,46 @@
+<% if(render ==='tpl'){ -%>
+<template>
+  <DocumentHead title="个人中心" />
+  <div :class="[$style.root, 'g-page-content']">
+    <div class="title">个人中心</div>
+    <div class="avatar" :style="{backgroundImage: `url(${StaticPrefix + curUser.avatar})`}" />
+    <template v-if="curUser.hasLogin">
+      <div class="nickname">{{ curUser.username }}</div>
+      <div class="score">{{ `✆ ${curUser.mobile}` }}</div>
+      <div class="logout" @click="onLogout">退出登录</div>
+    </template>
+    <template v-else>
+      <div class="nickname">游客</div>
+      <div class="login" @click="onLogin">登 录</div>
+    </template>
+  </div>
+  <TabBar selected="my" />
+</template>
+<% } -%>
 <% if(framework ==='reactRedux'){ -%>
 import {useCallback, FC} from 'react';
 import {Dispatch, DocumentHead, connectRedux} from '@elux/<%= elux %>';
 <% }else{ -%>
-import {defineComponent} from 'vue';
-import {exportView, DocumentHead} from '@elux/<%= elux %>';
+import {defineComponent, computed} from 'vue';
+import {exportView, DocumentHead, ComputedStore} from '@elux/<%= elux %>';
 <% } -%>
 import {CurUser} from '@/modules/stage/entity';
 import {Modules, StaticPrefix, GetRouter, APPState<%= framework ==='vueVuex' ? ', useStore' : '' %>} from '@/Global';
-import TabBar from '@/components/TabBar';
-import styles from './index.module.<%= css %>';
+import TabBar from '@/components/TabBar.vue';
+import styles from './index.module.less';
 
-export interface StoreProps {
+interface StoreProps {
   curUser: CurUser;
+}
+
+<% if(framework ==='reactRedux'){ -%>
+interface DispatchProps {
+  dispatch: Dispatch;
 }
 
 function mapStateToProps(appState: APPState): StoreProps {
   const stage = appState.stage;
   return {curUser: stage.curUser!};
-}
-
-<% if(framework ==='reactRedux'){ -%>
-export interface DispatchProps {
-  dispatch: Dispatch;
 }
 
 const Component: FC<StoreProps & DispatchProps> = ({curUser, dispatch}) => {
@@ -37,7 +56,7 @@ const Component: FC<StoreProps & DispatchProps> = ({curUser, dispatch}) => {
         {curUser.hasLogin ? (
           <>
             <div className="nickname">{curUser.username}</div>
-            <div className="score">✆ {curUser.mobile}</div>
+            <div className="score">{`✆ ${curUser.mobile}`}</div>
             <div className="logout" onClick={onLogout}>
               退出登录
             </div>
@@ -58,18 +77,31 @@ const Component: FC<StoreProps & DispatchProps> = ({curUser, dispatch}) => {
 
 export default connectRedux(mapStateToProps)(Component);
 <% }else{ -%>
+function mapStateToProps({stage}: APPState): ComputedStore<StoreProps> {
+  return {
+    curUser: () => stage.curUser!,
+  };
+}
+
 const Component = defineComponent({
+  name: 'MyUserSummary',
+  <%_ if(render ==='tpl'){ -%>
+  components: {
+    DocumentHead,
+    TabBar,
+  },
+  <%_ } -%>
   setup() {
     const store = useStore();
-    const appState = store.getState();
-    const storeProps = computed(() => mapStateToProps(appState));
+    const computedStore = mapStateToProps(store.getState());
+    const curUser = computed(computedStore.curUser);
     const onLogin = () => GetRouter().push('/login');
-    const onLogout = () => store.dispatch(accountActions.logout());
-    return {store, storeProps, onLogin, onLogout};
+    const onLogout = () => store.dispatch(Modules.stage.actions.logout());
+    return {curUser, onLogin, onLogout, StaticPrefix};
   },
+  <%_ if(render !=='tpl'){ -%>
   render() {
-    const {onLogin, onLogout} = this;
-    const {curUser} = this.storeProps;
+    const {curUser, onLogin, onLogout} = this;
 
     return (
       <>
@@ -80,7 +112,7 @@ const Component = defineComponent({
           {curUser.hasLogin ? (
             <>
               <div class="nickname">{curUser.username}</div>
-              <div class="score">✆ {curUser.mobile}</div>
+              <div class="score">{`✆ ${curUser.mobile}`}</div>
               <div class="logout" onClick={onLogout}>
                 退出登录
               </div>
@@ -98,6 +130,7 @@ const Component = defineComponent({
       </>
     );
   },
+  <%_ } -%>
 });
 
 export default exportView(Component);

@@ -1,30 +1,37 @@
+<% if(render ==='tpl'){ -%>
+<template>
+  <List v-if="listView === 'list'" />
+  <Detail v-if="itemView === 'detail' && itemDetail" :itemDetail="itemDetail" />
+  <Edit v-if="itemView === 'edit' && itemDetail" :itemDetail="itemDetail" :dispatch="dispatch" />
+</template>
+<% } -%>
 <% if(framework ==='reactRedux'){ -%>
 import {FC} from 'react';
 import {Dispatch, connectRedux} from '@elux/<%= elux %>';
 <% }else{ -%>
-import {defineComponent} from 'vue';
-import {Dispatch, exportView} from '@elux/<%= elux %>';
+import {defineComponent, computed} from 'vue';
+import {exportView, ComputedStore} from '@elux/<%= elux %>';
 <% } -%>
-import {APPState, RouteParams<%= framework ==='vueVuex' ? ', useStore' : '' %>} from '@/Global';
-import List from './List';
-import Detail from './Detail';
-import Edit from './Edit';
+import {APPState<%= framework ==='vueVuex' ? ', useStore' : '' %>} from '@/Global';
+import List from './List.vue';
+import Detail from './Detail.vue';
+import Edit from './Edit.vue';
 import {ListView, ItemView, ItemDetail} from '../entity';
 
-export interface StoreProps {
+interface StoreProps {
   listView?: ListView;
   itemView?: ItemView;
   itemDetail?: ItemDetail;
 }
 
+<% if(framework ==='reactRedux'){ -%>
 function mapStateToProps(appState: APPState): StoreProps {
-  const routeParams: RouteParams = appState.route.params;
+  const routeParams = appState.route.params;
   const {listView, itemView} = routeParams.article || {};
   const {itemDetail} = appState.article;
   return {listView, itemView, itemDetail};
 }
 
-<% if(framework ==='reactRedux'){ -%>
 const Component: FC<StoreProps & {dispatch: Dispatch}> = ({listView, itemView, itemDetail, dispatch}) => {
   return (
     <>
@@ -37,15 +44,34 @@ const Component: FC<StoreProps & {dispatch: Dispatch}> = ({listView, itemView, i
 
 export default connectRedux(mapStateToProps)(Component);
 <% }else{ -%>
+function mapStateToProps({route, article}: APPState): ComputedStore<StoreProps> {
+  return {
+    listView: () => route.params.article?.listView,
+    itemView: () => route.params.article?.itemView,
+    itemDetail: () => article.itemDetail,
+  };
+}
+
 const Component = defineComponent({
+  name: 'ArticleMain',
+  <%_ if(render ==='tpl'){ -%>
+  components: {
+    List,
+    Detail,
+    Edit,
+  },
+  <%_ } -%>
   setup() {
     const store = useStore();
-    const appState = store.getState();
-    const storeProps = computed(() => mapStateToProps(appState));
-    return {store, storeProps};
+    const computedStore = mapStateToProps(store.getState());
+    const listView = computed(computedStore.listView);
+    const itemView = computed(computedStore.itemView);
+    const itemDetail = computed(computedStore.itemDetail);
+    return {listView, itemView, itemDetail, dispatch: store.dispatch};
   },
+  <%_ if(render !=='tpl'){ -%>
   render() {
-    const {listView, itemView, itemDetail, {store: {dispatch}}} = this.storeProps;
+    const {listView, itemView, itemDetail, dispatch} = this;
     return (
       <>
         {listView === 'list' && <List />}
@@ -54,6 +80,7 @@ const Component = defineComponent({
       </>
     );
   },
+  <%_ } -%>
 });
 
 export default exportView(Component);

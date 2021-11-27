@@ -1,3 +1,16 @@
+<% if(render ==='tpl'){ -%>
+<template>
+  <DocumentHead :title="itemDetail.title" />
+  <div :class="[$style.root, 'g-page-content']">
+    <div class="hd">
+      <div class="back" @click="onBack"></div>
+      <div class="title">{{ itemDetail.title }}</div>
+      <div class="summary">{{ itemDetail.summary }}</div>
+    </div>
+    <div class="bd">{{ itemDetail.content }}</div>
+  </div>
+</template>
+<% } -%>
 <% if(framework ==='reactRedux'){ -%>
 import {memo, useCallback, FC} from 'react';
 import {DocumentHead} from '@elux/<%= elux %>';
@@ -7,7 +20,7 @@ import {exportView, DocumentHead} from '@elux/<%= elux %>';
 <% } -%>
 import {GetRouter} from '@/Global';
 import {ItemDetail} from '../../entity';
-import styles from './index.module.<%= css %>';
+import styles from './index.module.less';
 
 <% if(framework ==='reactRedux'){ -%>
 interface OwnerProps {
@@ -35,16 +48,23 @@ const Component: FC<OwnerProps> = ({itemDetail}) => {
 export default memo(Component);
 <% }else{ -%>
 const Component = defineComponent({
+  name: 'ArticleDetail',
+  <%_ if(render ==='tpl'){ -%>
+  components: {
+    DocumentHead,
+  },
+  <%_ } -%>
   props: {
     itemDetail: {
       type: Object as PropType<ItemDetail>,
       required: true,
-    }
+    },
   },
-  setup(props) {
+  setup() {
     const onBack = () => GetRouter().back(1, true);
     return {onBack};
   },
+  <%_ if(render !=='tpl'){ -%>
   render() {
     const {itemDetail, onBack} = this;
     return (
@@ -61,6 +81,7 @@ const Component = defineComponent({
       </>
     );
   },
+  <%_ } -%>
 });
 
 export default exportView(Component);

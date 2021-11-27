@@ -1,9 +1,11 @@
+@import '@/assets/css/var.less';
+
 :global {
   :local(.root) {
     padding-top: 10px;
     overflow: hidden;
     text-align: center;
-    border-top: #ddd 1px dashed;
+    border-top: @borderColor 1px dashed;
 
     .item {
       display: inline-block;
@@ -12,8 +14,8 @@
       padding: 0 30px;
       font-size: 14px;
       line-height: 30px;
-      background-color: #f7f7f7;
-      border: #ddd 1px solid;
+      background-color: @slightColor;
+      border: @borderColor 1px solid;
       border-radius: 30px;
       cursor: pointer;
     }

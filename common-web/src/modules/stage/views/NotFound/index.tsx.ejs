@@ -1,10 +1,18 @@
+<% if(render ==='tpl'){ -%>
+<template>
+  <NavBar title="Not Found" onBack />
+  <div :class="[$style.root, 'g-page-content']">
+    <div>404</div>
+  </div>
+</template>
+<% } -%>
 <% if(framework ==='reactRedux'){ -%>
 import {memo, FC} from 'react';
 <% }else{ -%>
 import {defineComponent} from 'vue';
 <% } -%>
-import NavBar from '@/components/NavBar';
-import styles from './index.module.<%= css %>';
+import NavBar from '@/components/NavBar.vue';
+import styles from './index.module.less';
 
 <% if(framework ==='reactRedux'){ -%>
 const Component: FC = () => {
@@ -21,6 +29,13 @@ const Component: FC = () => {
 export default memo(Component);
 <% }else{ -%>
 export default defineComponent({
+  name: 'StageNotFound',
+  <%_ if(render ==='tpl'){ -%>
+  components: {
+    NavBar,
+  },
+  <%_ } -%>
+  <%_ if(render !=='tpl'){ -%>
   render() {
     return (
       <>
@@ -31,5 +46,6 @@ export default defineComponent({
       </>
     );
   },
+  <%_ } -%>
 });
 <% } -%>

@@ -1,14 +1,47 @@
+<% if(render ==='tpl'){ -%>
+<template>
+  <DocumentHead title="编辑文章" />
+  <NavBar :title="itemDetail.id ? '修改文章' : '新建文章'" />
+  <div :class="[$style.root, 'g-page-content']">
+    <div class="form-body">
+      <div class="form-item">
+        <div class="label">标题</div>
+        <div class="item">
+          <input v-model="title" name="title" class="g-input" type="text" placeholder="请输入" />
+        </div>
+      </div>
+      <div class="form-item">
+        <div class="label">摘要</div>
+        <div class="item">
+          <textarea v-model="summary" name="summary" class="g-input" placeholder="请输入" rows="2" />
+        </div>
+      </div>
+      <div class="form-item">
+        <div class="label">内容</div>
+        <div class="item">
+          <textarea v-model="content" name="content" class="g-input" placeholder="请输入" rows="10" />
+        </div>
+      </div>
+    </div>
+    <div v-if="errorMessage" class="form-error">{{ `* ${errorMessage}` }}</div>
+    <div class="form-control">
+      <button type="submit" class="g-button primary" @click="onSubmit">提 交</button>
+      <button type="button" class="g-button" @click="onCancel">取 消</button>
+    </div>
+  </div>
+</template>
+<% } -%>
 <% if(framework ==='reactRedux'){ -%>
 import {useCallback, useState, memo, FC} from 'react';
 import {Dispatch, DocumentHead} from '@elux/<%= elux %>';
 <% }else{ -%>
-import {defineComponent, PropType} from 'vue';
+import {defineComponent, ref, PropType} from 'vue';
 import {exportView, Dispatch, DocumentHead} from '@elux/<%= elux %>';
 <% } -%>
 import {Modules, GetRouter} from '@/Global';
-import NavBar from '@/components/NavBar';
+import NavBar from '@/components/NavBar.vue';
 import {ItemDetail} from '../../entity';
-import styles from './index.module.<%= css %>';
+import styles from './index.module.less';
 
 <% if(framework ==='reactRedux'){ -%>
 interface OwnerProps {
@@ -81,7 +114,7 @@ const Component: FC<OwnerProps> = ({itemDetail, dispatch}) => {
             </div>
           </div>
         </div>
-        {errorMessage && <div className="form-error">* {errorMessage}</div>}
+        {errorMessage && <div className="form-error">{`* ${errorMessage}`}</div>}
         <div className="form-control">
           <button type="submit" className="g-button primary" onClick={onSubmit}>
             提 交
@@ -98,6 +131,13 @@ const Component: FC<OwnerProps> = ({itemDetail, dispatch}) => {
 export default memo(Component);
 <% }else{ -%>
 const Component = defineComponent({
+  name: 'ArticleEdit',
+  <%_ if(render ==='tpl'){ -%>
+  components: {
+    DocumentHead,
+    NavBar,
+  },
+  <%_ } -%>
   props: {
     itemDetail: {
       type: Object as PropType<ItemDetail>,
@@ -106,31 +146,32 @@ const Component = defineComponent({
     dispatch: {
       type: Function as PropType<Dispatch>,
       required: true,
-    }
+    },
   },
   setup(props) {
-    const {itemDetail, dispatch} = props;
     const errorMessage = ref('');
-    const title = ref(itemDetail.title);
-    const summary = ref(itemDetail.summary);
-    const content = ref(itemDetail.content);
+    const title = ref(props.itemDetail.title);
+    const summary = ref(props.itemDetail.summary);
+    const content = ref(props.itemDetail.content);
     const onCancel = () => GetRouter().back(1);
     const onSubmit = () => {
-      if (!title || !summary || !content) {
+      if (!title.value || !summary.value || !content.value) {
         errorMessage.value = '请输入文章标题、摘要、内容';
       } else {
-        const item = {id: itemDetail.id, title, summary, content};
-        if (itemDetail.id) {
-          dispatch(Modules.article.actions.updateItem(item));
+        const item = {id: props.itemDetail.id, title: title.value, summary: summary.value, content: content.value};
+        if (props.itemDetail.id) {
+          props.dispatch(Modules.article.actions.updateItem(item));
         } else {
-          dispatch(Modules.article.actions.createItem(item));
+          props.dispatch(Modules.article.actions.createItem(item));
         }
       }
     };
-    return {store, title, summary, content, errorMessage, onSubmit, onCancel};
+    return {title, summary, content, errorMessage, onSubmit, onCancel};
   },
+  <%_ if(render !=='tpl'){ -%>
   render() {
-    const {store, title, summary, content, errorMessage, onSubmit, onCancel} = this;
+    const {itemDetail, errorMessage, onSubmit, onCancel} = this;
+
     return (
       <>
         <DocumentHead title="编辑文章" />
@@ -140,41 +181,23 @@ const Component = defineComponent({
             <div class="form-item">
               <div class="label">标题</div>
               <div class="item">
-                <input
-                  name="title"
-                  class="g-input"
-                  type="text"
-                  placeholder="请输入"
-                  v-model={title}
-                />
+                <input name="title" class="g-input" type="text" placeholder="请输入" v-model={this.title} />
               </div>
             </div>
             <div class="form-item">
               <div class="label">摘要</div>
               <div class="item">
-                <textarea
-                  name="summary"
-                  class="g-input"
-                  placeholder="请输入"
-                  rows={2}
-                  v-model={summary}
-                />
+                <textarea name="summary" class="g-input" placeholder="请输入" rows={2} v-model={this.summary} />
               </div>
             </div>
             <div class="form-item">
               <div class="label">内容</div>
               <div class="item">
-                <textarea
-                  name="content"
-                  class="g-input"
-                  placeholder="请输入"
-                  rows={10}
-                  v-model={content}
-                />
+                <textarea name="content" class="g-input" placeholder="请输入" rows={10} v-model={this.content} />
               </div>
             </div>
           </div>
-          {errorMessage && <div class="form-error">* {errorMessage}</div>}
+          {errorMessage && <div class="form-error">{`* ${errorMessage}`}</div>}
           <div class="form-control">
             <button type="submit" class="g-button primary" onClick={onSubmit}>
               提 交
@@ -187,6 +210,7 @@ const Component = defineComponent({
       </>
     );
   },
+  <%_ } -%>
 });
 
 export default exportView(Component);

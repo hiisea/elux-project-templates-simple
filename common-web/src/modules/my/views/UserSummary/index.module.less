@@ -1,3 +1,5 @@
+@import '@/assets/css/var.less';
+
 :global {
   :local(.root) {
     align-items: center;
@@ -28,7 +30,7 @@
 
     .score {
       padding-bottom: 40px;
-      color: #999;
+      color: @tipColor;
       font-size: 12px;
     }
 
@@ -37,16 +39,16 @@
       padding: 5px 30px;
       color: #fff;
       font-size: 15px;
-      background-color: #0069f3;
+      background-color: @activeColor;
       border-radius: 100px;
       cursor: pointer;
     }
 
     .logout {
       padding: 5px 30px;
-      color: #0069f3;
+      color: @activeColor;
       font-size: 15px;
-      border: 1px solid #0069f3;
+      border: 1px solid @activeColor;
       border-radius: 100px;
       cursor: pointer;
     }

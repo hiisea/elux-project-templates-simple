@@ -4,6 +4,9 @@
     "types": ["../typings/assets"],
     "lib": ["es2020", "DOM"],
     "emitDeclarationOnly": true,
+    <%_ if(framework ==='vueVuex'){ -%>
+    "jsx": "preserve",
+    <%_ } -%>
     "outDir": "../dist",
     "rootDir": "./",
     "baseUrl": "./",

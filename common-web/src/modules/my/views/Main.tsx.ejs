@@ -1,41 +1,60 @@
+<% if(render ==='tpl'){ -%>
+<template>
+  <UserSummary v-if="subView === 'userSummary'" />
+</template>
+<% } -%>
 <% if(framework ==='reactRedux'){ -%>
 import {FC} from 'react';
 import {connectRedux} from '@elux/<%= elux %>';
 <% }else{ -%>
-import {defineComponent} from 'vue';
-import {exportView} from '@elux/<%= elux %>';
+import {defineComponent, computed} from 'vue';
+import {exportView, ComputedStore} from '@elux/<%= elux %>';
 <% } -%>
-import {APPState, RouteParams<%= framework ==='vueVuex' ? ', useStore' : '' %>} from '@/Global';
-import UserSummary from './UserSummary';
+import {APPState<%= framework ==='vueVuex' ? ', useStore' : '' %>} from '@/Global';
+import UserSummary from './UserSummary.vue';
 import {SubView} from '../entity';
 
-export interface StoreProps {
+interface StoreProps {
   subView?: SubView;
 }
 
+<% if(framework ==='reactRedux'){ -%>
 function mapStateToProps(appState: APPState): StoreProps {
-  const routeParams: RouteParams = appState.route.params;
+  const routeParams = appState.route.params;
   return {subView: routeParams.my?.subView};
 }
 
-<% if(framework ==='reactRedux'){ -%>
 const Component: FC<StoreProps> = ({subView}) => {
   return <>{subView === 'userSummary' && <UserSummary />}</>;
 };
 
 export default connectRedux(mapStateToProps)(Component);
 <% }else{ -%>
+function mapStateToProps({route}: APPState): ComputedStore<StoreProps> {
+  return {
+    subView: () => route.params.my?.subView,
+  };
+}
+
 const Component = defineComponent({
+  name: 'MyMain',
+  <%_ if(render ==='tpl'){ -%>
+  components: {
+    UserSummary,
+  },
+  <%_ } -%>
   setup() {
     const store = useStore();
-    const appState = store.getState();
-    const storeProps = computed(() => mapStateToProps(appState));
-    return {store, storeProps};
+    const computedStore = mapStateToProps(store.getState());
+    const subView = computed(computedStore.subView);
+    return {subView};
   },
+  <%_ if(render !=='tpl'){ -%>
   render() {
-    const {subView} = this.storeProps;
+    const {subView} = this;
     return <>{subView === 'userSummary' && <UserSummary />}</>;
   },
+  <%_ } -%>
 });
 
 export default exportView(Component);

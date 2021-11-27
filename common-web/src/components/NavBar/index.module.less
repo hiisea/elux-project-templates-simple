@@ -1,3 +1,5 @@
+@import '@/assets/css/var.less';
+
 :global {
   :local(.root) {
     position: relative;
@@ -5,18 +7,18 @@
     height: 50px;
     line-height: 50px;
     text-align: center;
-    background-color: #e7e7e7;
+    background-color: @tintColor;
 
     .back {
       position: absolute;
       left: 0;
       width: 50px;
       height: 100%;
-      background: rgba(255, 255, 255, 0.8);
+      background: rgba(0, 0, 0, 0.04);
       cursor: pointer;
 
       &::before {
-        color: #666;
+        color: @infoColor;
         font-size: 24px;
         content: '<';
       }

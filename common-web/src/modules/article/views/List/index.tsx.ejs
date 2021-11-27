@@ -1,17 +1,44 @@
+<% if(render ==='tpl'){ -%>
+<template>
+  <DocumentHead title="文章" />
+  <NavBar title="文章列表" />
+  <div :class="[$style.root, 'g-page-content']">
+    <template v-if="listSearch && list && listSummary">
+      <SearchBar :keyword="listSearch.keyword" @submit="onSearch" @create="onCreate" />
+      <div ref="scrollDiv" class="article-list">
+        <div v-for="item in list" :key="item.id" class="article-item">
+          <Link class="article-title" :route="`/article/detail/${item.id}`" root<%= platform === 'ssr' ? ' :href="`/article/detail/${item.id}`"' : '' %>>
+            {{ item.title }}
+          </Link>
+          <Link class="article-summary" :route="`/article/detail/${item.id}`" root<%= platform === 'ssr' ? ' :href="`/article/detail/${item.id}`"' : '' %>>
+            {{ item.summary }}
+          </Link>
+          <div class="article-operation">
+            <div class="item" @click="onEditItem(item.id)">修改</div>
+            <div class="item" @click="onDeleteItem(item.id)">删除</div>
+          </div>
+        </div>
+        <Pagination :total-pages="listSummary.totalPages" :page-current="listSummary.pageCurrent" @change="onPageChange" />
+      </div>
+    </template>
+  </div>
+  <TabBar selected="article" />
+</template>
+<% } -%>
 <% if(framework ==='reactRedux'){ -%>
 import {useCallback, useEffect, useRef, FC} from 'react';
-import {DocumentHead, connectRedux, Link, Dispatch} from '@elux/<%= elux %>';
+import {DocumentHead, Link, connectRedux, Dispatch} from '@elux/<%= elux %>';
 <% }else{ -%>
-import {defineComponent} from 'vue';
-import {exportView} from '@elux/<%= elux %>';
+import {defineComponent, computed, ref, watch} from 'vue';
+import {DocumentHead, Link, exportView, ComputedStore} from '@elux/<%= elux %>';
 <% } -%>
 import {APPState, GetRouter, Modules<%= framework ==='vueVuex' ? ', useStore' : '' %>} from '@/Global';
-import TabBar from '@/components/TabBar';
-import NavBar from '@/components/NavBar';
-import SearchBar from '../../components/SearchBar';
-import Pagination from '../../components/Pagination';
+import TabBar from '@/components/TabBar.vue';
+import NavBar from '@/components/NavBar.vue';
+import SearchBar from '../../components/SearchBar.vue';
+import Pagination from '../../components/Pagination.vue';
 import {ListItem, ListSearch, ListSummary} from '../../entity';
-import styles from './index.module.<%= css %>';
+import styles from './index.module.less';
 
 interface StoreProps {
   listSearch?: ListSearch;
@@ -19,12 +46,12 @@ interface StoreProps {
   listSummary?: ListSummary;
 }
 
+<% if(framework ==='reactRedux'){ -%>
 function mapStateToProps(appState: APPState): StoreProps {
   const {listSearch, list, listSummary} = appState.article;
   return {listSearch, list, listSummary};
 }
 
-<% if(framework ==='reactRedux'){ -%>
 const Component: FC<StoreProps & {dispatch: Dispatch}> = ({listSearch, list, listSummary, dispatch}) => {
   const onPageChange = useCallback((pageCurrent: number) => {
     GetRouter().push(`/article/page/${pageCurrent}`);
@@ -50,7 +77,7 @@ const Component: FC<StoreProps & {dispatch: Dispatch}> = ({listSearch, list, lis
     if (scrollDiv.current) {
       scrollDiv.current.scrollTop = 0;
     }
-  }, [listSummary?.pageCurrent]);
+  }, [list]);
 
   return (
     <>
@@ -91,11 +118,32 @@ const Component: FC<StoreProps & {dispatch: Dispatch}> = ({listSearch, list, lis
 
 export default connectRedux(mapStateToProps)(Component);
 <% }else{ -%>
+function mapStateToProps({article}: APPState): ComputedStore<StoreProps> {
+  return {
+    listSearch: () => article.listSearch,
+    list: () => article.list,
+    listSummary: () => article.listSummary,
+  };
+}
+
 const Component = defineComponent({
+  name: 'ArticleList',
+  <%_ if(render ==='tpl'){ -%>
+  components: {
+    DocumentHead,
+    Link,
+    NavBar,
+    TabBar,
+    SearchBar,
+    Pagination,
+  },
+  <%_ } -%>
   setup() {
     const store = useStore();
-    const appState = store.getState();
-    const storeProps = computed(() => mapStateToProps(appState));
+    const computedStore = mapStateToProps(store.getState());
+    const listSearch = computed(computedStore.listSearch);
+    const list = computed(computedStore.list);
+    const listSummary = computed(computedStore.listSummary);
     const onPageChange = (pageCurrent: number) => {
       GetRouter().push(`/article/page/${pageCurrent}`);
     };
@@ -104,7 +152,7 @@ const Component = defineComponent({
       GetRouter().push(loction);
     };
     const onDeleteItem = (id: string) => {
-      dispatch(Modules.article.actions.deleteItem(id));
+      store.dispatch(Modules.article.actions.deleteItem(id));
     };
     const onEditItem = (id: string) => {
       GetRouter().push(`/article/edit/${id}`, true);
@@ -112,32 +160,38 @@ const Component = defineComponent({
     const onCreate = () => {
       GetRouter().push(`/article/edit/0`, true);
     };
-    return {store, storeProps, onPageChange, onSearch, onDeleteItem, onEditItem, onCreate};
+    const scrollDiv = ref<Element>();
+    watch(list, () => {
+      scrollDiv.value && (scrollDiv.value.scrollTop = 0);
+    });
+    return {listSearch, list, listSummary, scrollDiv, onPageChange, onSearch, onDeleteItem, onEditItem, onCreate};
   },
+  <%_ if(render !=='tpl'){ -%>
   render() {
-    const {listSearch, list, listSummary, onPageChange, onSearch, onDeleteItem, onEditItem, onCreate} = this.storeProps;
+    const {listSearch, list, listSummary, onPageChange, onSearch, onDeleteItem, onEditItem, onCreate} = this;
+
     return (
       <>
         <DocumentHead title="文章" />
         <NavBar title="文章列表" />
-        <div className={`${styles.root} g-page-content`}>
+        <div class={`${styles.root} g-page-content`}>
           {listSearch && list && listSummary && (
             <>
               <SearchBar keyword={listSearch.keyword} onSubmit={onSearch} onCreate={onCreate} />
-              <div className="article-list" ref={scrollDiv}>
+              <div class="article-list" ref="scrollDiv">
                 {list.map((item) => (
-                  <div key={item.id} className="article-item">
-                    <Link className="article-title" route={`/article/detail/${item.id}`} root<%= platform === 'ssr' ? ' href={`/article/detail/${item.id}`}' : '' %>>
+                  <div key={item.id} class="article-item">
+                    <Link class="article-title" route={`/article/detail/${item.id}`} root<%= platform === 'ssr' ? ' href={`/article/detail/${item.id}`}' : '' %>>
                       {item.title}
                     </Link>
-                    <Link className="article-summary" route={`/article/detail/${item.id}`} root<%= platform === 'ssr' ? ' href={`/article/detail/${item.id}`}' : '' %>>
+                    <Link class="article-summary" route={`/article/detail/${item.id}`} root<%= platform === 'ssr' ? ' href={`/article/detail/${item.id}`}' : '' %>>
                       {item.summary}
                     </Link>
-                    <div className="article-operation">
-                      <div className="item" onClick={() => onEditItem(item.id)}>
+                    <div class="article-operation">
+                      <div class="item" onClick={() => onEditItem(item.id)}>
                         修改
                       </div>
-                      <div className="item" onClick={() => onDeleteItem(item.id)}>
+                      <div class="item" onClick={() => onDeleteItem(item.id)}>
                         删除
                       </div>
                     </div>
@@ -152,6 +206,7 @@ const Component = defineComponent({
       </>
     );
   },
+  <%_ } -%>
 });
 
 export default exportView(Component);

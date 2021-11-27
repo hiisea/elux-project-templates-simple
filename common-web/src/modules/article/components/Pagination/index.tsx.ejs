@@ -1,10 +1,19 @@
+<% if(render ==='tpl'){ -%>
+<template>
+  <div :class="$style.root">
+    <Link v-if="pageCurrent > 1" class="item" @click="onChangeHandler(pageCurrent - 1)"<%= platform==='ssr' ? ' :href="replacePageNumber(baseUrl, pageCurrent - 1)"':'' %>>上一页</Link>
+    <Link v-if="pageCurrent < totalPages" class="item" @click="onChangeHandler(pageCurrent + 1)"<%= platform==='ssr' ? ' :href="replacePageNumber(baseUrl, pageCurrent + 1)"':''%>>下一页</Link>
+    <div class="info">{{ `- 第 ${pageCurrent} 页 / 共 ${totalPages} 页 -` }}</div>
+  </div>
+</template>
+<% } -%>
 <% if(framework ==='reactRedux'){ -%>
 import {memo, FC} from 'react';
 <% }else{ -%>
 import {defineComponent, PropType} from 'vue';
 <% } -%>
 import {Link} from '@elux/<%= elux %>';
-import styles from './index.module.<%= css %>';
+import styles from './index.module.less';
 
 <% if (platform==='ssr'){ -%>
 function replacePageNumber(baseUrl: string, pageCurrent: number): string {
@@ -43,6 +52,12 @@ const Component: FC<Props> = ({totalPages, pageCurrent, onChange<%= platform==='
 export default memo(Component);
 <% }else{ -%>
 export default defineComponent({
+  name: 'ArticlePagination',
+  <%_ if(render ==='tpl'){ -%>
+  components: {
+    Link,
+  },
+  <%_ } -%>
   props: {
 <% if (platform==='ssr'){ -%>
     baseUrl: {
@@ -68,19 +83,21 @@ export default defineComponent({
     const onChangeHandler = (currentPage: number) => {
       emit('change', currentPage);
     };
-    return {onChangeHandler};
+    return {onChangeHandler<%= platform==='ssr' ? ', replacePageNumber':''%>};
   },
+  <%_ if(render !=='tpl'){ -%>
   render() {
     const {totalPages, pageCurrent, onChangeHandler<%= platform==='ssr' ? ', baseUrl' : '' %>} = this;
+
     return (
       <div class={styles.root}>
         {pageCurrent > 1 && (
-          <Link class="item" onClick={() => onChange(pageCurrent - 1)}<%= platform==='ssr' ? ' href={replacePageNumber(baseUrl, pageCurrent - 1)}':'' %>>
+          <Link class="item" onClick={() => onChangeHandler(pageCurrent - 1)}<%= platform==='ssr' ? ' href={replacePageNumber(baseUrl, pageCurrent - 1)}':'' %>>
             上一页
           </Link>
         )}
         {pageCurrent < totalPages && (
-          <Link class="item" onClick={() => onChange(pageCurrent + 1)}<%= platform==='ssr' ? ' href={replacePageNumber(baseUrl, pageCurrent + 1)}':''%>>
+          <Link class="item" onClick={() => onChangeHandler(pageCurrent + 1)}<%= platform==='ssr' ? ' href={replacePageNumber(baseUrl, pageCurrent + 1)}':''%>>
             下一页
           </Link>
         )}
@@ -88,5 +105,6 @@ export default defineComponent({
       </div>
     );
   },
+  <%_ } -%>
 });
 <% } -%>
