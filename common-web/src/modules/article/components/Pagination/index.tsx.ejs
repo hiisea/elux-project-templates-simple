@@ -1,8 +1,8 @@
 <% if(render ==='tpl'){ -%>
 <template>
   <div :class="$style.root">
-    <Link v-if="pageCurrent > 1" class="item" @click="onChangeHandler(pageCurrent - 1)"<%= platform==='ssr' ? ' :href="replacePageNumber(baseUrl, pageCurrent - 1)"':'' %>>上一页</Link>
-    <Link v-if="pageCurrent < totalPages" class="item" @click="onChangeHandler(pageCurrent + 1)"<%= platform==='ssr' ? ' :href="replacePageNumber(baseUrl, pageCurrent + 1)"':''%>>下一页</Link>
+    <Link v-if="pageCurrent > 1" class="item"<%= platform==='ssr' ? ' :href="replacePageNumber(baseUrl, pageCurrent - 1)"':'' %> @click="onChangeHandler(pageCurrent - 1)">上一页</Link>
+    <Link v-if="pageCurrent < totalPages" class="item"<%= platform==='ssr' ? ' :href="replacePageNumber(baseUrl, pageCurrent + 1)"':''%> @click="onChangeHandler(pageCurrent + 1)">下一页</Link>
     <div class="info">{{ `- 第 ${pageCurrent} 页 / 共 ${totalPages} 页 -` }}</div>
   </div>
 </template>
@@ -75,7 +75,7 @@ export default defineComponent({
     },
     onChange: {
       type: Function as PropType<(page: number) => void>,
-      required: true,
+      required: <%= render!=='tpl' %>,
     },
   },
   emits: ['change'],

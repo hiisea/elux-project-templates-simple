@@ -53,16 +53,19 @@ module.exports = {
           .replace(/'\.\.\/\.\.\//g, "'../");
     }
     if (data.css === "scss") {
-      if (filepath.endsWith(".tsx") || filepath.endsWith(".vue")) {
-        return code
-          .replace(/(import .*?['"].+?)\.less/g, "$1.scss")
-          .replace(/@(?!import|keyframes|media|\W)/g, "$")
-          .replace(/(import .*?['"].+?)\.less/g, "$1.scss");
+      if (filepath.endsWith(".tsx")) {
+        const arr = code.split('<style lang=')
+        arr[0] = arr[0].replace(/(import .*?['"].+?)\.less/g, "$1.scss");
+        if(arr[1]){
+          arr[1] = arr[1].replace(/@(?!import|keyframes|media|\W)/g, "$")
+          .replace(/(@import .*?['"].+?)\.less/g, "$1.scss");
+        }
+        return arr.join('<style lang=');
       }
       if (filepath.endsWith(".less")) {
         return code
           .replace(/@(?!import|keyframes|media|\W)/g, "$")
-          .replace(/(import .*?['"].+?)\.less/g, "$1.scss");
+          .replace(/(@import .*?['"].+?)\.less/g, "$1.scss");
       }
     }
     if (filepath.endsWith("model.ts")) {

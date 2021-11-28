@@ -63,11 +63,11 @@ export default defineComponent({
     },
     onSubmit: {
       type: Function as PropType<(keyword: string) => void>,
-      required: true,
+      required: <%= render!=='tpl' %>,
     },
     onCreate: {
       type: Function as PropType<() => void>,
-      required: true,
+      required: <%= render!=='tpl' %>,
     },
   },
   emits: ['submit', 'create'],

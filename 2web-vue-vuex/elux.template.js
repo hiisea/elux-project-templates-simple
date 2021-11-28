@@ -26,13 +26,13 @@ module.exports = {
       code = code.replace(/\.vue';/g, "';");
     }
     if (data.css === "scss") {
-      if (filepath.endsWith(".tsx") || filepath.endsWith(".vue")) {
+      if (filepath.endsWith(".tsx")) {
         return code.replace(/(import .*?['"].+?)\.less/g, "$1.scss");
       }
       if (filepath.endsWith(".less")) {
         return code
           .replace(/@(?!import|keyframes|media|\W)/g, "$")
-          .replace(/(import .*?['"].+?)\.less/g, "$1.scss");
+          .replace(/(@import .*?['"].+?)\.less/g, "$1.scss");
       }
     }
     if (filepath.endsWith("model.ts")) {

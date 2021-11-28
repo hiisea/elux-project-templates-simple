@@ -18,7 +18,7 @@
             <div class="item" @click="onDeleteItem(item.id)">删除</div>
           </div>
         </div>
-        <Pagination :total-pages="listSummary.totalPages" :page-current="listSummary.pageCurrent" @change="onPageChange" />
+        <Pagination :total-pages="listSummary.totalPages" :page-current="listSummary.pageCurrent"<%= platform === 'ssr' ? ' baseUrl="/article/page/0"' : '' %> @change="onPageChange" />
       </div>
     </template>
   </div>

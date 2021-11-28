@@ -52,8 +52,7 @@ export default defineComponent({
   },
   <%_ if(render !=='tpl'){ -%>
   render() {
-    const {title, onBack} = this;
-
+    const {title, callback} = this;
 
     return (
       <div class={styles.root}>
