@@ -30,7 +30,7 @@ import '@/assets/css/global.module.less';
 const Article = LoadComponent('article', 'main');
 const My = LoadComponent('my', 'main');
 
-interface StoreProps {
+export interface StoreProps {
   subView?: SubView;
   globalLoading?: LoadingState;
   routeParams: RouteParams;

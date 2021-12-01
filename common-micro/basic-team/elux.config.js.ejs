@@ -1,18 +1,7 @@
-<%
-  const typeMap = {
-    'reactRedux-csr': 'react',
-    'reactRedux-micro': 'react',
-    'reactRedux-ssr': 'react ssr',
-    'vueVuex-csr': 'vue',
-    'vueVuex-micro': 'vue',
-    'vueVuex-ssr': 'vue ssr',
-  };
-  const type = typeMap[framework + '-' + platform];
--%>
 const {localIP} = require('@elux/cli-utils');
 const apiHost = `http://${localIP}:3003/`;
 module.exports = {
-  type: '<%= type %>',
+  type: '<%= framework==='reactRedux'?'react':'vue' %>',
   mockServer: {port: 3003},
   cssProcessors: {<%= css==='less'?'less':'sass' %>: true},
   all: {
@@ -22,12 +11,6 @@ module.exports = {
       ApiPrefix: apiHost,
       StaticPrefix: apiHost,
     },
-<% if(platform==='ssr'){ -%>
-    serverGlobalVar: {
-      ApiPrefix: apiHost,
-      StaticPrefix: apiHost,
-    },
-<% } -%>
   },
   dev: {
     //开发环境专用配置
@@ -44,5 +27,8 @@ module.exports = {
         },
       },
     },
+  },
+  dir: {
+    mockPath: '../app-api',
   },
 };

@@ -1,0 +1,58 @@
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
+import {createRouteModule, DeepPartial, safeJsonParse, exportModule, exportComponent, EmptyModuleHandlers} from '@elux/<%= elux %>';
+import {RouteParams} from '@/Global';
+import stage from '@/modules/stage';
+
+type PartialRouteParams = DeepPartial<RouteParams>;
+
+const pagenameMap = {
+  '/index': {
+    argsToParams() {
+      const pathParams: PartialRouteParams = {stage: {}, my: {subView: 'userSummary'}};
+      return pathParams;
+    },
+    paramsToArgs() {
+      return [];
+    },
+  },
+  '/my': {
+    argsToParams() {
+      const pathParams: PartialRouteParams = {stage: {}, my: {subView: 'userSummary'}};
+      return pathParams;
+    },
+    paramsToArgs() {
+      return [];
+    },
+  },
+  '/login': {
+    argsToParams() {
+      const pathParams: PartialRouteParams = {stage: {subView: 'login'}};
+      return pathParams;
+    },
+    paramsToArgs() {
+      return [];
+    },
+  },
+};
+const routeModule = createRouteModule(pagenameMap, {
+  in(nativeLocation) {
+    const {pathname, query} = nativeLocation;
+    const args = safeJsonParse(query);
+    return {pathmatch: pathname, args};
+  },
+  out(eluxLocation) {
+    const {pathmatch, args} = eluxLocation;
+    return {pathname: pathmatch, query: Object.keys(args).length ? JSON.stringify(args) : ''};
+  },
+});
+
+export const MockComponent = exportComponent(() => null);
+
+export const moduleGetter = {
+  route: () => routeModule,
+  stage: () => stage,
+  article: () => exportModule('article', EmptyModuleHandlers, {}, {main: MockComponent}),
+  my: () => import('@/modules/my'),
+};
+
+export type ModuleGetter = typeof moduleGetter;

@@ -1,0 +1,40 @@
+{
+  "name": "<%= projectName %>",
+  "version": "1.0.0",
+  "description": "",
+  "author": "hiisea <hiisea@qq.com>",
+  "license": "MIT",
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "private": true,
+  "browserslist": [
+    "chrome >= 70"
+  ],
+  "workspaces": [
+    "app-api",
+    "app-build",
+    "app-runtime",
+    "basic-team",
+    "article-team",
+    "user-team",
+    "app-build/public",
+    "app-runtime/public",
+    "basic-team/public",
+    "article-team/public",
+    "user-team/public"
+  ],
+  "scripts": {
+    "start": "lerna run start --scope @<%= projectName %>/app-runtime --scope @<%= projectName %>/article-team --scope @<%= projectName %>/user-team --parallel",
+    "build": "lerna run build --scope @<%= projectName %>/app-runtime --scope @<%= projectName %>/article-team --scope @<%= projectName %>/user-team --parallel",
+    "demo": "lerna run demo --scope @<%= projectName %>/app-runtime --scope @<%= projectName %>/article-team --scope @<%= projectName %>/user-team --parallel"
+  },
+  "resolutions": {
+    "@<%= projectName %>/stage": "./basic-team/src/modules/stage",
+    "@<%= projectName %>/article": "./article-team/src/modules/article",
+    "@<%= projectName %>/my": "./user-team/src/modules/my"
+  },
+  "devDependencies": {
+    "lerna": "~3.22.1"
+  }
+}

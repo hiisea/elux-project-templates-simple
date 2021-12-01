@@ -1,0 +1,11 @@
+{
+  "name": "@<%= projectName %>/stage",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "peerDependencies": {
+    "@elux/react-redux-web": "*",
+    "react": "*",
+    "react-dom": "*",
+    "axios": "*"
+  }
+}

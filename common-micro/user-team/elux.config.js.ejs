@@ -1,0 +1,51 @@
+const {localIP} = require('@elux/cli-utils');
+const apiHost = `http://${localIP}:3003/`;
+module.exports = {
+  type: '<%= framework==='reactRedux'?'react':'vue' %>',
+  mockServer: {port: 3003},
+  cssProcessors: {<%= css==='less'?'less':'sass' %>: true},
+  all: {
+    //开发和生成环境都使用的配置
+    serverPort: 4002,
+    clientGlobalVar: {
+      ApiPrefix: apiHost,
+      StaticPrefix: apiHost,
+    },
+  },
+  dev: {
+    //开发环境专用配置
+    eslint: false,
+    stylelint: false,
+    clientGlobalVar: {
+      ApiPrefix: '/api/',
+    },
+    apiProxy: {
+      '/api': {
+        target: apiHost,
+        pathRewrite: {
+          '^/api': '',
+        },
+      },
+    },
+  },
+  dir: {
+    mockPath: '../app-api',
+  },
+  moduleFederation: {
+    name: 'userTeam',
+    filename: 'remote.js',
+    exposes: {
+      './modules/my': './src/modules/my',
+    },
+    shared: {
+      <%_ if(framework==='reactRedux'){ -%>
+      react: {singleton: true, eager: true, requiredVersion: '*'},
+      'react-dom': {singleton: true, eager: true, requiredVersion: '*'},
+      <%_ }else{ -%>
+      vue: {singleton: true, eager: true, requiredVersion: '*'},
+      <%_ } -%>
+      axios: {singleton: true, eager: true, requiredVersion: '*'},
+      '@elux/<%= elux %>': {singleton: true, eager: true, requiredVersion: '*'},
+    },
+  },
+};
