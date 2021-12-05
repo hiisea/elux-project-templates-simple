@@ -1,4 +1,4 @@
-module.exports = {
+return {
   platform: ["csr", "ssr"],
   framework: ["vueVuex"],
   css: ["less", "sass"],

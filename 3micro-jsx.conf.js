@@ -1,5 +1,5 @@
 let Alias, Depes;
-module.exports = {
+return {
   platform: ["micro"],
   framework: ["reactRedux", "vueVuex"],
   css: ["less", "sass"],
@@ -60,6 +60,9 @@ module.exports = {
     { action: "copy", from: "./common-micro", to: "$" },
   ],
   rename(data, filepath) {
+    if (filepath.endsWith("vetur.config.js")) {
+      return "";
+    }
     if (filepath.endsWith("/src/server.ts")) {
       return "";
     }
