@@ -1,4 +1,4 @@
-return {
+module.exports = {
   platform: ["csr", "ssr"],
   framework: ["reactRedux", "vueVuex"],
   css: ["less", "sass"],
@@ -20,9 +20,6 @@ return {
       return "";
     }
     if (data.platform !== "micro" && /\/modules\/\w+\/package\.json/.test(filepath)) {
-      return "";
-    }
-    if (filepath.endsWith("vetur.config.js")) {
       return "";
     }
     if (data.css === "scss" && filepath.endsWith(".less")) {
