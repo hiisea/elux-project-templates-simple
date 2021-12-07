@@ -1,0 +1,17 @@
+{
+  "name": "@<%= projectName %>/article",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "peerDependencies": {
+    "@<%= projectName %>/stage": "*",
+    "@elux/<%= elux %>": "*",
+  <%_ if(framework==='reactRedux'){ -%>
+    "react": "*",
+    "react-dom": "*",
+  <%_ }else{ -%>
+    "vue": "*",
+  <%_ } -%>
+    "fast-deep-equal": "*",
+    "axios": "*"
+  }
+}

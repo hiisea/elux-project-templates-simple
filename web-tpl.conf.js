@@ -1,4 +1,44 @@
-module.exports = {
+function replaceLess(code, css) {
+  if (css === "scss") {
+    return code
+      .replace(/@(?!import|keyframes|media|\W)/g, "$")
+      .replace(/(@import .*?['"].+?)\.less/g, "$1.scss")
+      .replace(/(@import .*?['"])\$/g, "$1@");
+  }
+  return code;
+}
+
+function replaceTsx(code, css, filepath) {
+  if (filepath.endsWith("index.tsx")) {
+    code = code.replace(/'\.\.\/(?=\w)/g, "'./").replace(/'\.\.\/\.\.\//g, "'../");
+  }
+  if (css === "scss") {
+    const arr = code.split("<style lang=");
+    arr[0] = arr[0].replace(/(import .*?['"].+?)\.less/g, "$1.scss");
+    if (arr[1]) {
+      arr[1] = arr[1]
+        .replace(/@(?!import|keyframes|media|\W)/g, "$")
+        .replace(/(@import .*?['"].+?)\.less/g, "$1.scss")
+        .replace(/(@import .*?['"])\$/g, "$1@");
+    }
+    return arr.join("<style lang=");
+  }
+  return code;
+}
+
+function replaceModel(code, framework) {
+  if (framework === "vueVuex") {
+    return code
+      .replace(/\breducer\b(?=.*\} from)/g, "mutation")
+      .replace(/\beffect\b(?=.*\} from)/g, "action")
+      .replace(/\):\s*ModuleState\s*{/g, "): void {")
+      .replace(/@reducer/g, "@mutation")
+      .replace(/@effect/g, "@action");
+  }
+  return code;
+}
+
+return {
   platform: ["csr", "ssr"],
   framework: ["vueVuex"],
   css: ["less", "sass"],
@@ -47,29 +87,14 @@ module.exports = {
     return code;
   },
   afterRender(data, filepath, code) {
-    if (filepath.endsWith("index.tsx")) {
-      code = code.replace(/'\.\.\/(?=\w)/g, "'./").replace(/'\.\.\/\.\.\//g, "'../");
+    if (filepath.endsWith(".tsx")) {
+      return replaceTsx(code, data.css, filepath);
     }
-    if (data.css === "scss") {
-      if (filepath.endsWith(".tsx")) {
-        const arr = code.split("<style lang=");
-        arr[0] = arr[0].replace(/(import .*?['"].+?)\.less/g, "$1.scss");
-        if (arr[1]) {
-          arr[1] = arr[1].replace(/@(?!import|keyframes|media|\W)/g, "$").replace(/(@import .*?['"].+?)\.less/g, "$1.scss");
-        }
-        return arr.join("<style lang=");
-      }
-      if (filepath.endsWith(".less")) {
-        return code.replace(/@(?!import|keyframes|media|\W)/g, "$").replace(/(@import .*?['"].+?)\.less/g, "$1.scss");
-      }
+    if (filepath.endsWith(".less")) {
+      return replaceLess(code, data.css);
     }
     if (filepath.endsWith("model.ts")) {
-      return code
-        .replace(/\breducer\b(?=.*\} from)/g, "mutation")
-        .replace(/\beffect\b(?=.*\} from)/g, "action")
-        .replace(/\):\s*ModuleState\s*{/g, "): void {")
-        .replace(/@reducer/g, "@mutation")
-        .replace(/@effect/g, "@action");
+      return replaceModel(code, data.framework);
     }
     return code;
   },
