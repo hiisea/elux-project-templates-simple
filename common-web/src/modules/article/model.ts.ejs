@@ -67,7 +67,8 @@ export class ModuleHandlers extends BaseModuleHandlers<ModuleState, {}> {
   @effect()
   public async createItem(item: ItemDetail): Promise<void> {
     await api.createItem(item);
-    GetRouter().relaunch('/article/page/1', true);
+    await GetRouter().back(1, true);
+    this.dispatch(this.actions.fetchList({pageCurrent: 1}));
   }
 
   @effect()

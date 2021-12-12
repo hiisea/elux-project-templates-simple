@@ -1,4 +1,4 @@
-let Alias, Depes;
+let Alias, Depes, Publishs;
 
 function replaceLess(code, css) {
   if (css === "scss") {
@@ -35,6 +35,13 @@ function replacePackage(code, filepath, projectName) {
   if (/\.\/[\w-]+\/package\.json/.test(filepath)) {
     const arr = filepath.split("/");
     const subProjectName = arr[arr.length - 2];
+    const publishs = Publishs[subProjectName];
+    if (publishs) {
+      code = code.replace(
+        '    "dev": "elux dev",',
+        publishs.map((item) => `    "publish:${item}": "npm publish ./src/modules/${item}",\n`).join("") + '    "dev": "elux dev",'
+      );
+    }
     const deps = Depes[subProjectName];
     code = code.replace(`name": "${projectName}`, `name": "@${projectName}/${subProjectName}`);
     code = code.replace(/  "workspaces": \[[^\]]+\],\n/, "");
@@ -89,6 +96,11 @@ return {
       "app-api": [stageDeps, articleDeps, myDeps],
       "app-build": [stageDeps, articleDeps, myDeps],
       "app-runtime": [stageDeps, articleDeps, myDeps],
+    };
+    Publishs = {
+      "basic-team": ["stage"],
+      "article-team": ["article"],
+      "user-team": ["my"],
     };
     return {
       ...options,
