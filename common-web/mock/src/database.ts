@@ -25,7 +25,7 @@ function createArticles(): {[id: string]: Article} {
         {
           'id|+1': 1,
           title: '@ctitle(10, 20)',
-          summary: '@csentence(50, 100)',
+          summary: '@csentence(50, 60)',
           content: '@cparagraph(50, 100)',
         },
       ],

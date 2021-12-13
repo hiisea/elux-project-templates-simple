@@ -11,13 +11,17 @@
 -%>
 const {localIP} = require('@elux/cli-utils');
 const apiHost = `http://${localIP}:3003/`;
+const serverPort = 4003;
+<% if(platform==='ssr'){ -%>
+const testUrl = `http://${localIP}:${serverPort}`;
+<% } -%>
 module.exports = {
   type: '<%= type %>',
   mockServer: {port: 3003},
   cssProcessors: {<%= css==='less'?'less':'sass' %>: true},
   all: {
     //开发和生成环境都使用的配置
-    serverPort: 4003,
+    serverPort,
     clientGlobalVar: {
       ApiPrefix: apiHost,
       StaticPrefix: apiHost,
@@ -45,4 +49,25 @@ module.exports = {
       },
     },
   },
+<% if(platform==='ssr'){ -%>
+  gen: {
+    override: true,
+    entries: [
+      (env) => [
+        {url: `${testUrl}/index`, dist: `./dist/${env}-gen/index.html`},
+        {url: `${testUrl}/login`, dist: `./dist/${env}-gen/login.html`},
+      ],
+      (env) => {
+        return new Array(10)
+          .fill(0)
+          .map((_, index) => ({url: `${testUrl}/article/page/${index + 1}`, dist: `./dist/${env}-gen/article/page/${index + 1}.html`}));
+      },
+      (env) => {
+        return new Array(10)
+          .fill(0)
+          .map((_, index) => ({url: `${testUrl}/article/detail/${index + 1}`, dist: `./dist/${env}-gen/article/detail/${index + 1}.html`}));
+      },
+    ],
+  },
+<% } -%>
 };
