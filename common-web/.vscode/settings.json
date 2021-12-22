@@ -1,12 +1,10 @@
 {
-  "editor.formatOnSave": true,
   "typescript.updateImportsOnFileMove.enabled": "never",
+  "editor.formatOnSave": true,
   "editor.codeActionsOnSave": {
     "source.organizeImports": false,
     "source.fixAll": true
   },
   "stylelint.validate": ["less", "scss", "vue"],
-  "[json]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  }
+  "vetur.format.enable": false
 }
