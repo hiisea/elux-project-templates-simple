@@ -1,4 +1,4 @@
-import {ActionTypes, BaseModuleHandlers, effect, reducer, LoadingState, IStore, RouteActionTypes} from '@elux/<%= elux %>';
+import {ActionTypes, BaseModuleHandlers, effect, reducer, isServer, LoadingState, IStore, RouteActionTypes} from '@elux/<%= elux %>';
 import {CustomError, CommonErrorCode} from '@/utils/errors';
 import {Pagenames, GetRouter} from '@/Global';
 import {CurUser, SubView, LoginParams, api} from './entity';
@@ -13,12 +13,24 @@ export const defaultRouteParams: RouteParams = {
 
 export interface ModuleState {
   loading?: {global: LoadingState};
-  curUser?: CurUser;
+  curUser: CurUser;
 }
 
 export class ModuleHandlers extends BaseModuleHandlers<ModuleState, {}> {
   constructor(moduleName: string, store: IStore, latestData: any) {
-    super(moduleName, store, latestData[moduleName]);
+    super(
+      moduleName,
+      store,
+      latestData[moduleName] || {
+        curUser: {
+          id: '',
+          username: '游客',
+          avatar: '',
+          mobile: '',
+          hasLogin: undefined,
+        },
+      }
+    );
   }
 
   @reducer
@@ -63,16 +75,16 @@ export class ModuleHandlers extends BaseModuleHandlers<ModuleState, {}> {
   // 支持路由守卫
   @effect(null)
   protected async [RouteActionTypes.TestRouteChange]({pagename}: {pagename: string}): Promise<void> {
-    if (pagename === Pagenames['/my'] && !this.getState().curUser!.hasLogin) {
+    if (pagename === Pagenames['/my'] && !this.getState().curUser.hasLogin) {
       throw new CustomError(CommonErrorCode.unauthorized, '请登录！', null, true);
     }
   }
 
   @effect(null)
   protected async ['this.Init'](initState: ModuleState): Promise<void> {
-    if (!initState.curUser) {
-      const curUser = await api.getCurUser();
-      this.dispatch(this.actions.putCurUser(curUser));
+    if (initState.curUser.hasLogin === undefined && !isServer()) {
+      //也可以将用户身份作为前置依赖: const curUser = await api.getCurUser();
+      api.getCurUser().then((curUser) => this.dispatch(this.actions.putCurUser(curUser)));
     }
   }
 }

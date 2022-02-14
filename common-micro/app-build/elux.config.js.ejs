@@ -1,5 +1,9 @@
 const {localIP} = require('@elux/cli-utils');
-const apiHost = `http://${localIP}:3003/`;
+const apiHosts = {
+  local: `http://${localIP}:3003/`,
+  test: 'http://10.201.0.212:31088/',
+};
+const APP_ENV = process.env.APP_ENV || 'local';
 module.exports = {
   type: '<%= framework==='reactRedux'?'react':'vue' %>',
   mockServer: {port: 3003},
@@ -8,20 +12,17 @@ module.exports = {
     //开发和生成环境都使用的配置
     serverPort: 4003,
     clientGlobalVar: {
-      ApiPrefix: apiHost,
-      StaticPrefix: apiHost,
+      ApiPrefix: apiHosts[APP_ENV],
+      StaticPrefix: apiHosts[APP_ENV],
     },
   },
   dev: {
     //开发环境专用配置
     eslint: false,
     stylelint: false,
-    clientGlobalVar: {
-      ApiPrefix: '/api/',
-    },
     apiProxy: {
       '/api': {
-        target: apiHost,
+        target: apiHosts[APP_ENV],
         pathRewrite: {
           '^/api': '',
         },

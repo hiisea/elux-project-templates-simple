@@ -40,7 +40,7 @@ interface DispatchProps {
 
 function mapStateToProps(appState: APPState): StoreProps {
   const stage = appState.stage;
-  return {curUser: stage.curUser!};
+  return {curUser: stage.curUser};
 }
 
 const Component: FC<StoreProps & DispatchProps> = ({curUser, dispatch}) => {
@@ -79,7 +79,7 @@ export default connectRedux(mapStateToProps)(Component);
 <% }else{ -%>
 function mapStateToProps({stage}: APPState): ComputedStore<StoreProps> {
   return {
-    curUser: () => stage.curUser!,
+    curUser: () => stage.curUser,
   };
 }
 

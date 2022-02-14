@@ -1,17 +1,14 @@
-<% if (platform==='ssr') { -%>
-import {env} from '@elux/<%= elux %>';
-<% } -%>
 import request, {IRequest} from '@/utils/request';
 
 export interface CurUser {
   id: string;
   username: string;
-  hasLogin: boolean;
   avatar: string;
   mobile: string;
+  hasLogin?: boolean;
 }
 
-export const guest: CurUser = {
+const guest: CurUser = {
   id: '',
   username: '游客',
   hasLogin: false,
@@ -34,11 +31,6 @@ export type SubView = 'login' | '';
 
 class API {
   public getCurUser(): Promise<IGetCurUser['Response']> {
-<% if (platform==='ssr') { -%>
-    if (env.isServer) {
-      return Promise.resolve({...guest});
-    }
-<% } -%>
     return request
       .get<CurUser>('/api/session')
       .then((res) => {
@@ -54,7 +46,7 @@ class API {
     });
   }
 
-  public logout(): Promise<ILogin['Response']> {
+  public logout(): Promise<ILogout['Response']> {
     return request.delete<CurUser>('/api/session').then((res) => {
       return res.data;
     });

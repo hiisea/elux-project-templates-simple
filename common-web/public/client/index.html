@@ -48,7 +48,7 @@
 
     .elux-page:last-child {
       display: flex;
-      z-index: 10000;
+      z-index: 1000;
     }
 
     .elux-push .elux-page {
@@ -71,10 +71,73 @@
     #root {
       height: 100%;
     }
+
+    @keyframes root-loading-ball {
+      0% {
+        transform: translate(-50%, -50%) scale(0.5);
+      }
+
+      100% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(1);
+      }
+    }
+
+    @keyframes root-loading-text {
+      0% {
+        opacity: 0.1;
+      }
+
+      50% {
+        opacity: 1;
+      }
+
+      100% {
+        opacity: 0.1;
+      }
+    }
+
+    #root-loading {
+      display: block;
+      position: fixed;
+      z-index: 100000;
+      height: 100%;
+      top: 0;
+      background: #fff;
+    }
+
+    #root-loading::before {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      content: '.';
+      font-size: 0;
+      width: 64px;
+      height: 64px;
+      background: #ddd;
+      border-radius: 64px;
+      transform: translate(-50%, -50%) scale(0.5);
+      -ms-transform: translate(-50%, -50%) scale(0.5);
+      animation: root-loading-ball 1s infinite;
+    }
+
+    #root-loading::after {
+      font-size: 12px;
+      font-family: sans-serif;
+      color: #666;
+      position: absolute;
+      content: 'Loading';
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      -ms-transform: translate(-50%, -50%);
+      animation: root-loading-text 1s infinite;
+    }
   </style>
 </head>
 
 <body class="g-doc-width">
+  <div id="root-loading" class="g-doc-width"></div>
   <div id="root"></div>
 </body>
 
