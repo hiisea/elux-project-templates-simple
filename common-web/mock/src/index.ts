@@ -20,7 +20,7 @@ const allowCrossDomain = function (req: Request, res: Response, next: (err?: Err
   res.header('Access-Control-Allow-Methods', '*');
   res.header('Access-Control-Allow-Headers', '*');
   if (req.method == 'OPTIONS') {
-    res.send(200);
+    res.sendStatus(200);
   } else {
     next();
   }

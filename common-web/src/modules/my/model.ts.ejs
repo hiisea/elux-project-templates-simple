@@ -1,18 +1,18 @@
-import {BaseModuleHandlers, IStore} from '@elux/<%= elux %>';
+import {BaseModel} from '@elux/<%= elux %>';
 import {SubView} from './entity';
-
-export interface RouteParams {
-  subView: SubView;
-}
-
-export const defaultRouteParams: RouteParams = {
-  subView: '',
-};
 
 export interface ModuleState {}
 
-export class ModuleHandlers extends BaseModuleHandlers<ModuleState, {}> {
-  constructor(moduleName: string, store: IStore) {
-    super(moduleName, store, {});
+export interface ModuleRouteParams {
+  subView: SubView;
+}
+
+export class Model extends BaseModel<ModuleState, ModuleRouteParams> {
+  defaultRouteParams: ModuleRouteParams = {
+    subView: '',
+  };
+
+  init(latestData: {[moduleName: string]: any}, ssrData: {[moduleName: string]: any}): ModuleState {
+    return {};
   }
 }

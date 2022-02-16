@@ -29,14 +29,6 @@ function replaceTsx(code, css, filepath) {
 }
 
 function replaceModel(code, framework) {
-  if (framework === "vueVuex") {
-    return code
-      .replace(/\breducer\b(?=.*\} from)/g, "mutation")
-      .replace(/\beffect\b(?=.*\} from)/g, "action")
-      .replace(/\):\s*ModuleState\s*{/g, "): void {")
-      .replace(/@reducer/g, "@mutation")
-      .replace(/@effect/g, "@action");
-  }
   return code;
 }
 
@@ -82,7 +74,7 @@ return {
   css: ["less", "sass"],
   install: ["./", "./mock", "./basic-team", "./article-team", "./user-team"],
   getTitle(options) {
-    return "web-vue3-vuex（使用Template）";
+    return "web-vue3（使用Template）";
   },
   data(options) {
     const projectName = options.projectName;
@@ -109,7 +101,7 @@ return {
     return {
       ...options,
       css: options.css === "less" ? "less" : "scss",
-      elux: "vue-vuex-web",
+      elux: "vue-web",
       render: "tpl",
     };
   },

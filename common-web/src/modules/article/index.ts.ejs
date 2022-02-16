@@ -1,5 +1,5 @@
 import {exportModule} from '@elux/<%= elux %>';
-import {ModuleHandlers, defaultRouteParams} from './model';
+import {Model} from './model';
 import main from './views/Main<%= render ==='tpl'?'.vue':'' %>';
 
-export default exportModule('article', ModuleHandlers, defaultRouteParams, {main});
+export default exportModule('article', Model, {main});

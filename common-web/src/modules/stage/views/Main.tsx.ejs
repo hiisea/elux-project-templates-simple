@@ -16,7 +16,7 @@
 import {FC} from 'react';
 import {connectRedux} from '@elux/<%= elux %>';
 <% }else{ -%>
-import {defineComponent, computed} from 'vue';
+import {defineComponent, computed, DefineComponent} from 'vue';
 import {exportView, ComputedStore} from '@elux/<%= elux %>';
 <% } -%>
 import {LoadingState, DocumentHead, Switch} from '@elux/<%= elux %>';
@@ -39,7 +39,7 @@ export interface StoreProps {
 <% if(framework ==='reactRedux'){ -%>
 function mapStateToProps(appState: APPState): StoreProps {
   const stage = appState.stage;
-  const routeParams: RouteParams = appState.route.params;
+  const routeParams = appState.route.params;
   return {
     routeParams,
     globalLoading: stage.loading?.global,
@@ -71,7 +71,7 @@ function mapStateToProps({stage, route}: APPState): ComputedStore<StoreProps> {
   };
 }
 
-const Component = defineComponent({
+const Component: DefineComponent<{}> = defineComponent({
   name: 'StageMain',
   <%_ if(render ==='tpl'){ -%>
   components: {

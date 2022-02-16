@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
-import {createRouteModule, DeepPartial, safeJsonParse} from '@elux/<%= elux %>';
+import {createRouteModule, DeepPartial, safeJsonParse, PagenameMap} from '@elux/<%= elux %>';
 import {RouteParams} from '@/Global';
 import stage from '@/modules/stage';
 
 type PartialRouteParams = DeepPartial<RouteParams>;
 
-const pagenameMap = {
+const pagenameMap: PagenameMap<'/index' | '/article/page' | '/article/detail' | '/article/edit' | '/my' | '/login'> = {
   '/index': {
     argsToParams() {
       const pathParams: PartialRouteParams = {
@@ -27,7 +27,7 @@ const pagenameMap = {
       return pathParams;
     },
     paramsToArgs(params: PartialRouteParams) {
-      const pageCurrent = params.article?.listSearch?.pageCurrent;
+      const pageCurrent = params.article?.listSearch?.pageCurrent?.toString();
       return [pageCurrent];
     },
   },
@@ -76,7 +76,7 @@ const pagenameMap = {
     },
   },
 };
-const routeModule = createRouteModule(pagenameMap, {
+const routeModule = createRouteModule('route', pagenameMap, {
   in(nativeLocation) {
     const {pathname, query} = nativeLocation;
     const args = safeJsonParse(query);

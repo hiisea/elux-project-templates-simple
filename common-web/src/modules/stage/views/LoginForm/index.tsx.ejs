@@ -29,7 +29,7 @@
 import {useCallback, useState, FC} from 'react';
 import {Dispatch, DocumentHead, connectRedux} from '@elux/<%= elux %>';
 <% }else{ -%>
-import {defineComponent, ref} from 'vue';
+import {defineComponent, ref, DefineComponent} from 'vue';
 import {exportView, DocumentHead} from '@elux/<%= elux %>';
 <% } -%>
 import NavBar from '@/components/NavBar.vue';
@@ -106,7 +106,7 @@ const Component: FC<DispatchProps> = ({dispatch}) => {
 
 export default connectRedux()(Component);
 <% }else{ -%>
-const Component = defineComponent({
+const Component: DefineComponent<{}> = defineComponent({
   name: 'StageLoginForm',
   <%_ if(render ==='tpl'){ -%>
   components: {

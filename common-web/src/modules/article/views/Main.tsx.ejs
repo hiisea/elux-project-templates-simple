@@ -9,8 +9,8 @@
 import {FC} from 'react';
 import {Dispatch, connectRedux} from '@elux/<%= elux %>';
 <% }else{ -%>
-import {defineComponent, computed} from 'vue';
-import {exportView, ComputedStore} from '@elux/<%= elux %>';
+import {defineComponent, computed, DefineComponent} from 'vue';
+import {Dispatch, exportView, ComputedStore} from '@elux/<%= elux %>';
 <% } -%>
 import {APPState<%= framework ==='vueVuex' ? ', useStore' : '' %>} from '@/Global';
 import List from './List.vue';
@@ -52,7 +52,7 @@ function mapStateToProps({route, article}: APPState): ComputedStore<StoreProps> 
   };
 }
 
-const Component = defineComponent({
+const Component: DefineComponent<{}> = defineComponent({
   name: 'ArticleMain',
   <%_ if(render ==='tpl'){ -%>
   components: {
@@ -63,11 +63,12 @@ const Component = defineComponent({
   <%_ } -%>
   setup() {
     const store = useStore();
+    const dispatch: Dispatch = store.dispatch;
     const computedStore = mapStateToProps(store.getState());
     const listView = computed(computedStore.listView);
     const itemView = computed(computedStore.itemView);
     const itemDetail = computed(computedStore.itemDetail);
-    return {listView, itemView, itemDetail, dispatch: store.dispatch};
+    return {listView, itemView, itemDetail, dispatch};
   },
   <%_ if(render !=='tpl'){ -%>
   render() {

@@ -1,24 +1,7 @@
-import {BaseModuleHandlers, reducer, effect, IStore} from '@elux/<%= elux %>';
+import {BaseModel, reducer, effect} from '@elux/<%= elux %>';
 import fastEqual from 'fast-deep-equal';
 import {GetRouter} from '@/Global';
 import {ListView, ListSearch, ItemView, ListItem, ListSummary, ItemDetail, api} from './entity';
-
-export interface RouteParams {
-  listSearch: ListSearch;
-  listView: ListView;
-  itemId: string;
-  itemView: ItemView;
-}
-
-export const defaultRouteParams: RouteParams = {
-  listSearch: {
-    pageCurrent: 1,
-    keyword: '',
-  },
-  listView: '',
-  itemId: '',
-  itemView: '',
-};
 
 export interface ModuleState {
   listSearch?: ListSearch;
@@ -28,13 +11,30 @@ export interface ModuleState {
   itemDetail?: ItemDetail;
 }
 
-export class ModuleHandlers extends BaseModuleHandlers<ModuleState, {}> {
-  constructor(moduleName: string, store: IStore<%= platform==='ssr' ? ', latestData: any, ssrData: any' : '' %>) {
-    super(moduleName, store, <%= platform==='ssr' ? 'ssrData[moduleName]' : '{}' %>);
+export interface ModuleRouteParams {
+  listSearch: ListSearch;
+  listView: ListView;
+  itemId: string;
+  itemView: ItemView;
+}
+
+export class Model extends BaseModel<ModuleState, ModuleRouteParams> {
+  defaultRouteParams: ModuleRouteParams = {
+    listSearch: {
+      pageCurrent: 1,
+      keyword: '',
+    },
+    listView: '',
+    itemId: '',
+    itemView: '',
+  };
+
+  init(latestData: {[moduleName: string]: any}, ssrData: {[moduleName: string]: any}): ModuleState {
+    return <%= platform==='ssr' ? 'ssrData[this.moduleName]' : '{}' %>;
   }
 
   @reducer
-  public putList(listSearch: ListSearch, list: ListItem[], listSummary: ListSummary): ModuleState {
+  public putList(listSearch: ListSearch, list: ListItem[], listSummary: ListSummary): <%= framework ==='reactRedux'?'ModuleState':'void' %> {
   <%_ if(framework ==='reactRedux'){ -%>
     return {...this.getState(), listSearch, list, listSummary};
   <%_ }else{ -%>
@@ -43,7 +43,7 @@ export class ModuleHandlers extends BaseModuleHandlers<ModuleState, {}> {
   }
 
   @reducer
-  public putCurrentItem(itemId = '', itemDetail: ItemDetail): ModuleState {
+  public putCurrentItem(itemId = '', itemDetail: ItemDetail): <%= framework ==='reactRedux'?'ModuleState':'void' %> {
   <%_ if(framework ==='reactRedux'){ -%>
     return {...this.getState(), itemId, itemDetail};
   <%_ }else{ -%>
@@ -73,7 +73,7 @@ export class ModuleHandlers extends BaseModuleHandlers<ModuleState, {}> {
 
   @effect()
   public async fetchList(args: Partial<ListSearch>): Promise<void> {
-    const listSearch = {...defaultRouteParams.listSearch, ...this.getState().listSearch, ...args};
+    const listSearch = {...this.defaultRouteParams.listSearch, ...this.getState().listSearch, ...args};
     const {list, listSummary} = await api.getList(listSearch);
     this.dispatch(this.actions.putList(listSearch, list, listSummary));
   }
@@ -91,7 +91,7 @@ export class ModuleHandlers extends BaseModuleHandlers<ModuleState, {}> {
 
   @effect(null)
   protected async ['this.Init, this.RouteChange'](): Promise<void> {
-    const {listView, listSearch, itemView, itemId} = this.getRouteParams() as RouteParams;
+    const {listView, listSearch, itemView, itemId} = this.getRouteParams();
     const state = this.getState();
     if (listView) {
       if (!fastEqual(listSearch, state.listSearch)) {

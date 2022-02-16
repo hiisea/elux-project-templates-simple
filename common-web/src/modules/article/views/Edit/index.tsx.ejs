@@ -35,7 +35,7 @@
 import {useCallback, useState, memo, FC} from 'react';
 import {Dispatch, DocumentHead} from '@elux/<%= elux %>';
 <% }else{ -%>
-import {defineComponent, ref, PropType} from 'vue';
+import {defineComponent, ref, PropType, DefineComponent} from 'vue';
 import {exportView, Dispatch, DocumentHead} from '@elux/<%= elux %>';
 <% } -%>
 import {Modules, GetRouter} from '@/Global';
@@ -43,12 +43,12 @@ import NavBar from '@/components/NavBar.vue';
 import {ItemDetail} from '../../entity';
 import styles from './index.module.less';
 
-<% if(framework ==='reactRedux'){ -%>
 interface OwnerProps {
   itemDetail: ItemDetail;
   dispatch: Dispatch;
 }
 
+<% if(framework ==='reactRedux'){ -%>
 const Component: FC<OwnerProps> = ({itemDetail, dispatch}) => {
   const onCancel = useCallback(() => GetRouter().back(1, true), []);
   const [errorMessage, setErrorMessage] = useState('');
@@ -130,7 +130,7 @@ const Component: FC<OwnerProps> = ({itemDetail, dispatch}) => {
 
 export default memo(Component);
 <% }else{ -%>
-const Component = defineComponent({
+const Component: DefineComponent<OwnerProps> = defineComponent({
   name: 'ArticleEdit',
   <%_ if(render ==='tpl'){ -%>
   components: {

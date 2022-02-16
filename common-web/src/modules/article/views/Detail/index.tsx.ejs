@@ -15,18 +15,18 @@
 import {memo, useCallback, FC} from 'react';
 import {DocumentHead} from '@elux/<%= elux %>';
 <% }else{ -%>
-import {defineComponent, PropType} from 'vue';
+import {defineComponent, DefineComponent, PropType} from 'vue';
 import {exportView, DocumentHead} from '@elux/<%= elux %>';
 <% } -%>
 import {GetRouter} from '@/Global';
 import {ItemDetail} from '../../entity';
 import styles from './index.module.less';
 
-<% if(framework ==='reactRedux'){ -%>
 interface OwnerProps {
   itemDetail: ItemDetail;
 }
 
+<% if(framework ==='reactRedux'){ -%>
 const Component: FC<OwnerProps> = ({itemDetail}) => {
   const onBack = useCallback(() => GetRouter().back(1, true), []);
 
@@ -47,7 +47,7 @@ const Component: FC<OwnerProps> = ({itemDetail}) => {
 
 export default memo(Component);
 <% }else{ -%>
-const Component = defineComponent({
+const Component: DefineComponent<OwnerProps> = defineComponent({
   name: 'ArticleDetail',
   <%_ if(render ==='tpl'){ -%>
   components: {

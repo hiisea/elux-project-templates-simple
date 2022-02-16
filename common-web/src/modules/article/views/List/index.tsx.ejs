@@ -29,7 +29,7 @@
 import {useCallback, useEffect, useRef, FC} from 'react';
 import {DocumentHead, Link, connectRedux, Dispatch} from '@elux/<%= elux %>';
 <% }else{ -%>
-import {defineComponent, computed, ref, watch} from 'vue';
+import {defineComponent, computed, ref, watch, DefineComponent} from 'vue';
 import {DocumentHead, Link, exportView, ComputedStore} from '@elux/<%= elux %>';
 <% } -%>
 import {APPState, GetRouter, Modules<%= framework ==='vueVuex' ? ', useStore' : '' %>} from '@/Global';
@@ -126,7 +126,7 @@ function mapStateToProps({article}: APPState): ComputedStore<StoreProps> {
   };
 }
 
-const Component = defineComponent({
+const Component: DefineComponent<{}> = defineComponent({
   name: 'ArticleList',
   <%_ if(render ==='tpl'){ -%>
   components: {

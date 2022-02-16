@@ -1,16 +1,16 @@
-import {getApp, Facade, GetApp} from '@elux/<%= elux %>';
+import {getApi, Facade, GetFacade, URouter} from '@elux/<%= elux %>';
 import type {ModuleGetter} from './Project';
 
-type APP = GetApp<Facade<ModuleGetter>>;
+type API = GetFacade<Facade<ModuleGetter>>;
 
-export type RouteParams = APP['RouteParams'];
-export type RouteState = APP['RouteState'];
-export type APPState = APP['State'];
-export type Router = APP['Router'];
-export type Pagename = APP['Pagename'];
-export type PatchActions = APP['Actions']; // 使用demote命令兼容IE时使用
+export type APPState = API['State'];
+export type RouteState = APPState['route'];
+export type RouteParams = RouteState['params'];
+export type Pagename = RouteState['pagename'];
+export type Router = URouter<RouteState>;
+export type PatchActions = API['Actions']; // 使用demote命令兼容IE时使用
 
-export const {Modules, Pagenames, LoadComponent, GetActions, GetRouter, useStore, useRouter} = getApp<APP>();
+export const {Modules, LoadComponent, GetActions, GetRouter, useStore, useRouter} = getApi<API, Router>();
 
 export const {StaticPrefix, ApiPrefix} = process.env.PROJ_ENV as {
   StaticPrefix: string;

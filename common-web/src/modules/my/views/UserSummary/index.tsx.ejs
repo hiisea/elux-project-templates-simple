@@ -21,7 +21,7 @@
 import {useCallback, FC} from 'react';
 import {Dispatch, DocumentHead, connectRedux} from '@elux/<%= elux %>';
 <% }else{ -%>
-import {defineComponent, computed} from 'vue';
+import {defineComponent, computed, DefineComponent} from 'vue';
 import {exportView, DocumentHead, ComputedStore} from '@elux/<%= elux %>';
 <% } -%>
 import {CurUser} from '@/modules/stage/entity';
@@ -83,7 +83,7 @@ function mapStateToProps({stage}: APPState): ComputedStore<StoreProps> {
   };
 }
 
-const Component = defineComponent({
+const Component: DefineComponent<{}> = defineComponent({
   name: 'MyUserSummary',
   <%_ if(render ==='tpl'){ -%>
   components: {
