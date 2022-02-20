@@ -7,71 +7,71 @@ type PartialRouteParams = DeepPartial<RouteParams>;
 
 const pagenameMap: PagenameMap<'/index' | '/article/page' | '/article/detail' | '/article/edit' | '/my' | '/login'> = {
   '/index': {
-    argsToParams() {
+    pathToParams() {
       const pathParams: PartialRouteParams = {
         stage: {},
         article: {listView: 'list', listSearch: {pageCurrent: 1}},
       };
       return pathParams;
     },
-    paramsToArgs(params: PartialRouteParams) {
+    paramsToPath(params: PartialRouteParams) {
       return [];
     },
   },
   '/article/page': {
-    argsToParams([pageCurrent]: string[]) {
+    pathToParams([pageCurrent]: string[]) {
       const pathParams: PartialRouteParams = {
         stage: {},
         article: {listView: 'list', listSearch: {pageCurrent: parseInt(pageCurrent, 10) || 1}},
       };
       return pathParams;
     },
-    paramsToArgs(params: PartialRouteParams) {
+    paramsToPath(params: PartialRouteParams) {
       const pageCurrent = params.article?.listSearch?.pageCurrent?.toString();
       return [pageCurrent];
     },
   },
   '/article/detail': {
-    argsToParams([id]: string[]) {
+    pathToParams([id]: string[]) {
       const pathParams: PartialRouteParams = {
         stage: {},
         article: {itemId: id, itemView: 'detail'},
       };
       return pathParams;
     },
-    paramsToArgs(params: PartialRouteParams) {
+    paramsToPath(params: PartialRouteParams) {
       const id = params.article?.itemId;
       return [id];
     },
   },
   '/article/edit': {
-    argsToParams([id]: string[]) {
+    pathToParams([id]: string[]) {
       const pathParams: PartialRouteParams = {
         stage: {},
         article: {itemId: id, itemView: 'edit'},
       };
       return pathParams;
     },
-    paramsToArgs(params: PartialRouteParams) {
+    paramsToPath(params: PartialRouteParams) {
       const id = params.article?.itemId;
       return [id];
     },
   },
   '/my': {
-    argsToParams() {
+    pathToParams() {
       const pathParams: PartialRouteParams = {stage: {}, my: {subView: 'userSummary'}};
       return pathParams;
     },
-    paramsToArgs() {
+    paramsToPath() {
       return [];
     },
   },
   '/login': {
-    argsToParams() {
+    pathToParams() {
       const pathParams: PartialRouteParams = {stage: {subView: 'login'}};
       return pathParams;
     },
-    paramsToArgs() {
+    paramsToPath() {
       return [];
     },
   },

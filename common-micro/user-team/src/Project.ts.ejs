@@ -7,29 +7,29 @@ type PartialRouteParams = DeepPartial<RouteParams>;
 
 const pagenameMap: PagenameMap<'/index' | '/my' | '/login'> = {
   '/index': {
-    argsToParams() {
+    pathToParams() {
       const pathParams: PartialRouteParams = {stage: {}, my: {subView: 'userSummary'}};
       return pathParams;
     },
-    paramsToArgs() {
+    paramsToPath() {
       return [];
     },
   },
   '/my': {
-    argsToParams() {
+    pathToParams() {
       const pathParams: PartialRouteParams = {stage: {}, my: {subView: 'userSummary'}};
       return pathParams;
     },
-    paramsToArgs() {
+    paramsToPath() {
       return [];
     },
   },
   '/login': {
-    argsToParams() {
+    pathToParams() {
       const pathParams: PartialRouteParams = {stage: {subView: 'login'}};
       return pathParams;
     },
-    paramsToArgs() {
+    paramsToPath() {
       return [];
     },
   },
