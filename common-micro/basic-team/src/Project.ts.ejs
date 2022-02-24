@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
-import {createRouteModule, DeepPartial, safeJsonParse, exportModule, exportComponent, EmptyModuleHandlers, PagenameMap} from '@elux/<%= elux %>';
+import {createRouteModule, DeepPartial, routeJsonParse, exportModule, exportComponent, EmptyModuleHandlers, PagenameMap} from '@elux/<%= elux %>';
 import {RouteParams} from '@/Global';
 import stage from '@/modules/stage';
 
@@ -28,7 +28,7 @@ const pagenameMap: PagenameMap<'/index' | '/login'> = {
 const routeModule = createRouteModule('route', pagenameMap, {
   in(nativeLocation) {
     const {pathname, query} = nativeLocation;
-    const args = safeJsonParse(query);
+    const args = routeJsonParse(query);
     return {pathmatch: pathname, args};
   },
   out(eluxLocation) {
