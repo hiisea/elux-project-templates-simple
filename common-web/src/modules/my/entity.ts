@@ -1,7 +1,7 @@
 export interface UpdateUserInfo {
   nickname: string;
 }
-export type SubView = 'userSummary' | '';
+export type CurrentView = 'userSummary';
 
 class API {}
 

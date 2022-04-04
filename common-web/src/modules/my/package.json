@@ -1,0 +1,17 @@
+{
+  "name": "@<%= projectName %>/my",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "peerDependencies": {
+    "@<%= projectName %>/stage": "*",
+    "<%= elux %>": "*",
+    /*# if:react #*/
+    "react": "*",
+    "react-dom": "*",
+    /*# else:vue #*/
+    "vue": "*",
+    /*# end #*/
+    "path-to-regexp": "*",
+    "axios": "*"
+  }
+}

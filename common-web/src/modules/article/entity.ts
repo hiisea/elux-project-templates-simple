@@ -14,11 +14,17 @@ export interface ListSummary {
   totalItems: number;
   totalPages: number;
 }
+
+export const defaultListSearch: ListSearch = {
+  pageCurrent: 1,
+  keyword: '',
+};
+
 export interface ItemDetail extends ListItem {
   content: string;
 }
-export type ListView = 'list' | '';
-export type ItemView = 'detail' | 'edit' | '';
+
+export type CurrentView = 'list' | 'detail' | 'edit';
 
 export type IGetList = IRequest<ListSearch, {list: ListItem[]; listSummary: ListSummary}>;
 export type IGetItem = IRequest<{id: string}, ItemDetail>;
@@ -34,6 +40,9 @@ export class API {
   }
 
   public getItem(params: IGetItem['Request']): Promise<IGetItem['Response']> {
+    if (params.id === '0') {
+      return Promise.resolve({id: '', title: '', summary: '', content: ''});
+    }
     return request.get<ItemDetail>(`/api/article/${params.id}`).then((res) => {
       return res.data;
     });

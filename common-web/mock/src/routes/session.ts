@@ -7,7 +7,7 @@ const router = Router();
 
 router.get('/', function (req, res, next) {
   const result: IGetCurUser['Response'] = database.curUser;
-  res.json(result);
+  setTimeout(() => res.json(result), 1000);
 });
 
 router.put('/', function (req, res, next) {
@@ -15,7 +15,7 @@ router.put('/', function (req, res, next) {
   if (username === 'admin' && password === '123456') {
     database.curUser = adminUser;
     const result: ILogin['Response'] = adminUser;
-    res.json(result);
+    setTimeout(() => res.json(result), 1000);
   } else {
     res.status(422).json({
       message: '用户名或密码错误！',
@@ -26,6 +26,6 @@ router.put('/', function (req, res, next) {
 router.delete('/', function (req, res, next) {
   database.curUser = guestUser;
   const result: ILogout['Response'] = database.curUser;
-  res.json(result);
+  setTimeout(() => res.json(result), 1000);
 });
 export default router;

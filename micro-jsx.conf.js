@@ -61,11 +61,11 @@ function replaceTsconfig(code, filepath) {
 
 return {
   platform: ["micro"],
-  framework: ["reactRedux", "vueVuex"],
+  framework: ["react", "vue"],
   css: ["less", "sass"],
   install: ["./", "./mock", "./basic-team", "./article-team", "./user-team"],
   getTitle(options) {
-    return options.framework === "reactRedux" ? "web-react" : "web-vue3（使用JSX）";
+    return options.framework === "react" ? "web-react" : "web-vue3（使用JSX）";
   },
   data(options) {
     const projectName = options.projectName;
@@ -97,7 +97,7 @@ return {
     return {
       ...options,
       css: options.css === "less" ? "less" : "scss",
-      elux: options.framework === "reactRedux" ? "react-web" : "vue-web",
+      elux: options.framework === "react" ? "react-web" : "vue-web",
       render: "jsx",
     };
   },

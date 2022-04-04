@@ -23,17 +23,17 @@ function replaceModel(code, framework) {
 
 return {
   platform: ["taro"],
-  framework: ["reactRedux", "vueVuex"],
+  framework: ["react", "vue"],
   css: ["less", "sass"],
   install: ["./", "./mock"],
   getTitle(options) {
-    return options.framework === "reactRedux" ? "web-react" : "web-vue3（使用JSX）";
+    return options.framework === "react" ? "web-react" : "web-vue3（使用JSX）";
   },
   data(options) {
     return {
       ...options,
       css: options.css === "less" ? "less" : "scss",
-      elux: options.framework === "reactRedux" ? "react-web" : "vue-web",
+      elux: options.framework === "react" ? "react-web" : "vue-web",
       render: "jsx",
     };
   },

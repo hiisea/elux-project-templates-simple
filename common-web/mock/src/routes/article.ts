@@ -38,7 +38,7 @@ router.get('/', function (req, res, next) {
     list: listData.slice(start, end),
   };
 
-  res.json(result);
+  setTimeout(() => res.json(result), 1000);
 });
 
 router.get('/:id', function (req, res, next) {
@@ -49,7 +49,7 @@ router.get('/:id', function (req, res, next) {
     res.status(404).end();
   } else {
     const result: IGetItem['Response'] = {...item};
-    res.json(result);
+    setTimeout(() => res.json(result), 1000);
   }
 });
 
@@ -62,7 +62,7 @@ router.delete('/:id', function (req, res, next) {
   } else {
     delete database.articles[id];
     const result: IDeleteItem['Response'] = {id};
-    res.json(result);
+    setTimeout(() => res.json(result), 1000);
   }
 });
 
@@ -75,7 +75,7 @@ router.put('/:id', function (req, res, next) {
   } else {
     database.articles[id] = {id, title, summary, content};
     const result: IUpdateItem['Response'] = {id};
-    res.json(result);
+    setTimeout(() => res.json(result), 1000);
   }
 });
 
@@ -85,6 +85,6 @@ router.post('/', function (req, res, next) {
   const id = 'n' + Object.keys(database.articles).length;
   database.articles[id] = {id, title, summary, content};
   const result: ICreateItem['Response'] = {id};
-  res.json(result);
+  setTimeout(() => res.json(result), 1000);
 });
 export default router;

@@ -5,7 +5,7 @@ const apiHosts = {
 };
 const APP_ENV = process.env.APP_ENV || 'local';
 module.exports = {
-  type: '<%= framework==='reactRedux'?'react':'vue' %>',
+  type: '<%= framework==='react'?'react':'vue' %>',
   mockServer: {port: 3003},
   cssProcessors: {<%= css==='less'?'less':'sass' %>: true},
   all: {
