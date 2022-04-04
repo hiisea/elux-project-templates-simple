@@ -7,5 +7,14 @@
     "source.fixAll": true
   },
   "stylelint.validate": ["less", "scss", "vue"],
-  "vetur.format.enable": false
+  "search.exclude": {
+    "**/.eslintcache": true,
+    "**/.stylelintcache": true,
+    "**/package-lock": true,
+    "**/yarn.lock": true,
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/types": true,
+    "**/storage": true
+  }
 }

@@ -14,8 +14,17 @@ Object.keys(proxy).forEach((key) => {
   app.use(key, createProxyMiddleware(proxy[key]));
 });
 app.use('/client', express.static(staticPath<%= platform==='ssr'?', {fallthrough: false}':'' %>));
+
 /*# if:ssr #*/
 const serverBundle = require('./server/main');
+const errorHandler = (e, res) => {
+  if (e.code === 'ELIX.ROUTE_REDIRECT') {
+    res.redirect(e.detail);
+  } else {
+    res.status(500).end(e.toString());
+  }
+};
+
 app.use((req, res) => {
   try {
     serverBundle
@@ -23,19 +32,16 @@ app.use((req, res) => {
       .then((str) => {
         res.end(str);
       })
-      .catch((e) => {
-        console.log(e);
-        res.status(500).end(e.toString());
-      });
+      .catch((e) => errorHandler(e, res));
   } catch (e) {
-    console.log(e);
-    res.status(500).end(e.toString());
+    errorHandler(e, res);
   }
 });
 /*# else #*/
 const fallback = require('express-history-api-fallback');
 app.use(fallback('index.html', {root: staticPath}));
 /*# end #*/
+
 app.listen(port, () =>
   console.info(`\n \n.....${new Date().toLocaleString()} starting ${chalk.redBright('Server')} on ${chalk.underline.redBright(serverUrl)} \n`)
 );

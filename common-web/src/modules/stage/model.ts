@@ -26,37 +26,22 @@ export class Model extends BaseModel<ModuleState, APPState> {
     return {currentView} as RouteParams;
   }
 
-  /*# if:pre #*/
-  public async onMount(): Promise<void> {
+  public async onMount(env: 'init' | 'route' | 'update'): Promise<void> {
     this.routeParams = this.getRouteParams();
     const {currentView} = this.routeParams;
-    let initState: ModuleState;
+    const {curUser: _curUser} = this.getPrevState() || {};
     try {
-      const {curUser: _curUser} = this.getPrevState() || {};
       const curUser = _curUser || (await api.getCurUser());
-      initState = {curUser, currentView};
-    } catch (err: any) {
-      initState = {curUser: {...guest}, currentView, error: err.message || err.toString()};
-    }
-    this.dispatch(this.privateActions._initState(initState));
-  }
-  /*# else #*/
-  public async onMount(routeChanged: boolean): Promise<void> {
-    this.routeParams = this.getRouteParams();
-    const {currentView} = this.routeParams;
-    let initState: ModuleState;
-    try {
-      const {curUser: _curUser} = this.getPrevState() || {};
-      const curUser = _curUser || (await api.getCurUser());
-      initState = {curUser, currentView};
+      const initState: ModuleState = {curUser, currentView};
       this.dispatch(this.privateActions._initState(initState));
-      await this.store.mount(currentView as any, routeChanged);
+      /*# if:post #*/
+      await this.store.mount(currentView as any, env);
+      /*# end #*/
     } catch (err: any) {
-      initState = {curUser: {...guest}, currentView, error: err.message || err.toString()};
+      const initState: ModuleState = {curUser: {...guest}, currentView, error: err.message || err.toString()};
       this.dispatch(this.privateActions._initState(initState));
     }
   }
-  /*# end #*/
 
   @reducer
   protected putCurUser(curUser: CurUser): /*# =react?ModuleState:void #*/ {

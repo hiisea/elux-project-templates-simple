@@ -5,7 +5,7 @@
   "author": "hiisea <hiisea@qq.com>",
   "license": "MIT",
   "engines": {
-    "node": ">=14.0.0"
+    "node": ">=15.0.0"
   },
   "private": true,
   "browserslist": [
@@ -22,7 +22,10 @@
     "app-runtime/public",
     "basic-team/public",
     "article-team/public",
-    "user-team/public"
+    "user-team/public",
+    "basic-team/src/modules/*",
+    "article-team/src/modules/*",
+    "user-team/src/modules/*"
   ],
   "scripts": {
     "mock": "lerna run mock --scope @<%= projectName %>/app-runtime --parallel",
@@ -31,15 +34,14 @@
     "dist": "lerna run dist --scope @<%= projectName %>/app-runtime --scope @<%= projectName %>/article-team --scope @<%= projectName %>/user-team --parallel",
     "start": "run-p mock dev",
     "demo": "run-p mock dist"
-
-  },
-  "resolutions": {
-    "@<%= projectName %>/stage": "./basic-team/src/modules/stage",
-    "@<%= projectName %>/article": "./article-team/src/modules/article",
-    "@<%= projectName %>/my": "./user-team/src/modules/my"
   },
   "devDependencies": {
     "npm-run-all": "~4.1.5",
     "lerna": "~3.22.1"
+  },
+  "resolutions": {
+    "@types/react": "^17.0.0",
+    "@types/react-dom": "^17.0.0",
+    "@types/express": "^4.17.9"
   }
 }

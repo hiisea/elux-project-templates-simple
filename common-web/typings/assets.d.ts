@@ -6,6 +6,7 @@ declare module '*.less';
 declare module '*.scss';
 /*# if:vue #*/
 declare module '*.vue' {
-  export default import('<%= elux %>').EluxComponent;
+  const Component: (props: any) => JSX.Element;
+  export default Component;
 }
 /*# end #*/

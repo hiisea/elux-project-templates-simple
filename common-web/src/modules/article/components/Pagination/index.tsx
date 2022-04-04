@@ -1,7 +1,7 @@
 /*# if:react #*/
 import {FC, memo} from 'react';
 /*# else:vue #*/
-import {PropType, defineComponent} from 'vue';
+import {defineComponent, computed} from 'vue';
 /*# end #*/
 import {Link} from '<%= elux %>';
 import styles from './index.module.less';
@@ -10,7 +10,7 @@ import styles from './index.module.less';
 interface Props {
   totalPages: number;
   pageCurrent: number;
-  onChange: (page: number) => void;
+  baseUrl: string;
 }
 /*# else:vue #*/
 const props = {
@@ -22,24 +22,28 @@ const props = {
     type: Number,
     required: true as const,
   },
-  onChange: {
-    type: Function as PropType<(page: number) => void>,
+  baseUrl: {
+    type: String,
     required: true as const,
   },
 };
 /*# end #*/
 
+function replacePageNumber(baseUrl: string, pageCurrent: number): string {
+  return baseUrl.replace('pageCurrent=0', `pageCurrent=${pageCurrent}`);
+}
+
 /*# if:react #*/
-const Component: FC<Props> = ({totalPages, pageCurrent, onChange}) => {
+const Component: FC<Props> = ({totalPages, pageCurrent, baseUrl}) => {
   return (
     <div className={styles.root}>
       {pageCurrent > 1 && (
-        <Link className="item" onClick={() => onChange(pageCurrent - 1)}>
+        <Link className="item" action="push" to={replacePageNumber(baseUrl, pageCurrent - 1)}>
           上一页
         </Link>
       )}
       {pageCurrent < totalPages && (
-        <Link className="item" onClick={() => onChange(pageCurrent + 1)}>
+        <Link className="item" action="push" to={replacePageNumber(baseUrl, pageCurrent + 1)}>
           下一页
         </Link>
       )}
@@ -53,21 +57,18 @@ export default memo(Component);
 export default defineComponent({
   name: 'ArticlePagination',
   props,
-  emits: ['change'],
-  setup(props, {emit}) {
-    props.pageCurrent;
-    const onChangeHandler = (currentPage: number) => {
-      emit('change', currentPage);
-    };
+  setup(props) {
+    const prevPage = computed(() => replacePageNumber(props.baseUrl, props.pageCurrent - 1));
+    const nextPage = computed(() => replacePageNumber(props.baseUrl, props.pageCurrent + 1));
     return () => (
       <div class={styles.root}>
         {props.pageCurrent > 1 && (
-          <Link class="item" onClick={() => onChangeHandler(props.pageCurrent - 1)}>
+          <Link class="item" action="push" to={prevPage.value}>
             上一页
           </Link>
         )}
         {props.pageCurrent < props.totalPages && (
-          <Link class="item" onClick={() => onChangeHandler(props.pageCurrent + 1)}>
+          <Link class="item" action="push" to={nextPage.value}>
             下一页
           </Link>
         )}

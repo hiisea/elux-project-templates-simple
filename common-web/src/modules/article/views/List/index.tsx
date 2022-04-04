@@ -1,9 +1,9 @@
 /*# if:react #*/
-import {FC, useCallback} from 'react';
+import {FC, useCallback, useMemo} from 'react';
 /*# else:vue #*/
 import {defineComponent, computed} from 'vue';
 /*# end #*/
-import {DocumentHead, Link, /*# =react?Dispatch, connectRedux:ComputedStore, exportView #*/} from '<%= elux %>';
+import {DocumentHead, Link, /*# =react?Dispatch, connectRedux,:ComputedStore, exportView, #*/ locationToUrl} from '<%= elux %>';
 import {APPState, Modules, useRouter/*# =vue?, useStore: #*/} from '@/Global';
 import {excludeDefaultParams} from '@/utils/tools';
 import TabBar from '@/components/TabBar';
@@ -42,11 +42,13 @@ function mapStateToProps(appState: APPState): ComputedStore<StoreProps> {
 /*# if:react #*/
 const Component: FC<StoreProps & {dispatch: Dispatch}> = ({listSearch, list, listSummary, dispatch}) => {
   const router = useRouter();
-  const onPageChange = useCallback(
-    (pageCurrent: number) => {
-      router.push({pathname: '/article/list', searchQuery: excludeDefaultParams(defaultListSearch, {pageCurrent, keyword: listSearch?.keyword})});
-    },
-    [listSearch?.keyword, router]
+  const paginationBaseUrl = useMemo(
+    () =>
+      locationToUrl({
+        pathname: '/article/list',
+        searchQuery: excludeDefaultParams(defaultListSearch, {keyword: listSearch?.keyword, pageCurrent: 0}),
+      }),
+    [listSearch?.keyword]
   );
   const onSearch = useCallback(
     (keyword: string) => {
@@ -97,7 +99,7 @@ const Component: FC<StoreProps & {dispatch: Dispatch}> = ({listSearch, list, lis
                   </div>
                 </div>
               ))}
-              <Pagination totalPages={listSummary.totalPages} pageCurrent={listSummary.pageCurrent} onChange={onPageChange} />
+              <Pagination totalPages={listSummary.totalPages} pageCurrent={listSummary.pageCurrent} baseUrl={paginationBaseUrl} />
             </div>
         /*# if:pre #*/
           </>
@@ -122,12 +124,12 @@ const Component = defineComponent({
     const listSearch = computed(computedStore.listSearch);
     const list = computed(computedStore.list);
     const listSummary = computed(computedStore.listSummary);
-    const onPageChange = (pageCurrent: number) => {
-      router.push({
+    const paginationBaseUrl = computed(() =>
+      locationToUrl({
         pathname: '/article/list',
-        searchQuery: excludeDefaultParams(defaultListSearch, {pageCurrent, keyword: listSearch.value!.keyword}),
-      });
-    };
+        searchQuery: excludeDefaultParams(defaultListSearch, {keyword: listSearch.value?.keyword, pageCurrent: 0}),
+      })
+    );
     const onSearch = (keyword: string) => {
       router.push({pathname: '/article/list', searchQuery: excludeDefaultParams(defaultListSearch, {pageCurrent: 1, keyword})});
     };
@@ -169,7 +171,7 @@ const Component = defineComponent({
                     </div>
                   </div>
                 ))}
-                <Pagination totalPages={listSummary.value.totalPages} pageCurrent={listSummary.value.pageCurrent} onChange={onPageChange} />
+                <Pagination totalPages={listSummary.value.totalPages} pageCurrent={listSummary.value.pageCurrent} baseUrl={paginationBaseUrl.value} />
               </div>
           /*# if:pre #*/
             </>

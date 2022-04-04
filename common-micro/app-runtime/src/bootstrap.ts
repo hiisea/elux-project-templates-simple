@@ -1,7 +1,7 @@
-import {createApp} from '@elux/<%= elux %>';
-import {moduleGetter} from './Project';
+import {createApp} from '<%= elux %>';
+import {appConfig} from './Project';
 
-createApp(moduleGetter)
+createApp(appConfig)
   .render()
   .then(() => {
     const initLoading = document.getElementById('root-loading');

@@ -35,7 +35,7 @@ router.get('/', function (req, res, next) {
       totalItems: listData.length,
       totalPages: Math.ceil(listData.length / pageSize),
     },
-    list: listData.slice(start, end),
+    list: listData.slice(start, end).map((item) => ({...item, content: ''})),
   };
 
   setTimeout(() => res.json(result), 1000);

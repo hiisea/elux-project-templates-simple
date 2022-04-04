@@ -5,5 +5,5 @@
     "stylelint.vscode-stylelint",
     "esbenp.prettier-vscode",
   ],
-  "unwantedRecommendations": ["editorconfig.editorconfig"]
+  "unwantedRecommendations": ["editorconfig.editorconfig", "octref.vetur"]
 }

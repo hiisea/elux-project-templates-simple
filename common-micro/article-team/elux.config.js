@@ -1,12 +1,12 @@
 const {localIP} = require('@elux/cli-utils');
 const apiHost = `http://${localIP}:3003/`;
 module.exports = {
-  type: '<%= framework==='react'?'react':'vue' %>',
-  mockServer: {port: 3003},
-  cssProcessors: {<%= css==='less'?'less':'sass' %>: true},
+  type: '<%= framework %>',
+  mockServer: {port: 3003, dir: '../app-api'},
+  cssProcessors: {/*# =less?less:sass #*/: true},
   all: {
     //开发和生成环境都使用的配置
-    serverPort: 4002,
+    serverPort: 4001,
     clientGlobalVar: {
       ApiPrefix: apiHost,
       StaticPrefix: apiHost,
@@ -28,24 +28,22 @@ module.exports = {
       },
     },
   },
-  dir: {
-    mockPath: '../app-api',
-  },
   moduleFederation: {
-    name: 'userTeam',
+    name: 'articleTeam',
     filename: 'remote.js',
     exposes: {
-      './modules/my': './src/modules/my',
+      './modules/article': './src/modules/article',
     },
     shared: {
-      <%_ if(framework==='react'){ -%>
+      /*# if:react #*/
       react: {singleton: true, eager: true, requiredVersion: '*'},
       'react-dom': {singleton: true, eager: true, requiredVersion: '*'},
-      <%_ }else{ -%>
+      /*# else:vue #*/
       vue: {singleton: true, eager: true, requiredVersion: '*'},
-      <%_ } -%>
+      /*# end #*/
+      'query-string': {singleton: true, eager: true, requiredVersion: '*'},
       axios: {singleton: true, eager: true, requiredVersion: '*'},
-      '@elux/<%= elux %>': {singleton: true, eager: true, requiredVersion: '*'},
+      '<%= elux %>': {singleton: true, eager: true, requiredVersion: '*'},
     },
   },
 };

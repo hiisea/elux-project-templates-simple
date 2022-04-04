@@ -31,11 +31,18 @@ export class Model extends BaseModel<ModuleState, APPState> {
     return {currentView: currentView as CurrentView, itemId, listSearch: mergeDefaultParams(defaultListSearch, listSearch)};
   }
 
-  public /*# =post?async : #*/onMount(): /*# =post?Promise<void>:void #*/ {
+  public /*# =post?async : #*/onMount(env: 'init' | 'route' | 'update'): /*# =post?Promise<void>:void #*/ {
     this.routeParams = this.getRouteParams();
+    /*# if:ssr #*/
+    const prevState = this.getPrevState();
+    //如果是SSR，client直接使用server的state即可
+    if (env === 'init' && prevState) {
+      this.dispatch(this.privateActions._initState(prevState));
+      return;
+    }
+    /*# end #*/
     const {currentView, listSearch, itemId} = this.routeParams;
-    const initState: ModuleState = {currentView};
-    this.dispatch(this.privateActions._initState(initState));
+    this.dispatch(this.privateActions._initState({currentView}));
     if (currentView === 'list') {
       /*# =post?await : #*/this.dispatch(this.actions.fetchList(listSearch));
     } else if (currentView && itemId) {

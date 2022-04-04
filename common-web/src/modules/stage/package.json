@@ -3,15 +3,15 @@
   "version": "1.0.0",
   "main": "index.ts",
   "peerDependencies": {
-    "@<%= projectName %>/stage": "*",
-    "<%= elux %>": "*",
+    "@<%= projectName %>/stage": "^1.0.0",
+    "<%= elux %>": "^2.0.0",
     /*# if:react #*/
-    "react": "*",
-    "react-dom": "*",
+    "react": "^17.0.0",
+    "react-dom": "^17.0.0",
     /*# else:vue #*/
-    "vue": "*",
+    "vue": "^3.2.22",
     /*# end #*/
-    "path-to-regexp": "*",
-    "axios": "*"
+    "path-to-regexp": "^6.2.0",
+    "axios": "^0.21.1"
   }
 }
