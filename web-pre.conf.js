@@ -9,6 +9,7 @@ return {
     return getData(options, "pre");
   },
   operation: getOperation(),
+  getNpmLockFile,
   rename,
   beforeRender,
   afterRender,

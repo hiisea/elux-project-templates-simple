@@ -86,6 +86,12 @@ function getData(options, route) {
   };
 }
 
+function getNpmLockFile(options) {
+  const { platform, framework, css } = options;
+  const fileName = [platform, framework, css].join("-");
+  return `https://gitee.com/hiisea/elux-project-templates-simple/raw/v2/${fileName}-lock.zip`;
+}
+
 function getOperation(platform) {
   if (platform === "micro") {
     return [

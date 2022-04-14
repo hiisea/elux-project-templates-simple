@@ -35,6 +35,7 @@ return {
     return getData(options, "pre");
   },
   operation: getOperation('micro'),
+  getNpmLockFile,
   rename,
   beforeRender,
   afterRender,
