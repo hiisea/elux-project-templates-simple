@@ -25,10 +25,10 @@ export class Model extends BaseModel<ModuleState, APPState> {
 
   protected getRouteParams(): RouteParams {
     const {pathname, searchQuery} = this.getRouter().location;
-    const [, currentView, itemId] = pathToRegexp('/article/:currentView/:itemId(\\d+)?').exec(pathname) || [];
-    const {pageCurrent = '', keyword} = searchQuery as Record<string, string | undefined>;
+    const [, currentView] = pathToRegexp('/article/:currentView').exec(pathname) || [];
+    const {pageCurrent = '', keyword, id} = searchQuery as Record<string, string | undefined>;
     const listSearch = {pageCurrent: parseInt(pageCurrent) || undefined, keyword};
-    return {currentView: currentView as CurrentView, itemId, listSearch: mergeDefaultParams(defaultListSearch, listSearch)};
+    return {currentView: currentView as CurrentView, itemId: id, listSearch: mergeDefaultParams(defaultListSearch, listSearch)};
   }
 
   public /*# =post?async : #*/onMount(env: 'init' | 'route' | 'update'): /*# =post?Promise<void>:void #*/ {

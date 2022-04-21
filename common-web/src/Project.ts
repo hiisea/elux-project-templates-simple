@@ -1,5 +1,6 @@
 import {stringify, parse} from 'query-string';
 import {setConfig, AppConfig} from '<%= elux %>';
+import './Global';
 import {HomeUrl} from '@/utils/const';
 import stage from '@/modules/stage';
 

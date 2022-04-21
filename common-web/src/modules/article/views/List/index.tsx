@@ -64,7 +64,7 @@ const Component: FC<StoreProps & {dispatch: Dispatch}> = ({listSearch, list, lis
   );
   const onEditItem = useCallback(
     (id = '0') => {
-      router.push({url: `/article/edit/${id}`}, 'window');
+      router.push({url: `/article/edit?id=${id}`}, 'window');
     },
     [router]
   );
@@ -83,10 +83,10 @@ const Component: FC<StoreProps & {dispatch: Dispatch}> = ({listSearch, list, lis
             <div className="article-list">
               {list.map((item) => (
                 <div key={item.id} className="article-item">
-                  <Link className="article-title" to={`/article/detail/${item.id}`} target="window">
+                  <Link className="article-title" to={`/article/detail?id=${item.id}`} target="window">
                     {item.title}
                   </Link>
-                  <Link className="article-summary" to={`/article/detail/${item.id}`} target="window">
+                  <Link className="article-summary" to={`/article/detail?id=${item.id}`} target="window">
                     {item.summary}
                   </Link>
                   <div className="article-operation">
@@ -155,10 +155,10 @@ const Component = defineComponent({
               <div class="article-list">
                 {list.value.map((item) => (
                   <div key={item.id} class="article-item">
-                    <Link class="article-title" to={`/article/detail/${item.id}`} target="window">
+                    <Link class="article-title" to={`/article/detail?id=${item.id}`} target="window">
                       {item.title}
                     </Link>
-                    <Link class="article-summary" to={`/article/detail/${item.id}`} target="window">
+                    <Link class="article-summary" to={`/article/detail?id=${item.id}`} target="window">
                       {item.summary}
                     </Link>
                     <div class="article-operation">

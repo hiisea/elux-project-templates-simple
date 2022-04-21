@@ -41,7 +41,6 @@
   },
   "resolutions": {
     "@types/react": "^17.0.0",
-    "@types/react-dom": "^17.0.0",
-    "@types/express": "^4.17.9"
+    "@types/react-dom": "^17.0.0"
   }
 }

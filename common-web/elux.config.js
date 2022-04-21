@@ -41,14 +41,15 @@ module.exports = {
     //开发环境专用配置
     eslint: false,
     stylelint: false,
-    apiProxy: {
-      '/api': {
-        target: apiHosts[APP_ENV],
-        pathRewrite: {
-          '^/api': '',
-        },
-      },
-    },
+    //要使用开发代理可以放开下面代码
+    // apiProxy: {
+    //   '/api': {
+    //     target: apiHosts[APP_ENV],
+    //     pathRewrite: {
+    //       '^/api': '',
+    //     },
+    //   },
+    // },
   },
 /*# if:ssr #*/
   gen: {
@@ -61,12 +62,12 @@ module.exports = {
       (env) => {
         return new Array(10)
           .fill(0)
-          .map((_, index) => ({url: `${testUrl}/article/page/${index + 1}`, dist: `./dist/${env}-gen/article/page/${index + 1}.html`}));
+          .map((_, index) => ({url: `${testUrl}/article/list?pageCurrent=${index + 1}`, dist: `./dist/${env}-gen/article/list/${index + 1}.html`}));
       },
       (env) => {
         return new Array(10)
           .fill(0)
-          .map((_, index) => ({url: `${testUrl}/article/detail/${index + 1}`, dist: `./dist/${env}-gen/article/detail/${index + 1}.html`}));
+          .map((_, index) => ({url: `${testUrl}/article/detail?id=${index + 1}`, dist: `./dist/${env}-gen/article/detail/${index + 1}.html`}));
       },
     ],
   },

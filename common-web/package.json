@@ -52,11 +52,10 @@
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
     /*# end #*/
-    "@types/express": "^4.17.9",
-    "@elux/cli": "~1.2.1",
-    "@elux/cli-utils": "~1.1.2",
-    "@elux/cli-webpack": "~1.2.0",
-    "@elux/cli-mock": "~1.1.1",
+    "@elux/cli": "~2.0.0",
+    "@elux/cli-utils": "~2.0.0",
+    "@elux/cli-webpack": "~2.0.0",
+    "@elux/cli-mock": "~2.0.0",
     "@elux/babel-preset": "~1.0.1",
     "@elux/eslint-plugin": "~1.0.1",
     "@elux/stylelint-config": "~1.0.1",
@@ -78,8 +77,7 @@
   "resolutions": {
     /*# if:react #*/
     "@types/react": "^17.0.0",
-    "@types/react-dom": "^17.0.0",
+    "@types/react-dom": "^17.0.0"
     /*# end #*/
-    "@types/express": "^4.17.9"
   }
 }

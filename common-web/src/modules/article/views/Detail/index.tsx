@@ -37,7 +37,7 @@ const Component: FC<Props> = ({itemDetail}) => {
           <div className="title">{/*# =pre?itemDetail?.title || '......':itemDetail.title #*/}</div>
           <div className="summary">{/*# =pre?itemDetail?.summary || '......':itemDetail.summary #*/}</div>
         </div>
-        <div className="bd">{/*# =pre?itemDetail?.content || '......':itemDetail.content #*/}</div>
+        <div className="bd">{/*# =pre?itemDetail?.content || '':itemDetail.content #*/}</div>
       </div>
     </>
   );
@@ -60,7 +60,7 @@ const Component = defineComponent({
             <div class="title">{/*# =pre?props.itemDetail?.title || '......':props.itemDetail.title #*/}</div>
             <div class="summary">{/*# =pre?props.itemDetail?.summary || '......':props.itemDetail.summary #*/}</div>
           </div>
-          <div class="bd">{/*# =pre?props.itemDetail?.content || '......':props.itemDetail.content #*/}</div>
+          <div class="bd">{/*# =pre?props.itemDetail?.content || '':props.itemDetail.content #*/}</div>
         </div>
       </>
     );
