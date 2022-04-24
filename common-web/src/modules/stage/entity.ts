@@ -28,7 +28,9 @@ export type ILogin = IRequest<LoginParams, CurUser>;
 
 export type ILogout = IRequest<{}, CurUser>;
 
-export type CurrentView = 'login' | 'article' | 'my';
+export type CurrentModule = 'stage' | 'article' | 'my'/*# =taro? | 'shop': #*/;
+
+export type CurrentView = 'login';
 
 class API {
   public getCurUser(): Promise<IGetCurUser['Response']> {

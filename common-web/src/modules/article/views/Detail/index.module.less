@@ -5,12 +5,15 @@
     > .hd {
       position: relative;
       padding: 20px;
+      /*# if:taro #*/
+      padding-top: 50px;
+      /*# end #*/
       padding-left: 52px;
       background-color: @primaryColor;
 
       .back {
         position: absolute;
-        top: 20px;
+        top: /*# =taro?44:20 #*/px;
         bottom: 20px;
         left: 6px;
         display: flex;

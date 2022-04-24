@@ -20,11 +20,11 @@ const props = {
 
 /*# if:react #*/
 const Component: FC<Props> = ({loadingState}) => {
-  return loadingState === 'Start' || loadingState === 'Depth' ? (
-    <div className={`${styles.root} ${loadingState.toLowerCase()}`}>
+  return (
+    <div className={`${styles.root} ${loadingState?.toLowerCase()}`}>
       <div className="loading-icon" />
     </div>
-  ) : null;
+  );
 };
 
 export default memo(Component);
@@ -33,12 +33,11 @@ export default defineComponent({
   name: 'LoadingPanel',
   props,
   setup(props) {
-    return () =>
-      props.loadingState === 'Start' || props.loadingState === 'Depth' ? (
-        <div class={`${styles.root} ${props.loadingState.toLowerCase()}`}>
-          <div class="loading-icon" />
-        </div>
-      ) : null;
+    return () => (
+      <div class={`${styles.root} ${props.loadingState?.toLowerCase()}`}>
+        <div class="loading-icon" />
+      </div>
+    );
   },
 });
 /*# end #*/

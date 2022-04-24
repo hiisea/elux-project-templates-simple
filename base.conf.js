@@ -75,13 +75,17 @@ function replacePackage(code, filepath, projectName) {
 
 function getTitle(options, route) {
   const routeSubject = route === "pre" ? "路由前置" : "路由后置";
-  return options.framework === "react" ? `web-react（${routeSubject}）` : `web-vue3（${routeSubject}）`;
+  const platform = options.platform === "rn" ? "开发中" : options.platform === "taro" ? "taro" : "web";
+  const ui = options.framework === "react" ? "react" : "vue3";
+  return `${platform}-${ui}（${routeSubject}）`;
 }
 
 function getData(options, route) {
+  const platform = options.platform === "rn" ? "rn" : options.platform === "taro" ? "taro" : "web";
+  const ui = options.framework;
   return {
     ...options,
-    elux: options.framework === "react" ? "@elux/react-web" : "@elux/vue-web",
+    elux: `@elux/${ui}-${platform}`,
     route,
   };
 }
@@ -92,8 +96,10 @@ function getNpmLockFile(options) {
   return `https://gitee.com/hiisea/elux-project-templates-simple/raw/v2/${fileName}-lock.zip`;
 }
 
-function getOperation(platform) {
-  if (platform === "micro") {
+function operation(options) {
+  if(options.platform === "rn"){
+    return [{ action: "copy", from: "./common-rn", to: "$" }];
+  } else if (options.platform === "micro") {
     return [
       { action: "copy", from: "./common-web/.vscode", to: "$/.vscode" },
       { action: "copy", from: "./common-web", to: "$/article-team" },
@@ -118,8 +124,17 @@ function getOperation(platform) {
       { action: "move", from: "$/app-runtime/src/modules", to: "" },
       { action: "copy", from: "./common-micro", to: "$" },
     ];
+  } else if (options.platform === "taro") {
+    return [
+      { action: "copy", from: "./common-web", to: "$" },
+      { action: "copy", from: "./common-taro", to: "$" },
+      { action: "move", from: "$/env", to: "" },
+      { action: "move", from: "$/public", to: "" },
+      { action: "move", from: "$/src/components/TabBar", to: "" },
+      { action: "move", from: "$/src/index.ts", to: "" },
+    ];
   } else {
-    return [{ action: "copy", from: "./common-web", to: "./$" }];
+    return [{ action: "copy", from: "./common-web", to: "$" }];
   }
 }
 
@@ -129,8 +144,14 @@ function beforeRender(data, filepath, code) {
       /\/\*#\s+\=(react|vue|ssr|csr|micro|taro|less|sass|post|pre)\?([^:]+?):(.*?)\s+#\*\//g,
       (str, $1, $2, $3) => `<%= ${valueKeys[$1]}==='${$1}'?\`${$2}\`:\`${$3}\` %>`
     )
-    .replace(/\/\*#\s+if:(react|vue|ssr|csr|micro|taro|less|sass|post|pre)\s+#\*\//g, (str, $1) => `<%_ if(${valueKeys[$1]}==='${$1}'){ -%>`)
-    .replace(/\/\*#\s+else:(react|vue|ssr|csr|micro|taro|less|sass|post|pre)\s+#\*\//g, (str, $1) => `<%_ }else if(${valueKeys[$1]}==='${$1}'){ -%>`)
+    .replace(
+      /\/\*#\s+if:(!?)(react|vue|ssr|csr|micro|taro|less|sass|post|pre)\s+#\*\//g,
+      (str, v1, v2) => `<%_ if(${valueKeys[v2]}${v1 || "="}=='${v2}'){ -%>`
+    )
+    .replace(
+      /\/\*#\s+else:(!?)(react|vue|ssr|csr|micro|taro|less|sass|post|pre)\s+#\*\//g,
+      (str, v1, v2) => `<%_ }else if(${valueKeys[v2]}${v1 || "="}=='${v2}'){ -%>`
+    )
     .replace(/\/\*#\s+else\s+#\*\//g, `<%_ }else{ -%>`)
     .replace(/\/\*#\s+end\s+#\*\//g, `<%_ } -%>`);
 }
@@ -158,25 +179,32 @@ function afterRender(data, filepath, code) {
 }
 
 function rename(data, filepath) {
+  if (data.css === "sass" && filepath.endsWith(".less")) {
+    return filepath.replace(/.less$/, ".scss");
+  }
   if (data.platform !== "ssr" && filepath.endsWith("/src/server.ts")) {
     return "";
   }
-  if (
-    data.platform === "micro" &&
-    (filepath.endsWith("/article-team/src/Project.ts") ||
+  if (data.platform === "micro") {
+    if (
+      filepath.endsWith("/article-team/src/Project.ts") ||
       filepath.endsWith("/user-team/src/Project.ts") ||
-      filepath.endsWith("/basic-team/src/Project.ts"))
-  ) {
-    return "";
+      filepath.endsWith("/basic-team/src/Project.ts")
+    ) {
+      return "";
+    }
+    if (filepath.endsWith("/src/.babelrc.js")) {
+      return filepath.replace("/src/.babelrc.js", "/babel.config.js");
+    }
+  } else {
+    if (/\/modules\/\w+\/package\.json/.test(filepath)) {
+      return "";
+    }
   }
-  if (data.platform === "micro" && filepath.endsWith("/src/.babelrc.js")) {
-    return filepath.replace("/src/.babelrc.js", "/babel.config.js");
-  }
-  if (data.platform !== "micro" && /\/modules\/\w+\/package\.json/.test(filepath)) {
-    return "";
-  }
-  if (data.css === "sass" && filepath.endsWith(".less")) {
-    return filepath.replace(/.less$/, ".scss");
+  if (data.platform === "taro") {
+    if (filepath.endsWith("elux.config.js") || filepath.endsWith("postcss.config.js") || filepath.endsWith("/src/.babelrc.js")) {
+      return "";
+    }
   }
   return filepath;
 }

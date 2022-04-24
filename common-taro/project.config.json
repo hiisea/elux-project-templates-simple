@@ -1,0 +1,13 @@
+{
+  "projectname": "<%= projectName %>",
+  "miniprogramRoot": "./dist",
+  "description": "",
+  "appid": "touristappid",
+  "setting": {
+    "urlCheck": false,
+    "es6": false,
+    "postcss": false,
+    "minified": false
+  },
+  "compileType": "miniprogram"
+}

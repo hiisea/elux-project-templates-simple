@@ -8,7 +8,7 @@ return {
   data(options) {
     return getData(options, "post");
   },
-  operation: getOperation(),
+  operation,
   getNpmLockFile,
   rename,
   beforeRender,

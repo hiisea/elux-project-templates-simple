@@ -8,13 +8,17 @@ import {LoadComponent, APPState/*# =vue?, useStore: #*/} from '@/Global';
 import LoadingPanel from '@/components/LoadingPanel';
 import ErrorPage from '@/components/ErrorPage';
 import LoginForm from './LoginForm';
-import {CurrentView} from '../entity';
+import {CurrentModule, CurrentView} from '../entity';
 import '@/assets/css/global.module.less';
 
 const Article = LoadComponent('article', 'main');
 const My = LoadComponent('my', 'main');
+/*# if:taro #*/
+const Shop = LoadComponent('shop', 'main');
+/*# end #*/
 
 export interface StoreProps {
+  currentModule?: CurrentModule;
   currentView?: CurrentView;
   globalLoading?: LoadingState;
   error?: string;
@@ -22,8 +26,9 @@ export interface StoreProps {
 
 /*# if:react #*/
 function mapStateToProps(appState: APPState): StoreProps {
-  const {globalLoading, error, currentView} = appState.stage!;
+  const {globalLoading, error, currentModule, currentView} = appState.stage!;
   return {
+    currentModule,
     currentView,
     globalLoading,
     error,
@@ -33,6 +38,7 @@ function mapStateToProps(appState: APPState): StoreProps {
 function mapStateToProps(appState: APPState): ComputedStore<StoreProps> {
   const stage = appState.stage!;
   return {
+    currentModule: () => stage.currentModule,
     currentView: () => stage.currentView,
     globalLoading: () => stage.globalLoading,
     error: () => stage.error,
@@ -41,15 +47,18 @@ function mapStateToProps(appState: APPState): ComputedStore<StoreProps> {
 /*# end #*/
 
 /*# if:react #*/
-const Component: FC<StoreProps> = ({currentView, globalLoading, error}) => {
+const Component: FC<StoreProps> = ({currentModule, currentView, globalLoading, error}) => {
   return (
     <>
       <DocumentHead title="Elux" />
       <Switch elseView={<ErrorPage />}>
         {!!error && <ErrorPage message={error} />}
-        {currentView === 'login' && <LoginForm />}
-        {currentView === 'article' && <Article />}
-        {currentView === 'my' && <My />}
+        {currentModule === 'stage' && currentView === 'login' && <LoginForm />}
+        {currentModule === 'article' && <Article />}
+        {currentModule === 'my' && <My />}
+        /*# if:taro #*/
+        {currentModule === 'shop' && <Shop />}
+        /*# end #*/
       </Switch>
       <LoadingPanel loadingState={globalLoading} />
     </>
@@ -63,6 +72,7 @@ const Component = defineComponent({
   setup() {
     const store = useStore();
     const computedStore = mapStateToProps(store.getState());
+    const currentModule = computed(computedStore.currentModule);
     const currentView = computed(computedStore.currentView);
     const globalLoading = computed(computedStore.globalLoading);
     const error = computed(computedStore.error);
@@ -72,9 +82,12 @@ const Component = defineComponent({
         <DocumentHead title="Elux" />
         <Switch elseView={<ErrorPage />}>
           {!!error.value && <ErrorPage message={error.value} />}
-          {currentView.value === 'login' && <LoginForm />}
-          {currentView.value === 'article' && <Article />}
-          {currentView.value === 'my' && <My />}
+          {currentModule.value === 'stage' && currentView.value === 'login' && <LoginForm />}
+          {currentModule.value === 'article' && <Article />}
+          {currentModule.value === 'my' && <My />}
+          /*# if:taro #*/
+          {currentModule.value === 'shop' && <Shop />}
+          /*# end #*/
         </Switch>
         <LoadingPanel loadingState={globalLoading.value} />
       </>

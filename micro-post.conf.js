@@ -34,7 +34,7 @@ return {
     };
     return getData(options, "post");
   },
-  operation: getOperation('micro'),
+  operation,
   getNpmLockFile,
   rename,
   beforeRender,

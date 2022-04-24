@@ -6,7 +6,9 @@ import {defineComponent, computed} from 'vue';
 import {DocumentHead, Link, /*# =react?Dispatch, connectRedux,:ComputedStore, exportView, #*/ locationToUrl} from '<%= elux %>';
 import {APPState, Modules, useRouter/*# =vue?, useStore: #*/} from '@/Global';
 import {excludeDefaultParams} from '@/utils/tools';
+/*# if:!taro #*/
 import TabBar from '@/components/TabBar';
+/*# end #*/
 import NavBar from '@/components/NavBar';
 import SearchBar from '../../components/SearchBar';
 import Pagination from '../../components/Pagination';
@@ -108,7 +110,9 @@ const Component: FC<StoreProps & {dispatch: Dispatch}> = ({listSearch, list, lis
           /*# ]]] #*/
         /*# end #*/
       </div>
+      /*# if:!taro #*/
       <TabBar selected="article" />
+      /*# end #*/
     </>
   );
 };
@@ -137,7 +141,7 @@ const Component = defineComponent({
       store.dispatch(Modules.article.actions.deleteItem(id));
     };
     const onEditItem = (id: string = '0') => {
-      router.push({url: `/article/edit/${id}`}, 'window');
+      router.push({url: `/article/edit?id=${id}`}, 'window');
     };
 
     return () => (
@@ -180,7 +184,9 @@ const Component = defineComponent({
             /*# ]]] #*/
           /*# end #*/
         </div>
+        /*# if:!taro #*/
         <TabBar selected="article" />
+        /*# end #*/
       </>
     );
   },

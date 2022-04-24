@@ -1,4 +1,4 @@
-import {pathToRegexp} from 'path-to-regexp';
+import /*# =taro?pathToRegexp:{pathToRegexp} #*/ from 'path-to-regexp';
 import {BaseModel, reducer, effect} from '<%= elux %>';
 import {APPState} from '@/Global';
 import {mergeDefaultParams} from '@/utils/tools';
@@ -20,7 +20,7 @@ interface RouteParams {
 }
 
 export class Model extends BaseModel<ModuleState, APPState> {
-  protected declare routeParams: RouteParams;
+  protected routeParams: RouteParams;
   protected privateActions = this.getPrivateActions({putList: this.putList, putCurrentItem: this.putCurrentItem});
 
   protected getRouteParams(): RouteParams {

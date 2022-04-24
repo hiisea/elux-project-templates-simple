@@ -7,6 +7,9 @@
     "source.fixAll": true
   },
   "stylelint.validate": ["less", "scss", "vue"],
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
   "search.exclude": {
     "**/.eslintcache": true,
     "**/.stylelintcache": true,

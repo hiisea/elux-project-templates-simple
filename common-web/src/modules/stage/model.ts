@@ -1,44 +1,51 @@
+import /*# =taro?pathToRegexp:{pathToRegexp} #*/ from 'path-to-regexp';
+/*# if:taro #*/
+import {showToast} from '@tarojs/taro';
+/*# end #*/
 import {BaseModel, ErrorCodes, LoadingState, effect, reducer} from '<%= elux %>';
 import {APPState} from '@/Global';
 import {HomeUrl, LoginUrl} from '@/utils/const';
 import {CustomError, CommonErrorCode} from '@/utils/errors';
-import {CurUser, CurrentView, LoginParams, guest, api} from './entity';
+import {CurUser, CurrentModule, CurrentView, LoginParams, guest, api} from './entity';
 
 export interface ModuleState {
   curUser: CurUser;
+  currentModule?: CurrentModule;
   currentView?: CurrentView;
   globalLoading?: LoadingState;
   error?: string;
 }
 
 export interface RouteParams {
+  currentModule?: CurrentModule;
   currentView?: CurrentView;
 }
 
 export class Model extends BaseModel<ModuleState, APPState> {
-  protected declare routeParams: RouteParams;
+  protected routeParams: RouteParams;
   protected privateActions = this.getPrivateActions({putCurUser: this.putCurUser});
 
   protected getRouteParams(): RouteParams {
-    const router = this.getRouter();
-    const {pathname} = router.location;
-    const [, currentView] = pathname.split('/');
-    return {currentView} as RouteParams;
+    const {pathname} = this.getRouter().location;
+    const [, currentModule, currentView] = pathToRegexp('/:currentModule/:currentView').exec(pathname) || [];
+    return {currentModule, currentView} as RouteParams;
   }
 
   public async onMount(env: 'init' | 'route' | 'update'): Promise<void> {
     this.routeParams = this.getRouteParams();
-    const {currentView} = this.routeParams;
+    const {currentModule, currentView} = this.routeParams;
     const {curUser: _curUser} = this.getPrevState() || {};
     try {
       const curUser = _curUser || (await api.getCurUser());
-      const initState: ModuleState = {curUser, currentView};
+      const initState: ModuleState = {curUser, currentModule, currentView};
       this.dispatch(this.privateActions._initState(initState));
       /*# if:post #*/
-      await this.store.mount(currentView as any, env);
+      if (currentModule && currentModule !== 'stage') {
+        await this.store.mount(currentModule, env);
+      }
       /*# end #*/
     } catch (err: any) {
-      const initState: ModuleState = {curUser: {...guest}, currentView, error: err.message || err.toString()};
+      const initState: ModuleState = {curUser: {...guest}, currentModule, currentView, error: err.message || err.toString()};
       this.dispatch(this.privateActions._initState(initState));
     }
   }
@@ -76,13 +83,19 @@ export class Model extends BaseModel<ModuleState, APPState> {
       // eslint-disable-next-line no-alert
       /*# if:ssr #*/
       typeof window === 'object' && window.alert(error.message);
+      /*# else:taro #*/
+      showToast({
+        title: error.message,
+        icon: 'error',
+      });
       /*# else #*/
       window.alert(error.message);
       /*# end #*/
     }
     throw error;
   }
-
+  /*# if:!taro #*/
+  
   // 支持路由守卫
   @effect(null)
   protected async ['this._testRouteChange']({pathname}: {pathname: string}): Promise<void> {
@@ -90,4 +103,5 @@ export class Model extends BaseModel<ModuleState, APPState> {
       throw new CustomError(CommonErrorCode.unauthorized, '请登录！', pathname, true);
     }
   }
+  /*# end #*/
 }

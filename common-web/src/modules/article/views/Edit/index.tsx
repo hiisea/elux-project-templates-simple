@@ -83,6 +83,10 @@ const Component: FC<Props> = ({itemDetail, dispatch}) => {
                 name="summary"
                 className="g-input"
                 placeholder="请输入"
+                /*# if:taro #*/
+                // eslint-disable-next-line react/no-unknown-property
+                maxlength={100}
+                /*# end #*/
                 rows={2}
                 onChange={(e) => setSummary(e.target.value.trim())}
                 value={summary}
@@ -96,6 +100,10 @@ const Component: FC<Props> = ({itemDetail, dispatch}) => {
                 name="content"
                 className="g-input"
                 placeholder="请输入"
+                /*# if:taro #*/
+                // eslint-disable-next-line react/no-unknown-property
+                maxlength={500}
+                /*# end #*/
                 rows={10}
                 onChange={(e) => setContent(e.target.value.trim())}
                 value={content}
@@ -165,13 +173,13 @@ const Component = defineComponent({
             <div class="form-item">
               <div class="label">摘要</div>
               <div class="item">
-                <textarea name="summary" class="g-input" placeholder="请输入" rows={2} v-model={summary.value} />
+                <textarea name="summary" class="g-input" placeholder="请输入" maxlength={100} rows={2} v-model={summary.value} />
               </div>
             </div>
             <div class="form-item">
               <div class="label">内容</div>
               <div class="item">
-                <textarea name="content" class="g-input" placeholder="请输入" rows={10} v-model={content.value} />
+                <textarea name="content" class="g-input" placeholder="请输入" maxlength={500} rows={10} v-model={content.value} />
               </div>
             </div>
           </div>

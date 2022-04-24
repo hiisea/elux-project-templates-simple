@@ -1,4 +1,4 @@
-import {pathToRegexp} from 'path-to-regexp';
+import /*# =taro?pathToRegexp:{pathToRegexp} #*/ from 'path-to-regexp';
 import {BaseModel} from '<%= elux %>';
 import {CurrentView} from './entity';
 
@@ -11,7 +11,7 @@ interface RouteParams {
 }
 
 export class Model extends BaseModel<ModuleState> {
-  protected declare routeParams: RouteParams;
+  protected routeParams: RouteParams;
   protected privateActions = this.getPrivateActions({});
 
   protected getRouteParams(): RouteParams {
