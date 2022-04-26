@@ -95,7 +95,7 @@ export class Model extends BaseModel<ModuleState, APPState> {
     throw error;
   }
   /*# if:!taro #*/
-  
+
   // 支持路由守卫
   @effect(null)
   protected async ['this._testRouteChange']({pathname}: {pathname: string}): Promise<void> {
