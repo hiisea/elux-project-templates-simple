@@ -134,6 +134,9 @@ const Component = defineComponent({
               </>
             )}
           </div>
+          /*# if:!taro #*/
+          <TabBar selected="my" />
+          /*# end #*/
         </>
       );
     };

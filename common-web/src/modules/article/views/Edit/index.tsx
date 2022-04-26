@@ -173,13 +173,13 @@ const Component = defineComponent({
             <div class="form-item">
               <div class="label">摘要</div>
               <div class="item">
-                <textarea name="summary" class="g-input" placeholder="请输入" maxlength={100} rows={2} v-model={summary.value} />
+                <textarea name="summary" class="g-input" placeholder="请输入" /*# =taro?maxlength={100} : #*/rows={2} v-model={summary.value} />
               </div>
             </div>
             <div class="form-item">
               <div class="label">内容</div>
               <div class="item">
-                <textarea name="content" class="g-input" placeholder="请输入" maxlength={500} rows={10} v-model={content.value} />
+                <textarea name="content" class="g-input" placeholder="请输入" /*# =taro?maxlength={500} : #*/rows={10} v-model={content.value} />
               </div>
             </div>
           </div>
