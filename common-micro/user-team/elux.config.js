@@ -42,6 +42,7 @@ module.exports = {
       vue: {singleton: true, eager: true, requiredVersion: '*'},
       /*# end #*/
       'query-string': {singleton: true, eager: true, requiredVersion: '*'},
+      'path-to-regexp': {singleton: true, eager: true, requiredVersion: '*'},
       axios: {singleton: true, eager: true, requiredVersion: '*'},
       '<%= elux %>': {singleton: true, eager: true, requiredVersion: '*'},
     },
