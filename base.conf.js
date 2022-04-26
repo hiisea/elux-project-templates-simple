@@ -92,12 +92,19 @@ function getData(options, route) {
 
 function getNpmLockFile(options) {
   const { platform, framework, css } = options;
-  const fileName = [platform, framework, css].join("-");
+  const arr = [];
+  if (platform === "csr" || platform === "ssr") {
+    arr.push("web");
+  } else {
+    arr.push(platform);
+  }
+  arr.push(framework);
+  const fileName = arr.join("-");
   return `https://gitee.com/hiisea/elux-project-templates-simple/raw/v2/${fileName}-lock.zip`;
 }
 
 function operation(options) {
-  if(options.platform === "rn"){
+  if (options.platform === "rn") {
     return [{ action: "copy", from: "./common-rn", to: "$" }];
   } else if (options.platform === "micro") {
     return [
