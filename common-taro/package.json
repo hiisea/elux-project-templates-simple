@@ -16,8 +16,8 @@
   ],
   "scripts": {
     "lint:type": "tsc --project ./src --noEmit --emitDeclarationOnly false",
-    "lint:es": "cross-env NODE_ENV=production eslint --fix --cache \"**/*.{js,ts,tsx}\"",
-    "lint:css": "cross-env NODE_ENV=production stylelint --fix --cache \"**/*.{css,less}\"",
+    "lint:es": "cross-env NODE_ENV=production eslint --fix --cache \"**/*.{js,ts,tsx/*# =vue?,vue: #*/}\"",
+    "lint:css": "cross-env NODE_ENV=production stylelint --fix --cache \"**/*.{css,/*# =less?less:scss #*//*# =vue?,vue: #*/}\"",
     "lint:json": "prettier --write **/*.json",
     "mock": "elux mock --watch",
     "build:weapp": "taro build --type weapp",
