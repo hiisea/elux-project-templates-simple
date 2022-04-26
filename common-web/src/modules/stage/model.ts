@@ -22,7 +22,7 @@ export interface RouteParams {
 }
 
 export class Model extends BaseModel<ModuleState, APPState> {
-  protected routeParams: RouteParams;
+  protected routeParams!: RouteParams;
   protected privateActions = this.getPrivateActions({putCurUser: this.putCurUser});
 
   protected getRouteParams(): RouteParams {

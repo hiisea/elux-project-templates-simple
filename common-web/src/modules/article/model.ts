@@ -20,7 +20,7 @@ interface RouteParams {
 }
 
 export class Model extends BaseModel<ModuleState, APPState> {
-  protected routeParams: RouteParams;
+  protected routeParams!: RouteParams;
   protected privateActions = this.getPrivateActions({putList: this.putList, putCurrentItem: this.putCurrentItem});
 
   protected getRouteParams(): RouteParams {
