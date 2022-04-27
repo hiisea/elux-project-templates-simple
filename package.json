@@ -1,0 +1,19 @@
+{
+  "name": "elux-project-templates-simple",
+  "version": "1.0.0",
+  "description": "",
+  "main": "base.conf.js",
+  "scripts": {
+    "recommit": "git commit --amend --no-edit"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hiisea/elux-project-templates-simple.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/hiisea/elux-project-templates-simple/issues"
+  },
+  "homepage": "https://github.com/hiisea/elux-project-templates-simple#readme"
+}
