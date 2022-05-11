@@ -11,6 +11,8 @@ import LoginForm from './LoginForm';
 import {CurrentModule, CurrentView} from '../entity';
 import '@/assets/css/global.module.less';
 
+//采用LoadComponent来加载视图，可以懒执行，并自动初始化与之对应的model
+//Stage中只显示子模块的根视图，如acticle.main，具体action.main中显示什么由acticle模块自己决定，类似于子路由
 const Article = LoadComponent('article', 'main');
 const My = LoadComponent('my', 'main');
 /*# if:taro #*/
@@ -65,6 +67,7 @@ const Component: FC<StoreProps> = ({currentModule, currentView, globalLoading, e
   );
 };
 
+//connectRedux中包含了exportView()的执行
 export default connectRedux(mapStateToProps)(Component);
 /*# else:vue #*/
 const Component = defineComponent({

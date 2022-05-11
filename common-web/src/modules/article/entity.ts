@@ -1,3 +1,4 @@
+//定义本模块涉及的业务实体和数据API
 import request, {IRequest} from '@/utils/request';
 export interface ListSearch {
   keyword: string;

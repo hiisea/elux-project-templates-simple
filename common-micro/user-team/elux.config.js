@@ -1,3 +1,4 @@
+//工程配置文件，参见 https://eluxjs.com/guide/configure.html
 const {localIP} = require('@elux/cli-utils');
 const apiHost = `http://${localIP}:3003/`;
 module.exports = {

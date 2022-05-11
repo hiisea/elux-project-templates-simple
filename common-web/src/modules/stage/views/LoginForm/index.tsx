@@ -19,6 +19,8 @@ const Component: FC<{dispatch: Dispatch}> = ({dispatch}) => {
     if (!username || !password) {
       setErrorMessage('请输入用户名、密码');
     } else {
+      //这样的写法可以使用TS的类型提示，等同于dispatch({type:'stage.login',payload:{username, password}})
+      //可以await这个action的所有handler执行完成
       const result = dispatch(Modules.stage.actions.login({username, password})) as Promise<void>;
       result.catch(({message}) => {
         setErrorMessage(message);
@@ -73,6 +75,7 @@ const Component: FC<{dispatch: Dispatch}> = ({dispatch}) => {
   );
 };
 
+//connectRedux中包含了exportView()的执行
 export default connectRedux()(Component);
 /*# else:vue #*/
 const Component = defineComponent({
@@ -88,6 +91,8 @@ const Component = defineComponent({
       if (!username.value || !password.value) {
         errorMessage.value = '请输入用户名、密码';
       } else {
+        //这样的写法可以使用TS的类型提示，等同于dispatch({type:'stage.login',payload:{username, password}})
+        //可以await这个action的所有handler执行完成
         const result = store.dispatch(Modules.stage.actions.login({username: username.value, password: password.value})) as Promise<void>;
         result.catch(({message}) => {
           errorMessage.value = message;

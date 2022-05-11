@@ -1,3 +1,4 @@
+//工程配置文件，参见 https://eluxjs.com/guide/configure.html
 <%
   const typeMap = {
     'react-csr': 'react',
@@ -52,12 +53,13 @@ module.exports = {
     // },
   },
 /*# if:ssr #*/
+  //Static Site Generation (SSG)
   gen: {
     override: true,
     entries: [
       (env) => [
-        {url: `${testUrl}/index`, dist: `./dist/${env}-gen/index.html`},
-        {url: `${testUrl}/login`, dist: `./dist/${env}-gen/login.html`},
+        {url: `${testUrl}/`, dist: `./dist/${env}-gen/index.html`},
+        {url: `${testUrl}/stage/login`, dist: `./dist/${env}-gen/stage/login.html`},
       ],
       (env) => {
         return new Array(10)

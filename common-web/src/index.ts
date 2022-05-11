@@ -1,3 +1,6 @@
+/**
+ * 该文件是应用的入口文件
+ */
 import {createApp} from '<%= elux %>';
 import {appConfig} from './Project';
 
