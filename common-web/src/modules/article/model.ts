@@ -99,7 +99,7 @@ export class Model extends BaseModel<ModuleState, APPState> {
     const router = this.getRouter();
     await api.updateItem(item);
     await this.getRouter().back(1, 'window');
-    router.getCurrentPage().store.dispatch(this.actions.fetchList());
+    router.getActivePage().store.dispatch(this.actions.fetchList());
   }
 
   //定义一个effect，用来执行创建的业务逻辑
