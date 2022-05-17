@@ -3,9 +3,9 @@ import {createSSR} from '<%= elux %>';
 import {appConfig} from './Project';
 
 /**
- * 该方法最终将被Web应用框架调用，参数依据所选web应用框架(如express/kao/nestjs)的不同可以自己变化，
- * 而这些原始入参都可以原封不动的传给`createSSR(...)`后，通过`router.initOptions`可以获取
+ * 该方法最终将被Server框架调用，参数依据所选Server框架(如express/kao/nestjs)的不同而变化，
+ * 框架的request和response对象传给createSSR后，在应用中可以通过`router.initOptions`获取
  */
 export default function server(request: {url: string}, response: any): Promise<string> {
-  return createSSR(appConfig, {url: request.url, request, response} as any).render();
+  return createSSR(appConfig, {url: request.url, request, response}).render();
 }

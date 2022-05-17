@@ -143,4 +143,16 @@ export class Model extends BaseModel<ModuleState, APPState> {
     }
   }
   /*# end #*/
+
+  //页面被激活(变为显示页面)时调用
+  onActive(){
+    //可以执行一些激活逻辑，比如开启定时器轮询最新数据；
+    console.log('page active!')
+  }
+
+  //页面被冻结(变为历史快照)时调用
+  onInactive(){
+    //可以清除onActive中的副作用，比如清除计时器
+    console.log('page inactive!')
+  }
 }
