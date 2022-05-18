@@ -91,7 +91,7 @@ function getData(options, route) {
 }
 
 function getNpmLockFile(options) {
-  const { platform, framework, css, repository } = options;
+  const { platform, framework, css } = options;
   const arr = [];
   if (platform === "csr" || platform === "ssr") {
     arr.push("web");
