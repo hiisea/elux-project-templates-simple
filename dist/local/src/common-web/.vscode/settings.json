@@ -1,0 +1,23 @@
+{
+  "files.eol": "\n",
+  "typescript.updateImportsOnFileMove.enabled": "never",
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": false,
+    "source.fixAll": true
+  },
+  "stylelint.validate": ["less", "scss", "vue"],
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "search.exclude": {
+    "**/.eslintcache": true,
+    "**/.stylelintcache": true,
+    "**/package-lock": true,
+    "**/yarn.lock": true,
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/types": true,
+    "**/storage": true
+  }
+}

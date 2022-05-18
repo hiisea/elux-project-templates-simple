@@ -1,0 +1,48 @@
+@import '@/assets/css/var.less';
+
+:global {
+  :local(.root) {
+    overflow: hidden;
+
+    .article-list {
+      flex: 1;
+      overflow: auto;
+    }
+
+    .article-item {
+      padding: 15px;
+
+      &:nth-child(odd) {
+        background-color: @splitColor;
+      }
+    }
+
+    .article-title {
+      display: block;
+      margin: 10px 0 20px;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .article-summary {
+      display: block;
+      font-size: 16px;
+      line-height: 1.5;
+      cursor: pointer;
+    }
+
+    .article-operation {
+      margin: 10px 0;
+      font-size: 13px;
+      color: @tipColor;
+      cursor: pointer;
+
+      > .item {
+        display: inline-block;
+        margin-right: 10px;
+        text-decoration: underline;
+      }
+    }
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "extends": "@elux/babel-preset/tsconfig.esm.json",
+  "compilerOptions": {
+    "lib": ["es2020", "DOM"],
+    "emitDeclarationOnly": true,
+    /*# if:vue #*/
+    "jsx": "preserve",
+    /*# end #*/
+    "outDir": "../dist",
+    "rootDir": "./",
+    "baseUrl": "./",
+    "paths": {
+      "@/*": ["./*"]
+    }
+  },
+  "include": ["./"]
+}

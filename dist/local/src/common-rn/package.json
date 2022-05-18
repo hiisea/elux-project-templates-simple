@@ -1,0 +1,16 @@
+{
+  "name": "<%= projectName %>",
+  "version": "1.0.0",
+  "description": "",
+  "author": "hiisea <hiisea@qq.com>",
+  "license": "MIT",
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "private": true,
+  "browserslist": [
+    "chrome >= 70"
+  ],
+  "scripts": {
+  }
+}
