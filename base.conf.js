@@ -91,7 +91,7 @@ function getData(options, route) {
 }
 
 function getNpmLockFile(options) {
-  const { platform, framework, css } = options;
+  const { platform, framework, css, repository } = options;
   const arr = [];
   if (platform === "csr" || platform === "ssr") {
     arr.push("web");
@@ -100,7 +100,8 @@ function getNpmLockFile(options) {
   }
   arr.push(framework);
   const fileName = arr.join("-");
-  return `https://gitee.com/hiisea/elux-project-templates-simple/raw/v2/${fileName}-lock.zip`;
+  const dir = repository.split('/').slice(0,-1).join('/');
+  return `${dir}/${fileName}-lock${repository.endsWith('.zip')?'.zip':''}`;
 }
 
 function operation(options) {
