@@ -91,17 +91,15 @@ function getData(options, route) {
 }
 
 function getNpmLockFile(options) {
-  const { platform, framework, css, repository } = options;
+  const { platform, framework, css } = options;
   const arr = [];
   if (platform === "csr" || platform === "ssr") {
     arr.push("web");
   } else {
     arr.push(platform);
   }
-  arr.push(framework);
-  const fileName = arr.join("-");
-  const dir = repository.split('/').slice(0,-1).join('/');
-  return `${dir}/${fileName}-lock${repository.endsWith('.zip')?'.zip':''}`;
+  arr.push(framework, 'lock');
+  return arr.join("-");
 }
 
 function operation(options) {

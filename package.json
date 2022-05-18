@@ -1,10 +1,16 @@
 {
   "name": "elux-project-templates-simple",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "",
   "main": "base.conf.js",
   "scripts": {
-    "recommit": "git commit --amend --no-edit"
+    "recommit": "git commit --amend --no-edit",
+    "lock:web-react": "elux lock-file ./_locks/web-react",
+    "lock:web-vue": "elux lock-file ./_locks/web-vue",
+    "lock:micro-react": "elux lock-file ./_locks/micro-react",
+    "lock:micro-vue": "elux lock-file ./_locks/micro-vue",
+    "lock:taro-react": "elux lock-file ./_locks/taro-react",
+    "lock:taro-vue": "elux lock-file ./_locks/taro-vue"
   },
   "repository": {
     "type": "git",
