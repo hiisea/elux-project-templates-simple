@@ -44,12 +44,13 @@
     ts-node "^10.0.0"
     tsconfig-paths "^3.0.0"
 
-"@elux/cli-utils@^2.1.0":
-  version "2.1.0"
-  resolved "https://registry.npmmirror.com/@elux/cli-utils/-/cli-utils-2.1.0.tgz#c249f4cbe804e3ab73b112cc10a38126bb33f427"
-  integrity sha512-WojrTcJ9i7K842nfovcaRiPHG0O6pi4DKgYGVf/LDXxZ6lycWxULJdvA2zEZ2mqGUxhzMeDJfWPJh0fYZA6ukQ==
+"@elux/cli-utils@^2.2.0":
+  version "2.2.0"
+  resolved "https://registry.npmmirror.com/@elux/cli-utils/-/cli-utils-2.2.0.tgz#4ec2dd58c4c848c60321dadcaf4a755e6bbf7181"
+  integrity sha512-LWcLi5EoBL/ez/1Ym5D/HgJsFYaNJVKh9OwhUiFZ0sXBdKFXxf5V8EllptsIq6A9k0gDOZaoNFmQ8NfyyDfK+g==
   dependencies:
     "@types/fs-extra" "^9.0.13"
+    archiver "^5.3.1"
     chalk "^4.1.2"
     deep-extend "^0.6.0"
     download "^8.0.0"
@@ -100,12 +101,12 @@
     webpack-bundle-analyzer "^4.5.0"
     webpack-dev-server "4.4.0"
 
-"@elux/cli@^2.1.0":
-  version "2.1.4"
-  resolved "https://registry.npmmirror.com/@elux/cli/-/cli-2.1.4.tgz#32021ee7adc9f2cd6a52fe5de1c60463674701c6"
-  integrity sha512-kWC36h5CLZzEIDlBXPWbdXH48Z1QM+YdpfiCLa7JzIBpdR2kjBzAcHH0NQAF5jTzNmXRhOnWifXlOselgHkPgQ==
+"@elux/cli@^2.2.0":
+  version "2.2.0"
+  resolved "https://registry.npmmirror.com/@elux/cli/-/cli-2.2.0.tgz#132db74fb3762e8c5f1ac87e98ca16f3cbe579f0"
+  integrity sha512-pWW4RFVDFafpkla3s99Nr7LAEG13uooAZ80wlkO3sntdarFiVhknZJD/wrjh2omg4qnexoBy5t71rbHzIg6xHw==
   dependencies:
-    "@elux/cli-utils" "^2.1.0"
+    "@elux/cli-utils" "^2.2.0"
     commander "^7.0.0"
     inquirer "^8.2.0"
     leven "^3.1.0"

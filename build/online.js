@@ -1,6 +1,5 @@
 const path = require("path");
-const archiver = require("archiver");
-const { fs, readDirSync } = require("@elux/cli-utils");
+const { fs, archiver, readDirSync } = require("@elux/cli-utils");
 
 const dist = path.join(__dirname, "../dist/online");
 const src = path.join(__dirname, "../src");
