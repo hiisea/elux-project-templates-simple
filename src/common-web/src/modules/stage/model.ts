@@ -29,7 +29,7 @@ export interface RouteParams {
 export class Model extends BaseModel<ModuleState, APPState> {
   protected routeParams!: RouteParams; //保存从当前路由中提取的信息结果
 
-  //构建私有actions生成器，因为要尽量避免使用public方法，所以this.actions也引用不到私有actions
+  //因为要尽量避免使用public方法，所以构建this.privateActions来引用私有actions
   protected privateActions = this.getPrivateActions({putCurUser: this.putCurUser});
 
   //提取当前路由中的本模块感兴趣的信息
@@ -38,11 +38,14 @@ export class Model extends BaseModel<ModuleState, APPState> {
     const [, currentModule, currentView] = pathToRegexp('/:currentModule/:currentView').exec(pathname) || [];
     return {currentModule, currentView} as RouteParams;
   }
-
-  //初始化或路由变化时都需要重新挂载Model
-  //在此钩子中必需完成ModuleState的初始赋值(可以异步)，在此钩子执行完成之前，UI将不会Render
-  //在此钩子中并可以await子模块挂载，等待所有子模块都mount完成后，一次性Render UI
-  //也可以不await子模块挂载，这样子模块可能需要自己设计并展示Loading界面，这样就形成了2种不同的路由风格：
+  
+  //每次路由发生变化，都会引起Model重新挂载到Store
+  //在此钩子中必需完成ModuleState的初始赋值，可以异步
+  //在此钩子执行完成之前，本模块的View将不会Render
+  //在此钩子中可以await数据请求，这样等所有数据拉取回来后，一次性Render
+  //在此钩子中也可以await子模块的mount，这样等所有子模块都挂载好了，一次性Render
+  //也可以不做任何await，直接Render，此时需要设计Loading界面
+  //这样也形成了2种不同的路由风格：
   //一种是数据前置，路由后置(所有数据全部都准备好了再跳转、展示界面)
   //一种是路由前置，数据后置(路由先跳转，展示设计好的loading界面)
   //SSR时只能使用"数据前置"风格
@@ -67,8 +70,7 @@ export class Model extends BaseModel<ModuleState, APPState> {
       }
       /*# end #*/
     } catch (err: any) {
-      //如果根模块初始化中出现错误，将错误放入ModuleState.error字段中
-      //渲染其它UI将变得没有实际意义
+      //如果根模块初始化中出现错误，将错误放入ModuleState.error字段中，此时将展示该错误信息
       const initState: ModuleState = {curUser: {...guest}, currentModule, currentView, error: err.message || err.toString()};
       this.dispatch(this.privateActions._initState(initState));
     }
@@ -87,7 +89,7 @@ export class Model extends BaseModel<ModuleState, APPState> {
 
   //定义一个effect，用来执行登录逻辑
   //effect(参数)，参数可以用来将该effect的执行进度注入ModuleState中，如effect('this.loginLoading')
-  //effect()参数为空，默认等于effect('stage.globalLoading')，表示将该effect的执行进度注入stage模块的globalLoading状态中
+  //effect()参数为空，默认等于effect('stage.globalLoading')，表示将执行进度注入stage模块的globalLoading状态中
   //如果不需要跟踪该effect的执行进度，请使用effect(null)
   @effect()
   public async login(args: LoginParams): Promise<void> {
@@ -107,9 +109,9 @@ export class Model extends BaseModel<ModuleState, APPState> {
   }
 
   //ActionHandler运行中的出现的任何错误都会自动派发'stage._error'的Action
-  //可以通过effect来监听这个Action，并决定是消化错误还是继续抛出
-  //如果继续抛出，则整个ActionBus链将终止执行
-  //注意：如果继续抛出，请抛出原错误，不要创建新的错误，以防止无穷递归
+  //可以通过effect来监听这个Action，用来处理错误，
+  //如果继续抛出错误，则Action停止继续传播，Handler链条将终止执行
+  //注意如果继续抛出，请抛出原错误，不要创建新的错误，以防止无穷递归
   @effect(null)
   protected async ['this._error'](error: CustomError): Promise<void> {
     if (error.code === CommonErrorCode.unauthorized) {
