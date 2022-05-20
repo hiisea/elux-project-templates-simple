@@ -28,7 +28,7 @@ interface RouteParams {
 export class Model extends BaseModel<ModuleState, APPState> {
   protected routeParams!: RouteParams; //保存从当前路由中提取的信息结果
 
-  //构建私有actions生成器，因为要尽量避免使用public方法，所以this.actions也引用不到私有actions
+  //因为要尽量避免使用public方法，所以构建this.privateActions来引用私有actions
   protected privateActions = this.getPrivateActions({putList: this.putList, putCurrentItem: this.putCurrentItem});
 
   //提取当前路由中的本模块感兴趣的信息
@@ -40,16 +40,17 @@ export class Model extends BaseModel<ModuleState, APPState> {
     return {currentView: currentView as CurrentView, itemId: id, listSearch: mergeDefaultParams(defaultListSearch, listSearch)};
   }
 
-  //每次路由发生变化，都会引起Model的重新挂载(注意，非UI的挂载)
+  //每次路由发生变化，都会引起Model重新挂载到Store
   //在此钩子中必需完成ModuleState的初始赋值，可以异步
-  //在此钩子执行完成之前，UI将不会Render具体内容，仅显示loading
-  //在此钩子中并可以await数据请求，这样等所有数据拉取回来后，一次性Render
-  //也可以不等待数据拉取，先Render界面(loading中)
+  //在此钩子执行完成之前，本模块的View将不会Render
+  //在此钩子中可以await数据请求，等所有数据拉取回来后，一次性Render
+  //在此钩子中也可以await子模块的mount，等所有子模块都挂载好了，一次性Render
+  //也可以不做任何await，直接Render，此时需要设计Loading界面
   public /*# =post?async : #*/onMount(env: 'init' | 'route' | 'update'): /*# =post?Promise<void>:void #*/ {
     this.routeParams = this.getRouteParams();
     /*# if:ssr #*/
     const prevState = this.getPrevState();
-    //如果是SSR，client直接使用server的state即可
+    //服务器渲染时，client端直接复用server端的state即可
     if (env === 'init' && prevState) {
       this.dispatch(this.privateActions._initState(prevState));
       return;
@@ -85,7 +86,7 @@ export class Model extends BaseModel<ModuleState, APPState> {
   }
 
   //定义一个effect，用来执行删除的业务逻辑
-  //effect()未加参数，默认等于effect('stage.globalLoading')，表示将该effect的执行进度注入stage模块的globalLoading状态中
+  //effect()未加参数，默认等于effect('stage.globalLoading')
   //也可以在ModuleState中增加一个loading状态，effect('this.deleteLoading')
   @effect()
   public async deleteItem(id: string): Promise<void> {
@@ -94,6 +95,7 @@ export class Model extends BaseModel<ModuleState, APPState> {
   }
 
   //定义一个effect，用来执行修改的业务逻辑
+  //effect()未加参数，默认等于effect('stage.globalLoading')
   @effect()
   public async updateItem(item: ItemDetail): Promise<void> {
     const router = this.getRouter();
@@ -103,6 +105,7 @@ export class Model extends BaseModel<ModuleState, APPState> {
   }
 
   //定义一个effect，用来执行创建的业务逻辑
+  //effect()未加参数，默认等于effect('stage.globalLoading')
   @effect()
   public async createItem(item: ItemDetail): Promise<void> {
     const router = this.getRouter();
@@ -112,6 +115,7 @@ export class Model extends BaseModel<ModuleState, APPState> {
   }
 
   //定义一个effect，用来执行列表查询的业务逻辑
+  //effect()未加参数，默认等于effect('stage.globalLoading')
   @effect()
   public async fetchList(listSearchData?: ListSearch): Promise<void> {
     const listSearch = listSearchData || this.state.listSearch || defaultListSearch;
@@ -120,6 +124,7 @@ export class Model extends BaseModel<ModuleState, APPState> {
   }
 
   //定义一个effect，用来执行获取详情的业务逻辑
+  //effect()未加参数，默认等于effect('stage.globalLoading')
   @effect()
   public async fetchItem(itemId: string): Promise<void> {
     const item = await api.getItem({id: itemId});

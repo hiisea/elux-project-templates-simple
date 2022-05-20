@@ -8,7 +8,7 @@ export interface ModuleState {
   currentView?: CurrentView; //该字段用来表示当前路由下展示本模块的哪个View
 }
 
-//每个不同的模块都可以在路由中提取自己想要的信息
+//定义路由中的本模块感兴趣的信息
 interface RouteParams {
   currentView?: CurrentView;
 }
@@ -18,6 +18,7 @@ interface RouteParams {
 export class Model extends BaseModel<ModuleState> {
   protected routeParams!: RouteParams; //保存从当前路由中提取的信息结果
 
+  //因为要尽量避免使用public方法，所以构建this.privateActions来引用私有actions
   protected privateActions = this.getPrivateActions({});
 
   //提取当前路由中的本模块感兴趣的信息
@@ -27,13 +28,14 @@ export class Model extends BaseModel<ModuleState> {
     return {currentView} as RouteParams;
   }
 
-  //每次路由发生变化，都会引起Model的重新挂载(注意，非UI的挂载)
+  //初始化或路由变化时都需要重新挂载Model
   //在此钩子中必需完成ModuleState的初始赋值，可以异步
   public onMount(): void {
     this.routeParams = this.getRouteParams();
     const {currentView} = this.routeParams;
     const initState: ModuleState = {currentView};
     //_initState是基类BaseModel中内置的一个reducer
+    //this.dispatch是this.store.dispatch的快捷方式
     this.dispatch(this.privateActions._initState(initState));
   }
 }
