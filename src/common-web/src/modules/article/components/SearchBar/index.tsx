@@ -1,7 +1,7 @@
 /*# if:react #*/
 import {FC, memo, useCallback, useState} from 'react';
 /*# else:vue #*/
-import {PropType, defineComponent, watch, ref} from 'vue';
+import {defineComponent, PropType, ref, watch} from 'vue';
 /*# end #*/
 import styles from './index.module.less';
 

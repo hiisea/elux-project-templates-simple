@@ -33,6 +33,7 @@ module.exports = {
     name: 'userTeam',
     filename: 'remote.js',
     exposes: {
+      './modules/admin': './src/modules/admin',
       './modules/my': './src/modules/my',
     },
     shared: {

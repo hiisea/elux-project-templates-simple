@@ -33,6 +33,8 @@ module.exports = {
     name: 'app-runtime',
     modules: {
       '@<%= projectName %>/article': '@article-team/modules/article',
+      '@<%= projectName %>/shop': '@article-team/modules/shop',
+      '@<%= projectName %>/admin': '@user-team/modules/admin',
       '@<%= projectName %>/my': '@user-team/modules/my',
     },
     remotes: {

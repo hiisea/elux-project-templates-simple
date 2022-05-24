@@ -1,9 +1,9 @@
+import {LoadingState} from '<%= elux %>';
 /*# if:react #*/
 import {FC, memo} from 'react';
 /*# else:vue #*/
-import {PropType, defineComponent} from 'vue';
+import {defineComponent, PropType} from 'vue';
 /*# end #*/
-import {LoadingState} from '<%= elux %>';
 import styles from './index.module.less';
 
 /*# if:react #*/

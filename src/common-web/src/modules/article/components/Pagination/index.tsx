@@ -1,9 +1,9 @@
+import {Link} from '<%= elux %>';
 /*# if:react #*/
 import {FC, memo} from 'react';
 /*# else:vue #*/
-import {defineComponent, computed} from 'vue';
+import {computed, defineComponent} from 'vue';
 /*# end #*/
-import {Link} from '<%= elux %>';
 import styles from './index.module.less';
 
 /*# if:react #*/

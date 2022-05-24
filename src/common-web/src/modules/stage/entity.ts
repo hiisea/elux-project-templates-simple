@@ -1,6 +1,6 @@
 //定义本模块涉及的业务实体和数据API
-import {isServer} from '<%= elux %>';
 import request, {IRequest} from '@/utils/request';
+import {isServer} from '<%= elux %>';
 
 export interface CurUser {
   id: string;
@@ -29,9 +29,15 @@ export type ILogin = IRequest<LoginParams, CurUser>;
 
 export type ILogout = IRequest<{}, CurUser>;
 
-export type CurrentModule = 'stage' | 'article' | 'my'/*# =taro? | 'shop': #*/;
+export enum SubModule {
+  'article' = 'article',
+  'shop' = 'shop',
+  'admin' = 'admin',
+}
 
-export type CurrentView = 'login';
+export enum CurView {
+  'login' = 'login',
+}
 
 class API {
   public getCurUser(): Promise<IGetCurUser['Response']> {

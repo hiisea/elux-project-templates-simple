@@ -1,36 +1,40 @@
 //通常模块可以定义一个根视图，根视图中显示什么由模块自行决定，父级不干涉，相当于子路由
+import ErrorPage from '@/components/ErrorPage';
+import {APPState/*# =vue?, useStore: #*/} from '@/Global';
+/*# if:react #*/
+import {connectRedux, Switch} from '<%= elux %>';
+/*# else:vue #*/
+import {ComputedStore, exportView, Switch} from '<%= elux %>';
+/*# end #*/
 /*# if:react #*/
 import {FC} from 'react';
 /*# else:vue #*/
-import {defineComponent, computed} from 'vue';
+import {computed, defineComponent} from 'vue';
 /*# end #*/
-import {Switch, /*# =react?connectRedux:ComputedStore, exportView #*/} from '<%= elux %>';
-import {APPState/*# =vue?, useStore: #*/} from '@/Global';
-import ErrorPage from '@/components/ErrorPage';
+import {CurView} from '../entity';
 import UserSummary from './UserSummary';
-import {CurrentView} from '../entity';
 
 export interface StoreProps {
-  currentView?: CurrentView;
+  curView?: CurView;
 }
 
 /*# if:react #*/
 function mapStateToProps(appState: APPState): StoreProps {
-  return {currentView: appState.my!.currentView};
+  return {curView: appState.my!.curView};
 }
 /*# else:vue #*/
 //这里保持和Redux的风格一致，也可以省去这一步，直接使用computed
 function mapStateToProps(appState: APPState): ComputedStore<StoreProps> {
   const my = appState.my!;
   return {
-    currentView: () => my.currentView,
+    curView: () => my.curView,
   };
 }
 /*# end #*/
 
 /*# if:react #*/
-const Component: FC<StoreProps> = ({currentView}) => {
-  return <Switch elseView={<ErrorPage />}>{currentView === 'userSummary' && <UserSummary />}</Switch>;
+const Component: FC<StoreProps> = ({curView}) => {
+  return <Switch elseView={<ErrorPage />}>{curView === 'userSummary' && <UserSummary />}</Switch>;
 };
 
 export default connectRedux(mapStateToProps)(Component);
@@ -40,9 +44,9 @@ const Component = defineComponent({
   setup() {
     const store = useStore();
     const computedStore = mapStateToProps(store.getState());
-    const currentView = computed(computedStore.currentView);
+    const curView = computed(computedStore.curView);
     return () => {
-      return <Switch elseView={<ErrorPage />}>{currentView.value === 'userSummary' && <UserSummary />}</Switch>;
+      return <Switch elseView={<ErrorPage />}>{curView.value === 'userSummary' && <UserSummary />}</Switch>;
     };
   },
 });

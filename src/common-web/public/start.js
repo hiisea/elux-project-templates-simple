@@ -4,6 +4,9 @@ const express = require('express');
 const chalk = require('chalk');
 const {createProxyMiddleware} = require('http-proxy-middleware');
 const config = require('./config');
+/*# if:ssr #*/
+const serverBundle = require('./server/main');
+/*# end #*/
 
 const {proxy, port} = config || {};
 const serverUrl = `http://localhost:${port}`;
@@ -16,12 +19,14 @@ Object.keys(proxy).forEach((key) => {
 app.use('/client', express.static(staticPath<%= platform==='ssr'?', {fallthrough: false}':'' %>));
 
 /*# if:ssr #*/
-const serverBundle = require('./server/main');
 const errorHandler = (e, res) => {
   if (e.code === 'ELIX.ROUTE_REDIRECT') {
     res.redirect(e.detail);
+  } else if (e.code === 'ELIX.ROUTE_RETURN') {
+    const {status = 200, body = ''} = e.detail;
+    res.status(status).end(body);
   } else {
-    res.status(500).end(e.toString());
+    res.status(500).end(`[${e.code}]${e.message}（${e.toString()}）`);
   }
 };
 

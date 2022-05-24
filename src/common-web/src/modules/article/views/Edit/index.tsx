@@ -1,11 +1,11 @@
-/*# if:react #*/
-import {FC, useCallback, useState, useMemo, memo} from 'react';
-/*# else:vue #*/
-import {PropType, defineComponent, ref, watch} from 'vue';
-/*# end #*/
-import {DocumentHead, Dispatch, exportView} from '<%= elux %>';
-import {Modules, useRouter} from '@/Global';
 import NavBar from '@/components/NavBar';
+import {Modules} from '@/Global';
+import {Dispatch, DocumentHead, exportView, Link} from '<%= elux %>';
+/*# if:react #*/
+import {FC, memo, useMemo, useState} from 'react';
+/*# else:vue #*/
+import {defineComponent, PropType, ref, watch} from 'vue';
+/*# end #*/
 import {ItemDetail} from '../../entity';
 import styles from './index.module.less';
 
@@ -31,8 +31,6 @@ const props = {
 
 /*# if:react #*/
 const Component: FC<Props> = ({itemDetail, dispatch}) => {
-  const router = useRouter();
-  const onCancel = useCallback(() => router.back(1, 'window'), [router]);
   const [errorMessage, setErrorMessage] = useState('');
   const [title, setTitle] = useState('');
   const [summary, setSummary] = useState('');
@@ -59,13 +57,13 @@ const Component: FC<Props> = ({itemDetail, dispatch}) => {
 
   return (
     <>
-      <DocumentHead title="编辑文章" />
       <NavBar title={<%= route==="pre"?"!itemDetail ? '......' : ":"" %>itemDetail.id ? '修改文章' : '新建文章'} />
       <div className={`${styles.root} g-page-content`}>
-        <div className="form-body">
-          <div className="form-item">
-            <div className="label">标题</div>
-            <div className="item">
+        <DocumentHead title="编辑文章" />
+        <div className="g-form">
+          <div>
+            <div>标题</div>
+            <div>
               <input
                 name="title"
                 className="g-input"
@@ -76,9 +74,9 @@ const Component: FC<Props> = ({itemDetail, dispatch}) => {
               />
             </div>
           </div>
-          <div className="form-item">
-            <div className="label">摘要</div>
-            <div className="item">
+          <div>
+            <div>摘要</div>
+            <div>
               <textarea
                 name="summary"
                 className="g-input"
@@ -93,9 +91,9 @@ const Component: FC<Props> = ({itemDetail, dispatch}) => {
               />
             </div>
           </div>
-          <div className="form-item">
-            <div className="label">内容</div>
-            <div className="item">
+          <div className="item-last">
+            <div>内容</div>
+            <div>
               <textarea
                 name="content"
                 className="g-input"
@@ -110,15 +108,18 @@ const Component: FC<Props> = ({itemDetail, dispatch}) => {
               />
             </div>
           </div>
+          <div className="item-error">
+            <span></span>
+            <div>{errorMessage}</div>
+          </div>
         </div>
-        {errorMessage && <div className="form-error">{`* ${errorMessage}`}</div>}
-        <div className="form-control">
+        <div className="g-control">
           <button type="submit" className="g-button primary" onClick={onSubmit}>
             提 交
           </button>
-          <button type="button" className="g-button" onClick={onCancel}>
+          <Link className="g-button" to={1} action="back" target="window">
             取 消
-          </button>
+          </Link>
         </div>
       </div>
     </>
@@ -131,7 +132,6 @@ const Component = defineComponent({
   name: 'ArticleEdit',
   props,
   setup(props) {
-    const router = useRouter();
     const title = ref('');
     const summary = ref('');
     const content = ref('');
@@ -145,7 +145,6 @@ const Component = defineComponent({
       },
       {immediate: true}
     );
-    const onCancel = () => router.back(1, 'window');
     const onSubmit = () => {
       if (!title.value || !summary.value || !content.value) {
         errorMessage.value = '请输入文章标题、摘要、内容';
@@ -160,37 +159,40 @@ const Component = defineComponent({
     };
     return () => (
       <>
-        <DocumentHead title="编辑文章" />
         <NavBar title={<%= route==="pre"?"!props.itemDetail ? '......' : ":"" %>props.itemDetail.id ? '修改文章' : '新建文章'} />
         <div class={`${styles.root} g-page-content`}>
-          <div class="form-body">
-            <div class="form-item">
-              <div class="label">标题</div>
-              <div class="item">
+          <DocumentHead title="编辑文章" />
+          <div class="g-form">
+            <div>
+              <div>标题</div>
+              <div>
                 <input name="title" class="g-input" type="text" placeholder="请输入" v-model={title.value} />
               </div>
             </div>
-            <div class="form-item">
-              <div class="label">摘要</div>
-              <div class="item">
+            <div>
+              <div>摘要</div>
+              <div>
                 <textarea name="summary" class="g-input" placeholder="请输入" /*# =taro?maxlength={100} : #*/rows={2} v-model={summary.value} />
               </div>
             </div>
-            <div class="form-item">
-              <div class="label">内容</div>
-              <div class="item">
+            <div class="item-last">
+              <div>内容</div>
+              <div>
                 <textarea name="content" class="g-input" placeholder="请输入" /*# =taro?maxlength={500} : #*/rows={10} v-model={content.value} />
               </div>
             </div>
+            <div class="item-error">
+              <div></div>
+              <div>{errorMessage.value}</div>
+            </div>
           </div>
-          {errorMessage.value && <div class="form-error">{`* ${errorMessage.value}`}</div>}
-          <div class="form-control">
+          <div class="g-control">
             <button type="submit" class="g-button primary" onClick={onSubmit}>
               提 交
             </button>
-            <button type="button" class="g-button" onClick={onCancel}>
+            <Link class="g-button" to={1} action="back" target="window">
               取 消
-            </button>
+            </Link>
           </div>
         </div>
       </>

@@ -34,6 +34,7 @@ module.exports = {
     filename: 'remote.js',
     exposes: {
       './modules/article': './src/modules/article',
+      './modules/shop': './src/modules/shop',
     },
     shared: {
       /*# if:react #*/

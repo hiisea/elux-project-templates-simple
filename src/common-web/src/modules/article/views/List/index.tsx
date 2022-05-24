@@ -1,22 +1,26 @@
-/*# if:react #*/
-import {FC, useCallback, useMemo} from 'react';
-/*# else:vue #*/
-import {defineComponent, computed} from 'vue';
-/*# end #*/
-import {DocumentHead, Link, /*# =react?Dispatch, connectRedux,:ComputedStore, exportView, #*/ locationToUrl} from '<%= elux %>';
-import {APPState, Modules, useRouter/*# =vue?, useStore: #*/} from '@/Global';
-import {excludeDefaultParams} from '@/utils/tools';
+import NavBar from '@/components/NavBar';
 /*# if:!taro #*/
 import TabBar from '@/components/TabBar';
 /*# end #*/
-import NavBar from '@/components/NavBar';
-import SearchBar from '../../components/SearchBar';
+import {APPState, Modules, useRouter/*# =vue?, useStore: #*/} from '@/Global';
+import {excludeDefaultParams} from '@/utils/tools';
+/*# if:react #*/
+import {connectRedux, Dispatch, DocumentHead, Link, locationToUrl} from '<%= elux %>';
+/*# else:vue #*/
+import {ComputedStore, DocumentHead, exportView, Link, locationToUrl} from '<%= elux %>';
+/*# end #*/
+/*# if:react #*/
+import {FC, useCallback, useMemo} from 'react';
+/*# else:vue #*/
+import {computed, defineComponent} from 'vue';
+/*# end #*/
 import Pagination from '../../components/Pagination';
-import {ListItem, ListSearch, ListSummary, defaultListSearch} from '../../entity';
+import SearchBar from '../../components/SearchBar';
+import {defaultListSearch, ListItem, ListSearch, ListSummary} from '../../entity';
 import styles from './index.module.less';
 
 interface StoreProps {
-  listSearch/*# =pre??: #*/: ListSearch;
+  listSearch: ListSearch;
   list/*# =pre??: #*/: ListItem[];
   listSummary/*# =pre??: #*/: ListSummary;
 }
@@ -27,7 +31,7 @@ function mapStateToProps(appState: APPState): StoreProps {
   /*# if:pre #*/
   return {listSearch, list, listSummary};
   /*# else #*/
-  return {listSearch: listSearch!, list: list!, listSummary: listSummary!};
+  return {listSearch: listSearch, list: list!, listSummary: listSummary!};
   /*# end #*/
 }
 /*# else:vue #*/
@@ -35,7 +39,7 @@ function mapStateToProps(appState: APPState): StoreProps {
 function mapStateToProps(appState: APPState): ComputedStore<StoreProps> {
   const article = appState.article!;
   return {
-    listSearch: () => article.listSearch/*# =post?!: #*/,
+    listSearch: () => article.listSearch,
     list: () => article.list/*# =post?!: #*/,
     listSummary: () => article.listSummary/*# =post?!: #*/,
   };
@@ -73,42 +77,39 @@ const Component: FC<StoreProps & {dispatch: Dispatch}> = ({listSearch, list, lis
   );
   return (
     <>
-      <DocumentHead title="文章" />
       <NavBar title="文章列表" />
       <div className={`${styles.root} g-page-content`}>
+        <DocumentHead title="文章列表" />
+        <SearchBar keyword={listSearch.keyword} onSubmit={onSearch} onCreate={onEditItem} />
         /*# if:pre #*/
-        {listSearch && list && listSummary && (
-          <>
-        /*# else #*/
-          /*# [[[-4 #*/
+        {list && listSummary && (
         /*# end #*/
-            <SearchBar keyword={listSearch.keyword} onSubmit={onSearch} onCreate={onEditItem} />
-            <div className="article-list">
-              {list.map((item) => (
-                <div key={item.id} className="article-item">
-                  <Link className="article-title" to={`/article/detail?id=${item.id}`} target="window">
-                    {item.title}
-                  </Link>
-                  <Link className="article-summary" to={`/article/detail?id=${item.id}`} target="window">
-                    {item.summary}
-                  </Link>
-                  <div className="article-operation">
-                    <div className="item" onClick={() => onEditItem(item.id)}>
-                      修改
-                    </div>
-                    <div className="item" onClick={() => onDeleteItem(item.id)}>
-                      删除
-                    </div>
+          <div className="article-list">
+            {list.map((item) => (
+              <div key={item.id} className="article-item">
+                <Link className="article-title" to={`/article/detail?id=${item.id}`} action="push" target="window">
+                  {item.title}
+                </Link>
+                <Link className="article-summary" to={`/article/detail?id=${item.id}`} action="push" target="window">
+                  {item.summary}
+                </Link>
+                <div className="article-operation">
+                  <div className="item" onClick={() => onEditItem(item.id)}>
+                    修改
+                  </div>
+                  <div className="item" onClick={() => onDeleteItem(item.id)}>
+                    删除
                   </div>
                 </div>
-              ))}
-              <Pagination totalPages={listSummary.totalPages} pageCurrent={listSummary.pageCurrent} baseUrl={paginationBaseUrl} />
-            </div>
+              </div>
+            ))}
+            <Pagination totalPages={listSummary.totalPages} pageCurrent={listSummary.pageCurrent} baseUrl={paginationBaseUrl} />
+            <Link className="ad" to="/shop/list" action="relaunch" target="window">
+              -- 特惠商城，盛大开业 --
+            </Link>
+          </div>
         /*# if:pre #*/
-          </>
         )}
-        /*# else #*/
-          /*# ]]] #*/
         /*# end #*/
       </div>
       /*# if:!taro #*/
@@ -147,39 +148,40 @@ const Component = defineComponent({
 
     return () => (
       <>
-        <DocumentHead title="文章" />
         <NavBar title="文章列表" />
         <div class={`${styles.root} g-page-content`}>
+          <DocumentHead title="文章列表" />
+          <SearchBar keyword={listSearch.value.keyword} onSubmit={onSearch} onCreate={onEditItem} />
           /*# if:pre #*/
-          {listSearch.value && list.value && listSummary.value && (
-            <>
+          {list.value && listSummary.value && (
           /*# else #*/
-            /*# [[[-4 #*/
+            /*# [[[-2 #*/
           /*# end #*/
-              <SearchBar keyword={listSearch.value.keyword} onSubmit={onSearch} onCreate={onEditItem} />
-              <div class="article-list">
-                {list.value.map((item) => (
-                  <div key={item.id} class="article-item">
-                    <Link class="article-title" to={`/article/detail?id=${item.id}`} target="window">
-                      {item.title}
-                    </Link>
-                    <Link class="article-summary" to={`/article/detail?id=${item.id}`} target="window">
-                      {item.summary}
-                    </Link>
-                    <div class="article-operation">
-                      <div class="item" onClick={() => onEditItem(item.id)}>
-                        修改
-                      </div>
-                      <div class="item" onClick={() => onDeleteItem(item.id)}>
-                        删除
-                      </div>
+            <div class="article-list">
+              {list.value.map((item) => (
+                <div key={item.id} class="article-item">
+                  <Link class="article-title" to={`/article/detail?id=${item.id}`} action="push" target="window">
+                    {item.title}
+                  </Link>
+                  <Link class="article-summary" to={`/article/detail?id=${item.id}`} action="push" target="window">
+                    {item.summary}
+                  </Link>
+                  <div class="article-operation">
+                    <div class="item" onClick={() => onEditItem(item.id)}>
+                      修改
+                    </div>
+                    <div class="item" onClick={() => onDeleteItem(item.id)}>
+                      删除
                     </div>
                   </div>
-                ))}
-                <Pagination totalPages={listSummary.value.totalPages} pageCurrent={listSummary.value.pageCurrent} baseUrl={paginationBaseUrl.value} />
-              </div>
+                </div>
+              ))}
+              <Pagination totalPages={listSummary.value.totalPages} pageCurrent={listSummary.value.pageCurrent} baseUrl={paginationBaseUrl.value} />
+              <Link class="ad" to="/shop/list" action="relaunch" target="window">
+                -- 特惠商城，盛大开业 --
+              </Link>
+            </div>
           /*# if:pre #*/
-            </>
           )}
           /*# else #*/
             /*# ]]] #*/

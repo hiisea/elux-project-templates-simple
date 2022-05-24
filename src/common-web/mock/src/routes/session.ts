@@ -1,7 +1,7 @@
+import {IGetNotices} from '@/modules/admin/entity';
+import {IGetCurUser, ILogin, ILogout} from '@/modules/stage/entity';
 import {Router} from 'express';
-import {IGetCurUser} from '@/modules/stage/entity';
-import {ILogin, ILogout} from '@/modules/stage/entity';
-import {database, adminUser, guestUser} from '../database';
+import {adminUser, database, guestUser} from '../database';
 
 const router = Router();
 
@@ -28,4 +28,10 @@ router.delete('/', function (req, res, next) {
   const result: ILogout['Response'] = database.curUser;
   setTimeout(() => res.json(result), 500);
 });
+
+router.get('/notices', function (req, res, next) {
+  const result: IGetNotices['Response'] = {num: Math.floor(Math.random() * 100)};
+  setTimeout(() => res.json(result), 500);
+});
+
 export default router;

@@ -1,15 +1,15 @@
 //定义本模块的业务模型
-import /*# =taro?pathToRegexp:{pathToRegexp} #*/ from 'path-to-regexp';
-import {BaseModel, reducer, effect} from '<%= elux %>';
 import {APPState} from '@/Global';
 import {mergeDefaultParams} from '@/utils/tools';
-import {CurrentView, ListSearch, ListItem, ListSummary, ItemDetail, defaultListSearch, api} from './entity';
+import {BaseModel, effect, reducer} from '<%= elux %>';
+import /*# =taro?pathToRegexp:{pathToRegexp} #*/ from 'path-to-regexp';
+import {api, CurView, defaultListSearch, ItemDetail, ListItem, ListSearch, ListSummary} from './entity';
 
 //定义本模块的状态结构
 //通常都是`列表/详情/编辑`结构
 export interface ModuleState {
-  currentView?: CurrentView; //该字段用来表示当前路由下展示本模块的哪个View
-  listSearch?: ListSearch; //该字段用来记录列表时搜索条件
+  curView?: CurView; //该字段用来表示当前路由下展示本模块的哪个View
+  listSearch: ListSearch; //该字段用来记录列表时搜索条件
   list?: ListItem[]; //该字段用来记录列表
   listSummary?: ListSummary; //该字段用来记录当前列表的摘要信息
   itemId?: string; //该字段用来记录某条记录的ID
@@ -18,7 +18,7 @@ export interface ModuleState {
 
 //每个不同的模块都可以在路由中提取自己想要的信息
 interface RouteParams {
-  currentView?: CurrentView;
+  curView?: CurView;
   listSearch: ListSearch;
   itemId?: string;
 }
@@ -34,10 +34,11 @@ export class Model extends BaseModel<ModuleState, APPState> {
   //提取当前路由中的本模块感兴趣的信息
   protected getRouteParams(): RouteParams {
     const {pathname, searchQuery} = this.getRouter().location;
-    const [, currentView] = pathToRegexp('/article/:currentView').exec(pathname) || [];
+    const [, , curViewStr = ''] = pathToRegexp('/:article/:curView').exec(pathname) || [];
+    const curView: CurView | undefined = CurView[curViewStr] || undefined;
     const {pageCurrent = '', keyword, id} = searchQuery as Record<string, string | undefined>;
     const listSearch = {pageCurrent: parseInt(pageCurrent) || undefined, keyword};
-    return {currentView: currentView as CurrentView, itemId: id, listSearch: mergeDefaultParams(defaultListSearch, listSearch)};
+    return {curView, itemId: id, listSearch: mergeDefaultParams(defaultListSearch, listSearch)};
   }
 
   //每次路由发生变化，都会引起Model重新挂载到Store
@@ -56,11 +57,11 @@ export class Model extends BaseModel<ModuleState, APPState> {
       return;
     }
     /*# end #*/
-    const {currentView, listSearch, itemId} = this.routeParams;
-    this.dispatch(this.privateActions._initState({currentView}));
-    if (currentView === 'list') {
+    const {curView, listSearch, itemId} = this.routeParams;
+    this.dispatch(this.privateActions._initState({curView, listSearch}));
+    if (curView === 'list') {
       /*# =post?await : #*/this.dispatch(this.actions.fetchList(listSearch));
-    } else if (currentView && itemId) {
+    } else if (curView && itemId) {
       /*# =post?await : #*/this.dispatch(this.actions.fetchItem(itemId));
     }
   }

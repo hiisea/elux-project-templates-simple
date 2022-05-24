@@ -1,17 +1,21 @@
+/*# if:!taro #*/
+import TabBar from '@/components/TabBar';
+/*# end #*/
+import {APPState, Modules, StaticPrefix, useRouter/*# =vue?, useStore: #*/} from '@/Global';
+import {CurUser} from '@/modules/stage/entity';
+import {LoginUrl} from '@/utils/const';
 /*# if:react #*/
-import {FC, useCallback} from 'react';
+import {connectRedux, Dispatch, DocumentHead} from '<%= elux %>';
 /*# else:vue #*/
-import {defineComponent, computed} from 'vue';
+import {ComputedStore, DocumentHead, exportView} from '<%= elux %>';
 /*# end #*/
 /*# if:taro #*/
 import {navigateTo} from '@tarojs/taro';
 /*# end #*/
-import {DocumentHead, /*# =react?Dispatch, connectRedux:ComputedStore, exportView #*/} from '<%= elux %>';
-import {Modules, APPState, StaticPrefix, useRouter/*# =vue?, useStore: #*/} from '@/Global';
-import {LoginUrl} from '@/utils/const';
-import {CurUser} from '@/modules/stage/entity';
-/*# if:!taro #*/
-import TabBar from '@/components/TabBar';
+/*# if:react #*/
+import {FC, useCallback} from 'react';
+/*# else:vue #*/
+import {computed, defineComponent} from 'vue';
 /*# end #*/
 import styles from './index.module.less';
 

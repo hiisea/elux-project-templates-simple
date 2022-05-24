@@ -1,17 +1,19 @@
+import NavBar from '@/components/NavBar';
+import {Modules/*# =vue?, useStore: #*/} from '@/Global';
+/*# if:react #*/
+import {connectRedux, Dispatch, DocumentHead, Link} from '<%= elux %>';
+/*# else:vue #*/
+import {DocumentHead, exportView, Link} from '<%= elux %>';
+/*# end #*/
 /*# if:react #*/
 import {FC, useCallback, useState} from 'react';
 /*# else:vue #*/
 import {defineComponent, ref} from 'vue';
 /*# end #*/
-import {DocumentHead, /*# =react?Dispatch, connectRedux:exportView #*/} from '<%= elux %>';
-import NavBar from '@/components/NavBar';
-import {Modules, useRouter/*# =vue?, useStore: #*/} from '@/Global';
 import styles from './index.module.less';
 
 /*# if:react #*/
 const Component: FC<{dispatch: Dispatch}> = ({dispatch}) => {
-  const router = useRouter();
-  const onCancel = useCallback(() => router.back(1, 'window'), [router]);
   const [errorMessage, setErrorMessage] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -30,13 +32,13 @@ const Component: FC<{dispatch: Dispatch}> = ({dispatch}) => {
 
   return (
     <>
-      <DocumentHead title="登录" />
       <NavBar title="登录" />
       <div className={`${styles.root} g-page-content`}>
-        <div className="form-body">
-          <div className="form-item">
-            <div className="label">用户名:</div>
-            <div className="item">
+        <DocumentHead title="登录" />
+        <div className="g-form">
+          <div>
+            <div>用户名</div>
+            <div>
               <input
                 name="username"
                 className="g-input"
@@ -47,9 +49,9 @@ const Component: FC<{dispatch: Dispatch}> = ({dispatch}) => {
               />
             </div>
           </div>
-          <div className="form-item">
-            <div className="label">密码:</div>
-            <div className="item">
+          <div className="item-last">
+            <div>密码</div>
+            <div>
               <input
                 name="password"
                 type="password"
@@ -60,15 +62,18 @@ const Component: FC<{dispatch: Dispatch}> = ({dispatch}) => {
               />
             </div>
           </div>
-          {errorMessage && <div className="error">{`* ${errorMessage}`}</div>}
+          <div className="item-error">
+            <div></div>
+            <div>{errorMessage}</div>
+          </div>
         </div>
-        <div className="form-control">
+        <div className="g-control">
           <button type="submit" className="g-button primary" onClick={onSubmit}>
             登 录
           </button>
-          <button type="button" className="g-button" onClick={onCancel}>
+          <Link className="g-button" to={1} action="back" target="window">
             取 消
-          </button>
+          </Link>
         </div>
       </div>
     </>
@@ -81,12 +86,10 @@ export default connectRedux()(Component);
 const Component = defineComponent({
   name: 'StageLoginForm',
   setup() {
-    const router = useRouter();
     const store = useStore();
     const errorMessage = ref('');
     const username = ref('');
     const password = ref('');
-    const onCancel = () => router.back(1, 'window');
     const onSubmit = () => {
       if (!username.value || !password.value) {
         errorMessage.value = '请输入用户名、密码';
@@ -101,31 +104,34 @@ const Component = defineComponent({
     };
     return () => (
       <>
-        <DocumentHead title="登录" />
         <NavBar title="登录" />
         <div class={`${styles.root} g-page-content`}>
-          <div class="form-body">
-            <div class="form-item">
-              <div class="label">用户名:</div>
+          <DocumentHead title="登录" />
+          <div class="g-form">
+            <div>
+              <div>用户名:</div>
               <div class="item">
                 <input name="username" class="g-input" type="text" placeholder="请输入" v-model={username.value} />
               </div>
             </div>
-            <div class="form-item">
-              <div class="label">密码:</div>
+            <div class="item-last">
+              <div>密码:</div>
               <div class="item">
                 <input name="password" type="password" class="g-input" placeholder="请输入" v-model={password.value} />
               </div>
             </div>
-            {errorMessage.value && <div class="error">{`* ${errorMessage.value}`}</div>}
+            <div class="item-error">
+              <div></div>
+              <div>{errorMessage.value}</div>
+            </div>
           </div>
-          <div class="form-control">
+          <div class="g-control">
             <button type="submit" class="g-button primary" onClick={onSubmit}>
               登 录
             </button>
-            <button type="button" class="g-button" onClick={onCancel}>
+            <Link class="g-button" to={1} action="back" target="window">
               取 消
-            </button>
+            </Link>
           </div>
         </div>
       </>

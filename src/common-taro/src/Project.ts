@@ -1,9 +1,9 @@
 //该文件可以看作应用的配置文件
 import {stringify, parse} from 'query-string';
 import {setConfig, AppConfig} from '<%= elux %>';
-import './Global';
 import {HomeUrl} from '@/utils/const';
 import stage from '@/modules/stage';
+import admin from '@/modules/admin';
 import article from '@/modules/article';
 import my from '@/modules/my';
 //分包加载示例，只引入类型
@@ -16,6 +16,8 @@ import type {Shop} from '@/modules/shop';
 export const ModuleGetter = {
   //通常stage为根模块，如果根模块要用别的名字，需要同时在以下setConfig中设置
   stage: () => stage,
+  //admin充当一个字路由模块，所有此模块下的子模块都需要登录
+  admin: () => admin,
   article: () => article,
   my: () => my,
   //该模块使用分包加载，此处返回一个空对象即可
