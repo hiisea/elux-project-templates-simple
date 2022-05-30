@@ -1,9 +1,9 @@
 import NavBar from '@/components/NavBar';
-import {Modules/*# =vue?, useStore: #*/} from '@/Global';
+import {GetActions/*# =vue?, useStore: #*/} from '@/Global';
 /*# if:react #*/
-import {connectRedux, Dispatch, DocumentHead, Link} from '<%= elux %>';
+import {connectRedux, Dispatch, DocumentHead} from '<%= elux %>';
 /*# else:vue #*/
-import {DocumentHead, exportView, Link} from '<%= elux %>';
+import {DocumentHead, exportView} from '<%= elux %>';
 /*# end #*/
 /*# if:react #*/
 import {FC, useCallback, useState} from 'react';
@@ -12,23 +12,28 @@ import {defineComponent, ref} from 'vue';
 /*# end #*/
 import styles from './index.module.less';
 
+const {stage: stageActions} = GetActions('stage');
+
 /*# if:react #*/
 const Component: FC<{dispatch: Dispatch}> = ({dispatch}) => {
   const [errorMessage, setErrorMessage] = useState('');
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState('admin');
+  const [password, setPassword] = useState('123456');
   const onSubmit = useCallback(() => {
     if (!username || !password) {
       setErrorMessage('请输入用户名、密码');
     } else {
       //这样的写法可以使用TS的类型提示，等同于dispatch({type:'stage.login',payload:{username, password}})
       //可以await这个action的所有handler执行完成
-      const result = dispatch(Modules.stage.actions.login({username, password})) as Promise<void>;
+      const result = dispatch(stageActions.login({username, password})) as Promise<void>;
       result.catch(({message}) => {
         setErrorMessage(message);
       });
     }
   }, [dispatch, password, username]);
+  const onCancel = useCallback(() => {
+    dispatch(stageActions.cancelLogin());
+  }, [dispatch]);
 
   return (
     <>
@@ -41,8 +46,8 @@ const Component: FC<{dispatch: Dispatch}> = ({dispatch}) => {
             <div>
               <input
                 name="username"
-                className="g-input"
                 type="text"
+                className="g-input"
                 placeholder="请输入"
                 onChange={(e) => setUsername(e.target.value.trim())}
                 value={username}
@@ -54,7 +59,7 @@ const Component: FC<{dispatch: Dispatch}> = ({dispatch}) => {
             <div>
               <input
                 name="password"
-                type="password"
+                type="text"
                 className="g-input"
                 placeholder="请输入"
                 onChange={(e) => setPassword(e.target.value.trim())}
@@ -71,9 +76,9 @@ const Component: FC<{dispatch: Dispatch}> = ({dispatch}) => {
           <button type="submit" className="g-button primary" onClick={onSubmit}>
             登 录
           </button>
-          <Link className="g-button" to={1} action="back" target="window">
+          <button type="button" className="g-button" onClick={onCancel}>
             取 消
-          </Link>
+          </button>
         </div>
       </div>
     </>

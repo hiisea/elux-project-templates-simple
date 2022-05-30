@@ -9,6 +9,9 @@ import {connectRedux, Dispatch, DocumentHead, Link, locationToUrl} from '<%= elu
 /*# else:vue #*/
 import {ComputedStore, DocumentHead, exportView, Link, locationToUrl} from '<%= elux %>';
 /*# end #*/
+/*# if:taro #*/
+import {navigateTo} from '@tarojs/taro';
+/*# end #*/
 /*# if:react #*/
 import {FC, useCallback, useMemo} from 'react';
 /*# else:vue #*/
@@ -75,6 +78,10 @@ const Component: FC<StoreProps & {dispatch: Dispatch}> = ({listSearch, list, lis
     },
     [router]
   );
+  /*# if:taro #*/
+  const onNavToShop = useCallback(() => navigateTo({url: '/modules/shop/pages/list'}), []);
+  /*# end #*/
+
   return (
     <>
       <NavBar title="文章列表" />
@@ -104,9 +111,15 @@ const Component: FC<StoreProps & {dispatch: Dispatch}> = ({listSearch, list, lis
               </div>
             ))}
             <Pagination totalPages={listSummary.totalPages} pageCurrent={listSummary.pageCurrent} baseUrl={paginationBaseUrl} />
+            /*# if:taro #*/
+            <div className="ad" onClick={onNavToShop}>
+              -- 特惠商城，盛大开业 --
+            </div>
+            /*# else #*/
             <Link className="ad" to="/shop/list" action="relaunch" target="window">
               -- 特惠商城，盛大开业 --
             </Link>
+            /*# end #*/
           </div>
         /*# if:pre #*/
         )}
@@ -145,6 +158,9 @@ const Component = defineComponent({
     const onEditItem = (id: string = '0') => {
       router.push({url: `/article/edit?id=${id}`}, 'window');
     };
+    /*# if:taro #*/
+    const onNavToShop = () => navigateTo({url: '/modules/shop/pages/list'});
+    /*# end #*/
 
     return () => (
       <>
@@ -154,8 +170,6 @@ const Component = defineComponent({
           <SearchBar keyword={listSearch.value.keyword} onSubmit={onSearch} onCreate={onEditItem} />
           /*# if:pre #*/
           {list.value && listSummary.value && (
-          /*# else #*/
-            /*# [[[-2 #*/
           /*# end #*/
             <div class="article-list">
               {list.value.map((item) => (
@@ -177,14 +191,18 @@ const Component = defineComponent({
                 </div>
               ))}
               <Pagination totalPages={listSummary.value.totalPages} pageCurrent={listSummary.value.pageCurrent} baseUrl={paginationBaseUrl.value} />
+              /*# if:taro #*/
+              <div class="ad" onClick={onNavToShop}>
+                -- 特惠商城，盛大开业 --
+              </div>
+              /*# else #*/
               <Link class="ad" to="/shop/list" action="relaunch" target="window">
                 -- 特惠商城，盛大开业 --
               </Link>
+              /*# end #*/
             </div>
           /*# if:pre #*/
           )}
-          /*# else #*/
-            /*# ]]] #*/
           /*# end #*/
         </div>
         /*# if:!taro #*/

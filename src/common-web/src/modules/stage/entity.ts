@@ -7,7 +7,7 @@ export interface CurUser {
   username: string;
   avatar: string;
   mobile: string;
-  hasLogin?: boolean;
+  hasLogin: boolean;
 }
 
 export const guest: CurUser = {

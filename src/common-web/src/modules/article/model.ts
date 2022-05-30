@@ -1,5 +1,6 @@
 //定义本模块的业务模型
 import {APPState} from '@/Global';
+import {CommonErrorCode, CustomError} from '@/utils/errors';
 import {mergeDefaultParams} from '@/utils/tools';
 import {BaseModel, effect, reducer} from '<%= elux %>';
 import /*# =taro?pathToRegexp:{pathToRegexp} #*/ from 'path-to-regexp';
@@ -91,6 +92,10 @@ export class Model extends BaseModel<ModuleState, APPState> {
   //也可以在ModuleState中增加一个loading状态，effect('this.deleteLoading')
   @effect()
   public async deleteItem(id: string): Promise<void> {
+    //删除需要登录
+    if (!this.hasLogin()) {
+      throw new CustomError(CommonErrorCode.unauthorized, '请登录！', this.getRouter().location.url, true);
+    }
     await api.deleteItem({id});
     this.dispatch(this.actions.fetchList());
   }
@@ -130,5 +135,9 @@ export class Model extends BaseModel<ModuleState, APPState> {
   public async fetchItem(itemId: string): Promise<void> {
     const item = await api.getItem({id: itemId});
     this.dispatch(this.privateActions.putCurrentItem(itemId, item));
+  }
+
+  private hasLogin(): boolean {
+    return this.getRootState().stage!.curUser.hasLogin;
   }
 }

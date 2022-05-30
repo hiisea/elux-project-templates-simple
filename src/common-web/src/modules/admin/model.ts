@@ -7,7 +7,7 @@ import {api, Notices, SubModule} from './entity';
 //定义本模块的状态结构
 export interface ModuleState {
   subModule?: SubModule; //该字段用来记录当前路由下展示哪个子Module
-  notices: Notices; //该字段用来记录实时通知信息
+  notices?: Notices; //该字段用来记录实时通知信息
 }
 
 //定义路由中的本模块感兴趣的信息
@@ -38,23 +38,28 @@ export class Model extends BaseModel<ModuleState, APPState> {
   public onMount(): void {
     this.routeParams = this.getRouteParams();
     const {subModule} = this.routeParams;
-    //getPrevState()可以获取路由跳转前的状态
-    const {notices} = this.getPrevState() || {notices: {num: 0}};
-    const initState: ModuleState = {subModule, notices};
+    const initState: ModuleState = {subModule};
     //_initState是基类BaseModel中内置的一个reducer
     //this.dispatch是this.store.dispatch的快捷方式
     this.dispatch(this.privateActions._initState(initState));
   }
 
+  private hasLogin(): boolean {
+    return this.getRootState().stage!.curUser.hasLogin;
+  }
+
+  private getNotices = () => {
+    api.getNotices().then((notices) => {
+      this.dispatch(this.privateActions._updateState('updataNotices', {notices}));
+    });
+  };
+
   //页面被激活(变为显示页面)时调用
   onActive(): void {
     //轮询获取通知
-    if (!noticesTimer) {
-      noticesTimer = setInterval(() => {
-        api.getNotices().then((notices) => {
-          this.dispatch(this.privateActions._updateState('updataNotices', {notices}));
-        });
-      }, 10000);
+    if (!noticesTimer && this.hasLogin()) {
+      this.getNotices();
+      noticesTimer = setInterval(this.getNotices, 10000);
     }
   }
 

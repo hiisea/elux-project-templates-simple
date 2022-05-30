@@ -1,16 +1,13 @@
 /*# if:!taro #*/
 import TabBar from '@/components/TabBar';
 /*# end #*/
-import {APPState, Modules, StaticPrefix, useRouter/*# =vue?, useStore: #*/} from '@/Global';
+import {APPState, Modules, StaticPrefix/*# =vue?, useStore: #*/} from '@/Global';
 import {CurUser} from '@/modules/stage/entity';
-import {LoginUrl} from '@/utils/const';
+import {Notices} from '@/modules/admin/entity';
 /*# if:react #*/
 import {connectRedux, Dispatch, DocumentHead} from '<%= elux %>';
 /*# else:vue #*/
 import {ComputedStore, DocumentHead, exportView} from '<%= elux %>';
-/*# end #*/
-/*# if:taro #*/
-import {navigateTo} from '@tarojs/taro';
 /*# end #*/
 /*# if:react #*/
 import {FC, useCallback} from 'react';
@@ -21,12 +18,12 @@ import styles from './index.module.less';
 
 interface StoreProps {
   curUser: CurUser;
+  notices?: Notices;
 }
 
 /*# if:react #*/
 function mapStateToProps(appState: APPState): StoreProps {
-  const stage = appState.stage!;
-  return {curUser: stage.curUser};
+  return {curUser: appState.stage!.curUser, notices: appState.admin!.notices};
 }
 
 interface DispatchProps {
@@ -35,21 +32,16 @@ interface DispatchProps {
 /*# else:vue #*/
 //这里保持和Redux的风格一致，也可以省去这一步，直接使用computed
 function mapStateToProps(appState: APPState): ComputedStore<StoreProps> {
-  const stage = appState.stage!;
   return {
-    curUser: () => stage.curUser,
+    curUser: () => appState.stage!.curUser,
+    notices: () => appState.admin!.notices,
   };
 }
 /*# end #*/
 
 /*# if:react #*/
-const Component: FC<StoreProps & DispatchProps> = ({curUser, dispatch}) => {
-  const router = useRouter();
-  const onLogin = useCallback(() => router.push({url: LoginUrl}, 'window'), [router]);
+const Component: FC<StoreProps & DispatchProps> = ({curUser, notices, dispatch}) => {
   const onLogout = useCallback(() => dispatch(Modules.stage.actions.logout()), [dispatch]);
-  /*# if:taro #*/
-  const onNavToShop = useCallback(() => navigateTo({url: '/modules/shop/pages/goodsList'}), []);
-  /*# end #*/
 
   return (
     <>
@@ -57,32 +49,12 @@ const Component: FC<StoreProps & DispatchProps> = ({curUser, dispatch}) => {
       <div className={`${styles.root} g-page-content`}>
         <div className="title">个人中心</div>
         <div className="avatar" style={{backgroundImage: `url(${StaticPrefix + curUser.avatar})`}} />
-        {curUser.hasLogin ? (
-          <>
-            <div className="nickname">{curUser.username}</div>
-            <div className="score">{`✆ ${curUser.mobile}`}</div>
-            <div className="logout" onClick={onLogout}>
-              退出登录
-            </div>
-            /*# if:taro #*/
-            <div className="shop-link" onClick={onNavToShop}>
-              分包加载示例
-            </div>
-            /*# end #*/
-          </>
-        ) : (
-          <>
-            <div className="nickname">游客</div>
-            <div className="login" onClick={onLogin}>
-              登 录
-            </div>
-            /*# if:taro #*/
-            <div className="shop-link" onClick={onNavToShop}>
-              分包加载示例
-            </div>
-            /*# end #*/
-          </>
-        )}
+        <div className="notices">{notices?.num || '..'}</div>
+        <div className="nickname">{curUser.username}</div>
+        <div className="score">{`✆ ${curUser.mobile}`}</div>
+        <div className="logout" onClick={onLogout}>
+          退出登录
+        </div>
       </div>
       /*# if:!taro #*/
       <TabBar selected="my" />
@@ -96,15 +68,12 @@ export default connectRedux(mapStateToProps)(Component);
 const Component = defineComponent({
   name: 'MyUserSummary',
   setup() {
-    const router = useRouter();
     const store = useStore();
     const computedStore = mapStateToProps(store.getState());
     const curUser = computed(computedStore.curUser);
-    const onLogin = () => router.push({url: LoginUrl}, 'window');
+    const notices = computed(computedStore.notices);
     const onLogout = () => store.dispatch(Modules.stage.actions.logout());
-    /*# if:taro #*/
-    const onNavToShop = () => navigateTo({url: '/modules/shop/pages/goodsList'});
-    /*# end #*/
+    
     return () => {
       return (
         <>
@@ -112,32 +81,12 @@ const Component = defineComponent({
           <div class={`${styles.root} g-page-content`}>
             <div class="title">个人中心</div>
             <div class="avatar" style={{backgroundImage: `url(${StaticPrefix + curUser.value.avatar})`}} />
-            {curUser.value.hasLogin ? (
-              <>
-                <div class="nickname">{curUser.value.username}</div>
-                <div class="score">{`✆ ${curUser.value.mobile}`}</div>
-                <div class="logout" onClick={onLogout}>
-                  退出登录
-                </div>
-                /*# if:taro #*/
-                <div class="shop-link" onClick={onNavToShop}>
-                  分包加载示例
-                </div>
-                /*# end #*/
-              </>
-            ) : (
-              <>
-                <div class="nickname">游客</div>
-                <div class="login" onClick={onLogin}>
-                  登 录
-                </div>
-                /*# if:taro #*/
-                <div class="shop-link" onClick={onNavToShop}>
-                  分包加载示例
-                </div>
-                /*# end #*/
-              </>
-            )}
+            <div class="notices">{notices.value?.num || '..'}</div>
+            <div class="nickname">{curUser.value.username}</div>
+            <div class="score">{`✆ ${curUser.value.mobile}`}</div>
+            <div class="logout" onClick={onLogout}>
+              退出登录
+            </div>
           </div>
           /*# if:!taro #*/
           <TabBar selected="my" />

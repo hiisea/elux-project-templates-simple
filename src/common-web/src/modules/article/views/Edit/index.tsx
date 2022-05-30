@@ -82,11 +82,11 @@ const Component: FC<Props> = ({itemDetail, dispatch}) => {
                 className="g-input"
                 placeholder="请输入"
                 /*# if:taro #*/
-                // eslint-disable-next-line react/no-unknown-property
+                // eslint-disable-next-line
                 maxlength={100}
                 /*# end #*/
                 rows={2}
-                onChange={(e) => setSummary(e.target.value.trim())}
+                onInput={(e) => setSummary(e.target['value'].trim())}
                 value={summary}
               />
             </div>
@@ -99,17 +99,17 @@ const Component: FC<Props> = ({itemDetail, dispatch}) => {
                 className="g-input"
                 placeholder="请输入"
                 /*# if:taro #*/
-                // eslint-disable-next-line react/no-unknown-property
+                // eslint-disable-next-line
                 maxlength={500}
                 /*# end #*/
                 rows={10}
-                onChange={(e) => setContent(e.target.value.trim())}
+                onInput={(e) => setContent(e.target['value'].trim())}
                 value={content}
               />
             </div>
           </div>
           <div className="item-error">
-            <span></span>
+            <div></div>
             <div>{errorMessage}</div>
           </div>
         </div>

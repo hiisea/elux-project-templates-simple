@@ -114,6 +114,15 @@ export class Model extends BaseModel<ModuleState, APPState> {
   }
 
   @effect()
+  public async cancelLogin(): Promise<void> {
+    //在历史栈中找到第一条不需要登录的记录
+    //如果简单的back(1)，前一个页面需要登录时会引起循环
+    this.getRouter().back((record) => {
+      return !this.checkNeedsLogin(record.location.pathname);
+    }, 'window');
+  }
+
+  @effect()
   public async logout(): Promise<void> {
     const curUser = await api.logout();
     this.dispatch(this.privateActions.putCurUser(curUser));
@@ -146,16 +155,19 @@ export class Model extends BaseModel<ModuleState, APPState> {
     }
     throw error;
   }
-  /*# if:!taro #*/
+
+  private checkNeedsLogin(pathname: string): boolean {
+    return ['/admin/', '/article/edit'].some((prefix) => pathname.startsWith(prefix));
+  }
 
   //支持路由守卫
   //路由跳转前会自动派发'stage._testRouteChange'的Action
   //可以通过effect来监听这个Action，并决定是否阻止，如果想阻止跳转，可以抛出一个错误
+  //注意：小程序中如果使用原生路由跳转是无法拦截的
   @effect(null)
-  protected async ['this._testRouteChange']({url}: {url: string}): Promise<void> {
-    if (url.startsWith('/admin/') && !this.state.curUser.hasLogin) {
+  protected async ['this._testRouteChange']({url, pathname}: {url: string; pathname: string}): Promise<void> {
+    if (!this.state.curUser.hasLogin && this.checkNeedsLogin(pathname)) {
       throw new CustomError(CommonErrorCode.unauthorized, '请登录！', url, true);
     }
   }
-  /*# end #*/
 }

@@ -16,10 +16,9 @@ import type {Shop} from '@/modules/shop';
 export const ModuleGetter = {
   //通常stage为根模块，如果根模块要用别的名字，需要同时在以下setConfig中设置
   stage: () => stage,
-  //admin充当一个字路由模块，所有此模块下的子模块都需要登录
   admin: () => admin,
-  article: () => article,
   my: () => my,
+  article: () => article,
   //该模块使用分包加载，此处返回一个空对象即可
   shop: () => ({} as Shop),
 };
@@ -37,9 +36,15 @@ export const appConfig: AppConfig = setConfig({
       if (nativePathname === '/') {
         nativePathname = '/modules/article/pages/list';
       }
-      return nativePathname.replace(/^\/modules\/(\w+)\/pages\//, '/$1/');
+      //小程序page中并没有admin这个路由逻辑
+      const Prefix = {my: '/admin'};
+      return nativePathname.replace(/^\/modules\/(\w+)\/pages\//, (match: string, moduleName: string) => {
+        return `${Prefix[moduleName] || ''}/${moduleName}/`;
+      });
     },
     out(internalPathname) {
+      //小程序page中并没有admin这个路由逻辑
+      internalPathname = internalPathname.replace('/admin/','/');
       return internalPathname.replace(/^\/(\w+)\//, '/modules/$1/pages/');
     },
   },

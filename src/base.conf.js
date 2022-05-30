@@ -26,6 +26,11 @@ function replaceLess(code, css) {
   return code;
 }
 
+function replaceTaroCss(code, css) {
+  return code.replace(/> \*/g, '> .h5-div').replace(/> :/g, '> .h5-div:');
+}
+
+
 function replaceTsx(code, css) {
   code = code.replace(/\s+\/\*#\s+\[\[\[([+-]\d+)\s+#\*\/([\s\S]*?\n)\s*\/\*#\s+\]\]\]\s+#\*\/\s*\n/g, (a, cmd, str) => {
     const num = parseInt(cmd.substr(1));
@@ -186,6 +191,10 @@ function afterRender(data, filepath, code) {
     }
     if (filepath.endsWith("package.json")) {
       return replacePackage(code, filepath, data.projectName);
+    }
+  } else if(data.platform === "taro") {
+    if (filepath.endsWith(".less")) {
+      code = replaceTaroCss(code, data.css);
     }
   }
   if (filepath.endsWith(".tsx")) {

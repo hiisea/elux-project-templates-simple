@@ -1,7 +1,7 @@
 const path = require('path');
+const {localIP, getCssScopedName} = require('@elux/cli-utils');
 
 const srcPath = path.resolve(__dirname, '..', 'src');
-const {localIP, getCssScopedName} = require('@elux/cli-utils');
 
 const config = {
   projectName: '<%= projectName %>',
