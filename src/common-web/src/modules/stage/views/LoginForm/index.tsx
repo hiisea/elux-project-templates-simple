@@ -36,8 +36,8 @@ const Component: FC<{dispatch: Dispatch}> = ({dispatch}) => {
   }, [dispatch]);
 
   return (
-    <>
-      <NavBar title="登录" />
+    /*# =admin?<div className="wrap">:<>#*/
+      /*# =!admin?<NavBar title="登录" />:#*/
       <div className={`${styles.root} g-page-content`}>
         <DocumentHead title="登录" />
         <div className="g-form">
@@ -81,7 +81,7 @@ const Component: FC<{dispatch: Dispatch}> = ({dispatch}) => {
           </button>
         </div>
       </div>
-    </>
+    /*# =admin?</div>:</>#*/
   );
 };
 
@@ -108,8 +108,8 @@ const Component = defineComponent({
       }
     };
     return () => (
-      <>
-        <NavBar title="登录" />
+      /*# =admin?<div className="wrap">:<>#*/
+        /*# =!admin?<NavBar title="登录" />:#*/
         <div class={`${styles.root} g-page-content`}>
           <DocumentHead title="登录" />
           <div class="g-form">
@@ -139,7 +139,7 @@ const Component = defineComponent({
             </Link>
           </div>
         </div>
-      </>
+      /*# =admin?</div>:</>#*/
     );
   },
 });

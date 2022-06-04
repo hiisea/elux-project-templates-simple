@@ -35,7 +35,11 @@ export class Model extends BaseModel<ModuleState, APPState> {
   //提取当前路由中的本模块感兴趣的信息
   protected getRouteParams(): RouteParams {
     const {pathname, searchQuery} = this.getRouter().location;
+    /*# if:admin #*/
+    const [, , , curViewStr = ''] = pathToRegexp('/:admin/:article/:curView').exec(pathname) || [];
+    /*# else #*/
     const [, , curViewStr = ''] = pathToRegexp('/:article/:curView').exec(pathname) || [];
+    /*# end #*/
     const curView: CurView | undefined = CurView[curViewStr] || undefined;
     const {pageCurrent = '', keyword, id} = searchQuery as Record<string, string | undefined>;
     const listSearch = {pageCurrent: parseInt(pageCurrent) || undefined, keyword};

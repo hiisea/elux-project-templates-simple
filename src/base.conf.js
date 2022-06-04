@@ -27,14 +27,13 @@ function replaceLess(code, css) {
 }
 
 function replaceTaroCss(code, css) {
-  return code.replace(/> \*/g, '> .h5-div').replace(/> :/g, '> .h5-div:');
+  return code.replace(/> \*/g, "> .h5-div").replace(/> :/g, "> .h5-div:");
 }
-
 
 function replaceTsx(code, css) {
   code = code.replace(/\s+\/\*#\s+\[\[\[([+-]\d+)\s+#\*\/([\s\S]*?\n)\s*\/\*#\s+\]\]\]\s+#\*\/\s*\n/g, (a, cmd, str) => {
     const num = parseInt(cmd.substr(1));
-    return str.replace(new RegExp(`\n[ ]{${num}}`,'g'), "\n");
+    return str.replace(new RegExp(`\n[ ]{${num}}`, "g"), "\n");
   });
 
   if (css === "sass") {
@@ -83,7 +82,7 @@ function replacePackage(code, filepath, projectName) {
 
 function getTitle(options, route, style) {
   const routeSubject = route === "pre" ? "路由前置" : "路由后置";
-  const platform = options.platform === "rn" ? "开发中" : options.platform === "Taro" ? "Taro" : style==='admin'?'Admin':'H5';
+  const platform = options.platform === "rn" ? "开发中" : options.platform === "Taro" ? "Taro" : style === "admin" ? "Admin" : "H5";
   const ui = options.framework === "react" ? "react" : "vue3";
   return `${platform}-${ui}（${routeSubject}）`;
 }
@@ -107,11 +106,12 @@ function getNpmLockFile(options) {
   } else {
     arr.push(platform);
   }
-  arr.push(framework, 'lock');
+  arr.push(framework, "lock");
   return arr.join("-");
 }
 
 function operation(options, style) {
+  console.log(3333, style);
   if (options.platform === "rn") {
     return [{ action: "copy", from: "./common-rn", to: "$" }];
   } else if (options.platform === "micro") {
@@ -152,7 +152,7 @@ function operation(options, style) {
       { action: "move", from: "$/src/components/TabBar", to: "" },
       { action: "move", from: "$/src/index.ts", to: "" },
     ];
-  } else if (style==='amdin') {
+  } else if (style === "admin") {
     return [
       { action: "copy", from: "./common-web", to: "$" },
       { action: "copy", from: "./common-admin", to: "$" },
@@ -192,7 +192,7 @@ function afterRender(data, filepath, code) {
     if (filepath.endsWith("package.json")) {
       return replacePackage(code, filepath, data.projectName);
     }
-  } else if(data.platform === "taro") {
+  } else if (data.platform === "taro") {
     if (filepath.endsWith(".less")) {
       code = replaceTaroCss(code, data.css);
     }

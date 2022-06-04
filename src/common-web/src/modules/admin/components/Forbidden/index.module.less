@@ -4,8 +4,26 @@
   :local(.root) {
     flex: 1;
     width: 100%;
+    /*# if:admin #*/
+    .title {
+      padding: 20px 0 20px 50px;
+      margin: 20px;
+      font-size: 18px;
+      font-weight: bold;
+      color: @secondaryColor;
+      background: url('@/assets/imgs/logo-icon.svg') no-repeat left center;
+      background-size: 40px;
+    }
+
+    .ver {
+      margin-left: 5px;
+      font-size: 14px;
+      font-weight: normal;
+    }
+    /*# else #*/
     padding-top: 50px;
     color: @borderColor;
     text-align: center;
+    /*# end #*/
   }
 }
