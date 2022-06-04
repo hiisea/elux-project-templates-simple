@@ -165,8 +165,8 @@ function operation(options, style) {
 function beforeRender(data, filepath, code) {
   return code
     .replace(
-      /\/\*#\s+\=(react|vue|ssr|csr|micro|taro|less|sass|post|pre|admin|h5)\?([^:]+?):(.*?)\s+#\*\//g,
-      (str, $1, $2, $3) => `<%= ${valueKeys[$1]}==='${$1}'?\`${$2}\`:\`${$3}\` %>`
+      /\/\*#\s+\=(!?)(react|vue|ssr|csr|micro|taro|less|sass|post|pre|admin|h5)\?([^:]+?):(.*?)\s+#\*\//g,
+      (str, v1, v2, v3, v4) => `<%= ${valueKeys[v2]}${v1 || "="}=='${v2}'?\`${v3}\`:\`${v4}\` %>`
     )
     .replace(
       /\/\*#\s+if:(!?)(react|vue|ssr|csr|micro|taro|less|sass|post|pre|admin|h5)\s+#\*\//g,

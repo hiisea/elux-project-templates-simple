@@ -137,7 +137,11 @@ export class Model extends BaseModel<ModuleState, APPState> {
   @effect(null)
   protected async ['this._error'](error: CustomError): Promise<void> {
     if (error.code === CommonErrorCode.unauthorized) {
-      this.getRouter().push({pathname: LoginUrl, searchQuery: {from: error.detail}/*# =admin?, classname: '_dialog': #*/}, 'window');
+      /*# if:admin #*/
+      this.getRouter().push({pathname: LoginUrl, searchQuery: {from: error.detail} , classname: '_dialog'}, 'window');
+      /*# else #*/
+      this.getRouter().push({pathname: LoginUrl, searchQuery: {from: error.detail}}, 'window');
+      /*# end #*/
     } else if (!error.quiet && error.code !== ErrorCodes.ROUTE_BACK_OVERFLOW) {
       // ErrorCodes.ROUTE_BACK_OVERFLOW是路由后退溢出时抛出的错误，默认会回到首页，所以无需处理
       // eslint-disable-next-line no-alert
