@@ -45,6 +45,7 @@ const Component: FC<{dispatch: Dispatch}> = ({dispatch}) => {
       <div className={`${styles.root} g-page-content`}>
     /*# end #*/
         <DocumentHead title="登录" />
+        /*# =admin?<h2>请登录</h2>?: #*/
         <div className="g-form">
           <div>
             <div>用户名</div>
@@ -122,6 +123,7 @@ const Component = defineComponent({
         <div class={`${styles.root} g-page-content`}>
       /*# end #*/
           <DocumentHead title="登录" />
+          /*# =admin?<h2>请登录</h2>?: #*/
           <div class="g-form">
             <div>
               <div>用户名:</div>

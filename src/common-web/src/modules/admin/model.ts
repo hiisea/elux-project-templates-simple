@@ -8,6 +8,11 @@ import {api, Notices, SubModule} from './entity';
 export interface ModuleState {
   subModule?: SubModule; //该字段用来记录当前路由下展示哪个子Module
   notices?: Notices; //该字段用来记录实时通知信息
+  /*# if:admin #*/
+  //该字段用来记录当前Page是否用Dialog模式展示(非全屏)
+  //Dialog模式时将不渲染Layout
+  dialogMode: boolean;
+  /*# end #*/
 }
 
 //定义路由中的本模块感兴趣的信息
@@ -38,7 +43,12 @@ export class Model extends BaseModel<ModuleState, APPState> {
   public onMount(): void {
     this.routeParams = this.getRouteParams();
     const {subModule} = this.routeParams;
+    /*# if:admin #*/
+    const dialogMode = this.getRouter().location.classname.startsWith('_');
+    const initState: ModuleState = {subModule, dialogMode};
+    /*# else #*/
     const initState: ModuleState = {subModule};
+    /*# end #*/
     //_initState是基类BaseModel中内置的一个reducer
     //this.dispatch是this.store.dispatch的快捷方式
     this.dispatch(this.privateActions._initState(initState));

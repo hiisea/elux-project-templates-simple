@@ -14,6 +14,9 @@ import {computed, defineComponent} from 'vue';
 /*# end #*/
 import Forbidden from '../components/Forbidden';
 import {SubModule} from '../entity';
+/*# if:admin #*/
+import Layout from './Layout';
+/*# end #*/
 
 //采用LoadComponent来加载视图，可以懒执行，并自动初始化与之对应的model
 const My = LoadComponent('my', 'main');
@@ -43,7 +46,7 @@ function mapStateToProps(appState: APPState): ComputedStore<StoreProps> {
 
 /*# if:react #*/
 const Component: FC<StoreProps> = ({curUser, subModule}) => {
-  return curUser.hasLogin ? <Switch elseView={<ErrorPage />}>{subModule === 'my' && <My />}</Switch> : <Forbidden />;
+  return curUser.hasLogin ? /*# =admin?<Layout>?: #*/<Switch elseView={<ErrorPage />}>{subModule === 'my' && <My />}</Switch>/*# =admin?</Layout>?: #*/ : <Forbidden />;
 };
 
 //connectRedux中包含了exportView()的执行
@@ -58,7 +61,7 @@ const Component = defineComponent({
     const curUser = computed(computedStore.curUser);
 
     return () => {
-      return curUser.value.hasLogin ? <Switch elseView={<ErrorPage />}>{subModule.value === 'my' && <My />}</Switch> : <Forbidden />;
+      return curUser.value.hasLogin ? /*# =admin?<Layout>?: #*/<Switch elseView={<ErrorPage />}>{subModule.value === 'my' && <My />}</Switch>/*# =admin?</Layout>?: #*/ : <Forbidden />;
     };
   },
 });

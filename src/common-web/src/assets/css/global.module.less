@@ -73,6 +73,44 @@
     font-size: 12px;
     color: @errorColor;
   }
+  /*# if:admin #*/
+
+  :local(.page-dialog) {
+    box-sizing: border-box;
+    height: 100%;
+    padding: 20px 30px;
+    overflow: auto;
+    background: #fff;
+
+    > h2 {
+      padding-bottom: 10px;
+      font-size: 14px;
+      color: @tipColor;
+      border-bottom: 1px solid @borderColor;
+
+      &::before {
+        margin-right: 5px;
+        content: '◎';
+      }
+    }
+  }
+
+  :local(.page-content) {
+    padding-top: 20px;
+    margin: 0 30px;
+    background: #fff;
+
+    > h2 {
+      font-size: 16px;
+      color: @infoColor;
+
+      &::before {
+        margin-right: 5px;
+        content: '▸';
+      }
+    }
+  }
+  /*# else #*/
 
   :local(.page-content) {
     display: flex;
@@ -82,6 +120,7 @@
     overflow: auto;
     background: #fff;
   }
+  /*# end #*/
 
   :local(.input) {
     padding: 9px;

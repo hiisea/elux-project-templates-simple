@@ -1,6 +1,9 @@
 import request, {IRequest} from '@/utils/request';
 
 export enum SubModule {
+  /*# if:admin #*/
+  'article' = 'article',
+  /*# end #*/
   'my' = 'my',
 }
 
