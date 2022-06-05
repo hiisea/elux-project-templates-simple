@@ -1,4 +1,6 @@
+/*# if:!admin #*/
 import NavBar from '@/components/NavBar';
+/*# end #*/
 import {Modules} from '@/Global';
 import {Dispatch, DocumentHead, exportView, Link} from '<%= elux %>';
 /*# if:react #*/
@@ -56,14 +58,20 @@ const Component: FC<Props> = ({itemDetail, dispatch}) => {
   };
 
   return (
+    /*# if:!admin #*/
     <>
-      <NavBar title={<%= route==="pre"?"!itemDetail ? '......' : ":"" %>itemDetail.id ? '修改文章' : '新建文章'} />
+      <NavBar title="编辑文章" />
       <div className={`${styles.root} g-page-content`}>
         <DocumentHead title="编辑文章" />
+    /*# else #*/
+    <div className={`${styles.root} g-page-dialog`}>
+        <DocumentHead title="编辑文章" />
+        <h2>编辑文章</h2>
+    /*# end #*/
         <div className="g-form">
-          <div>
-            <div>标题</div>
-            <div>
+          <div className="item">
+            <div className="item">标题</div>
+            <div className="item">
               <input
                 name="title"
                 className="g-input"
@@ -74,9 +82,9 @@ const Component: FC<Props> = ({itemDetail, dispatch}) => {
               />
             </div>
           </div>
-          <div>
-            <div>摘要</div>
-            <div>
+          <div className="item">
+            <div className="item">摘要</div>
+            <div className="item">
               <textarea
                 name="summary"
                 className="g-input"
@@ -91,9 +99,9 @@ const Component: FC<Props> = ({itemDetail, dispatch}) => {
               />
             </div>
           </div>
-          <div className="item-last">
-            <div>内容</div>
-            <div>
+          <div className="item item-last">
+            <div className="item">内容</div>
+            <div className="item">
               <textarea
                 name="content"
                 className="g-input"
@@ -108,9 +116,9 @@ const Component: FC<Props> = ({itemDetail, dispatch}) => {
               />
             </div>
           </div>
-          <div className="item-error">
-            <div></div>
-            <div>{errorMessage}</div>
+          <div className="item item-error">
+            <div className="item"></div>
+            <div className="item">{errorMessage}</div>
           </div>
         </div>
         <div className="g-control">
@@ -122,7 +130,9 @@ const Component: FC<Props> = ({itemDetail, dispatch}) => {
           </Link>
         </div>
       </div>
+    /*# if:!admin #*/
     </>
+    /*# end #*/
   );
 };
 
@@ -158,32 +168,38 @@ const Component = defineComponent({
       }
     };
     return () => (
+      /*# if:!admin #*/
       <>
-        <NavBar title={<%= route==="pre"?"!props.itemDetail ? '......' : ":"" %>props.itemDetail.id ? '修改文章' : '新建文章'} />
+        <NavBar title="编辑文章" />
         <div class={`${styles.root} g-page-content`}>
           <DocumentHead title="编辑文章" />
+      /*# else #*/
+      <div class={`${styles.root} g-page-dialog`}>
+          <DocumentHead title="编辑文章" />
+          <h2>编辑文章</h2>
+      /*# end #*/
           <div class="g-form">
-            <div>
-              <div>标题</div>
-              <div>
+            <div class="item">
+              <div class="item">标题</div>
+              <div class="item">
                 <input name="title" class="g-input" type="text" placeholder="请输入" v-model={title.value} />
               </div>
             </div>
-            <div>
-              <div>摘要</div>
-              <div>
+            <div class="item">
+              <div class="item">摘要</div>
+              <div class="item">
                 <textarea name="summary" class="g-input" placeholder="请输入" /*# =taro?maxlength={100} : #*/rows={2} v-model={summary.value} />
               </div>
             </div>
-            <div class="item-last">
-              <div>内容</div>
-              <div>
+            <div class="item item-last">
+              <div class="item">内容</div>
+              <div class="item">
                 <textarea name="content" class="g-input" placeholder="请输入" /*# =taro?maxlength={500} : #*/rows={10} v-model={content.value} />
               </div>
             </div>
-            <div class="item-error">
-              <div></div>
-              <div>{errorMessage.value}</div>
+            <div class="item item-error">
+              <div class="item"></div>
+              <div class="item">{errorMessage.value}</div>
             </div>
           </div>
           <div class="g-control">
@@ -195,7 +211,9 @@ const Component = defineComponent({
             </Link>
           </div>
         </div>
+      /*# if:!admin #*/
       </>
+      /*# end #*/
     );
   },
 });

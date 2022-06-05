@@ -1,5 +1,5 @@
 return {
-  platform: ["csr"],
+  platform: ["csr", "ssr"],
   framework: ["react", "vue"],
   css: ["less", "sass"],
   getTitle(options) {

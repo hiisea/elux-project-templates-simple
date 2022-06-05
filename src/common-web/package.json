@@ -5,7 +5,7 @@
   "author": "hiisea <hiisea@qq.com>",
   "license": "MIT",
   "engines": {
-    "node": ">=16.0.0"
+    "node": ">=14.0.0"
   },
   "private": true,
   "workspaces": [
@@ -13,7 +13,7 @@
     "./public"
   ],
   /*# if:ssr #*/
-  "ssrnode": "16.14.2",
+  "ssrnode": "14.16.0",
   /*# end #*/
   "browserslist": [
     "chrome >= 70"
@@ -52,9 +52,9 @@
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
     /*# end #*/
-    "@elux/cli": "^2.5.0",
-    "@elux/cli-utils": "^2.3.0",
-    "@elux/cli-webpack": "^2.2.0",
+    "@elux/cli": "^2.5.1",
+    "@elux/cli-utils": "^2.3.1",
+    "@elux/cli-webpack": "^2.2.1",
     "@elux/cli-mock": "^2.1.0",
     "@elux/babel-preset": "^1.0.2",
     "@elux/eslint-plugin": "^1.2.2",

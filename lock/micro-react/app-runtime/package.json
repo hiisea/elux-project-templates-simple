@@ -34,10 +34,7 @@
     "react-dom": "^17.0.0",
     "axios": "^0.21.1",
     "query-string": "^7.1.1",
-    "path-to-regexp": "^6.2.0",
-    "@micro-react/stage": "^1.0.0",
-    "@micro-react/article": "^1.0.0",
-    "@micro-react/my": "^1.0.0"
+    "path-to-regexp": "^6.2.0"
   },
   "devDependencies": {
     "@types/react": "^17.0.0",

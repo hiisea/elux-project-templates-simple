@@ -20,6 +20,9 @@ import Layout from './Layout';
 
 //采用LoadComponent来加载视图，可以懒执行，并自动初始化与之对应的model
 const My = LoadComponent('my', 'main');
+/*# if:admin #*/
+const Article = LoadComponent('article', 'main');
+/*# end #*/
 
 export interface StoreProps {
   curUser: CurUser;
@@ -46,7 +49,20 @@ function mapStateToProps(appState: APPState): ComputedStore<StoreProps> {
 
 /*# if:react #*/
 const Component: FC<StoreProps> = ({curUser, subModule}) => {
-  return curUser.hasLogin ? /*# =admin?<Layout>?: #*/<Switch elseView={<ErrorPage />}>{subModule === 'my' && <My />}</Switch>/*# =admin?</Layout>?: #*/ : <Forbidden />;
+  /*# if:admin #*/
+  return curUser.hasLogin ? (
+    <Layout>
+      <Switch elseView={<ErrorPage />}>
+        {subModule === 'article' && <Article />}
+        {subModule === 'my' && <My />}
+      </Switch>
+    </Layout>
+  ) : (
+    <Forbidden />
+  );
+  /*# else #*/
+  return curUser.hasLogin ? <Switch elseView={<ErrorPage />}>{subModule === 'my' && <My />}</Switch> : <Forbidden />;
+  /*# end #*/
 };
 
 //connectRedux中包含了exportView()的执行
@@ -61,7 +77,20 @@ const Component = defineComponent({
     const curUser = computed(computedStore.curUser);
 
     return () => {
-      return curUser.value.hasLogin ? /*# =admin?<Layout>?: #*/<Switch elseView={<ErrorPage />}>{subModule.value === 'my' && <My />}</Switch>/*# =admin?</Layout>?: #*/ : <Forbidden />;
+      /*# if:admin #*/
+      return curUser.value.hasLogin ? (
+        <Layout>
+          <Switch elseView={<ErrorPage />}>
+            {subModule.value === 'article' && <Article />}
+            {subModule.value === 'my' && <My />}
+          </Switch>
+        </Layout>
+      ) : (
+        <Forbidden />
+      );
+      /*# else #*/
+      return curUser.value.hasLogin ? <Switch elseView={<ErrorPage />}>{subModule.value === 'my' && <My />}</Switch> : <Forbidden />;
+      /*# end #*/
     };
   },
 });

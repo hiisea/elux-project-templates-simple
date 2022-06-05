@@ -10,18 +10,18 @@ import styles from './index.module.less';
 /*# if:react #*/
 const Component: FC = () => {
   return (
-    <>
+    /*# =admin?<div className={styles.root}>:<> #*/
       <NavBar title="商品列表" onBack />
-      <div className={`${styles.root} g-page-content`}>
+      <div className=/*# =admin?"g-page-content":{styles.root + ' g-page-content'} #*/>
         <DocumentHead title="商品列表" />
         <div className="note">本页面主要用来演示小程序下的“分包加载”</div>
         <div className="list">
-          <div>---商品1---</div>
-          <div>---商品2---</div>
-          <div>---商品3---</div>
+          <div className="item">---商品1---</div>
+          <div className="item">---商品2---</div>
+          <div className="item">---商品3---</div>
         </div>
       </div>
-    </>
+    /*# =admin?</div>:</> #*/
   );
 };
 
@@ -32,18 +32,18 @@ const Component = defineComponent({
   setup() {
     return () => {
       return (
-        <>
+        /*# =admin?<div class={styles.root}>:<> #*/
           <NavBar title="商品列表" onBack />
-          <div class={`${styles.root} g-page-content`}>
+          <div class=/*# =admin?"g-page-content":{styles.root + ' g-page-content'} #*/>
             <DocumentHead title="商品列表" />
             <div class="note">本页面主要用来演示小程序下的“分包加载”</div>
             <div class="list">
-              <div>---商品1---</div>
-              <div>---商品2---</div>
-              <div>---商品3---</div>
+              <div class="item">---商品1---</div>
+              <div class="item">---商品2---</div>
+              <div class="item">---商品3---</div>
             </div>
           </div>
-        </>
+        /*# =admin?</div>:</> #*/
       );
     };
   },

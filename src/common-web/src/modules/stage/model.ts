@@ -20,6 +20,7 @@ export interface ModuleState {
 
 //定义路由中的本模块感兴趣的信息
 export interface RouteParams {
+  pathname: string;
   subModule?: SubModule;
   curView?: CurView;
 }
@@ -43,7 +44,7 @@ export class Model extends BaseModel<ModuleState, APPState> {
     const subModule: SubModule | undefined = SubModule[subModuleStr] || undefined;
     /*# end #*/
     const curView: CurView | undefined = CurView[curViewStr] || undefined;
-    return {subModule, curView};
+    return {pathname, subModule, curView};
   }
 
   //每次路由发生变化，都会引起Model重新挂载到Store
@@ -61,7 +62,7 @@ export class Model extends BaseModel<ModuleState, APPState> {
     const {subModule, curView} = this.routeParams;
     /*# if:ssr #*/
     //需要登录的页面无需服务器渲染
-    if (isServer() && subModule === 'admin') {
+    if (isServer() && this.checkNeedsLogin(this.routeParams.pathname)) {
       throw new CustomError(ErrorCodes.ROUTE_RETURN, '无需SSR', {body: getTplInSSR()});
     }
     /*# end #*/
@@ -78,6 +79,7 @@ export class Model extends BaseModel<ModuleState, APPState> {
       //以下语句等于this.store.dispatch({type: 'stage._initState', payload: initState})
       this.dispatch(this.privateActions._initState(initState));
       /*# if:post #*/
+      //使用路由后置风格时，要等待子模块数据取回来
       if (subModule) {
         await this.store.mount(subModule/*# =micro? as any: #*/, env);
       }
@@ -161,7 +163,7 @@ export class Model extends BaseModel<ModuleState, APPState> {
   }
 
   private checkNeedsLogin(pathname: string): boolean {
-    return ['/admin/', '/article/edit'].some((prefix) => pathname.startsWith(prefix));
+    return ['/admin/'/*# =!admin?, '/article/edit': #*/].some((prefix) => pathname.startsWith(prefix));
   }
 
   //支持路由守卫

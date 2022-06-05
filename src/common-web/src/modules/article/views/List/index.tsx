@@ -23,6 +23,7 @@ import {defaultListSearch, ListItem, ListSearch, ListSummary} from '../../entity
 import styles from './index.module.less';
 
 interface StoreProps {
+  prefixPathname: string;
   listSearch: ListSearch;
   list/*# =pre??: #*/: ListItem[];
   listSummary/*# =pre??: #*/: ListSummary;
@@ -30,11 +31,11 @@ interface StoreProps {
 
 /*# if:react #*/
 function mapStateToProps(appState: APPState): StoreProps {
-  const {listSearch, list, listSummary} = appState.article!;
+  const {prefixPathname, listSearch, list, listSummary} = appState.article!;
   /*# if:pre #*/
-  return {listSearch, list, listSummary};
+  return {prefixPathname, listSearch, list, listSummary};
   /*# else #*/
-  return {listSearch: listSearch, list: list!, listSummary: listSummary!};
+  return {prefixPathname, listSearch: listSearch, list: list!, listSummary: listSummary!};
   /*# end #*/
 }
 /*# else:vue #*/
@@ -42,6 +43,7 @@ function mapStateToProps(appState: APPState): StoreProps {
 function mapStateToProps(appState: APPState): ComputedStore<StoreProps> {
   const article = appState.article!;
   return {
+    prefixPathname: () => article.prefixPathname,
     listSearch: () => article.listSearch,
     list: () => article.list/*# =post?!: #*/,
     listSummary: () => article.listSummary/*# =post?!: #*/,
@@ -50,21 +52,21 @@ function mapStateToProps(appState: APPState): ComputedStore<StoreProps> {
 /*# end #*/
 
 /*# if:react #*/
-const Component: FC<StoreProps & {dispatch: Dispatch}> = ({listSearch, list, listSummary, dispatch}) => {
+const Component: FC<StoreProps & {dispatch: Dispatch}> = ({prefixPathname, listSearch, list, listSummary, dispatch}) => {
   const router = useRouter();
   const paginationBaseUrl = useMemo(
     () =>
       locationToUrl({
-        pathname: '/article/list',
+        pathname: `${prefixPathname}/list`,
         searchQuery: excludeDefaultParams(defaultListSearch, {keyword: listSearch?.keyword, pageCurrent: 0}),
       }),
-    [listSearch?.keyword]
+    [listSearch?.keyword, prefixPathname]
   );
   const onSearch = useCallback(
     (keyword: string) => {
-      router.push({pathname: '/article/list', searchQuery: excludeDefaultParams(defaultListSearch, {keyword})});
+      router.push({pathname: `${prefixPathname}/list`, searchQuery: excludeDefaultParams(defaultListSearch, {keyword})});
     },
-    [router]
+    [router, prefixPathname]
   );
   const onDeleteItem = useCallback(
     (id) => {
@@ -74,9 +76,9 @@ const Component: FC<StoreProps & {dispatch: Dispatch}> = ({listSearch, list, lis
   );
   const onEditItem = useCallback(
     (id = '0') => {
-      router.push({url: `/article/edit?id=${id}`}, 'window');
+      router.push({url: `${prefixPathname}/edit?id=${id}`}, 'window');
     },
-    [router]
+    [router, prefixPathname]
   );
   /*# if:taro #*/
   const onNavToShop = useCallback(() => navigateTo({url: '/modules/shop/pages/list'}), []);
@@ -91,13 +93,13 @@ const Component: FC<StoreProps & {dispatch: Dispatch}> = ({listSearch, list, lis
         /*# if:pre #*/
         {list && listSummary && (
         /*# end #*/
-          <div className="article-list">
+          <div className="list">
             {list.map((item) => (
               <div key={item.id} className="article-item">
-                <Link className="article-title" to={`/article/detail?id=${item.id}`} action="push" target="window">
+                <Link className="article-title" to={`${prefixPathname}/detail?id=${item.id}`} action="push" target="window">
                   {item.title}
                 </Link>
-                <Link className="article-summary" to={`/article/detail?id=${item.id}`} action="push" target="window">
+                <Link className="article-summary" to={`${prefixPathname}/detail?id=${item.id}`} action="push" target="window">
                   {item.summary}
                 </Link>
                 <div className="article-operation">
@@ -112,11 +114,11 @@ const Component: FC<StoreProps & {dispatch: Dispatch}> = ({listSearch, list, lis
             ))}
             <Pagination totalPages={listSummary.totalPages} pageCurrent={listSummary.pageCurrent} baseUrl={paginationBaseUrl} />
             /*# if:taro #*/
-            <div className="ad" onClick={onNavToShop}>
+            <div className="g-ad" onClick={onNavToShop}>
               -- 特惠商城，盛大开业 --
             </div>
             /*# else #*/
-            <Link className="ad" to="/shop/list" action="relaunch" target="window">
+            <Link className="g-ad" to="/shop/list" action="push" target="window">
               -- 特惠商城，盛大开业 --
             </Link>
             /*# end #*/
@@ -140,23 +142,24 @@ const Component = defineComponent({
     const router = useRouter();
     const store = useStore();
     const computedStore = mapStateToProps(store.getState());
+    const prefixPathname = computed(computedStore.prefixPathname);
     const listSearch = computed(computedStore.listSearch);
     const list = computed(computedStore.list);
     const listSummary = computed(computedStore.listSummary);
     const paginationBaseUrl = computed(() =>
       locationToUrl({
-        pathname: '/article/list',
+        pathname: `${prefixPathname.value}/list`,
         searchQuery: excludeDefaultParams(defaultListSearch, {keyword: listSearch.value?.keyword, pageCurrent: 0}),
       })
     );
     const onSearch = (keyword: string) => {
-      router.push({pathname: '/article/list', searchQuery: excludeDefaultParams(defaultListSearch, {pageCurrent: 1, keyword})});
+      router.push({pathname: `${prefixPathname.value}/list`, searchQuery: excludeDefaultParams(defaultListSearch, {pageCurrent: 1, keyword})});
     };
     const onDeleteItem = (id: string) => {
       store.dispatch(Modules.article.actions.deleteItem(id));
     };
     const onEditItem = (id: string = '0') => {
-      router.push({url: `/article/edit?id=${id}`}, 'window');
+      router.push({url: `${prefixPathname.value}/edit?id=${id}`}, 'window');
     };
     /*# if:taro #*/
     const onNavToShop = () => navigateTo({url: '/modules/shop/pages/list'});
@@ -171,13 +174,13 @@ const Component = defineComponent({
           /*# if:pre #*/
           {list.value && listSummary.value && (
           /*# end #*/
-            <div class="article-list">
+            <div class="list">
               {list.value.map((item) => (
                 <div key={item.id} class="article-item">
-                  <Link class="article-title" to={`/article/detail?id=${item.id}`} action="push" target="window">
+                  <Link class="article-title" to={`${prefixPathname.value}/detail?id=${item.id}`} action="push" target="window">
                     {item.title}
                   </Link>
-                  <Link class="article-summary" to={`/article/detail?id=${item.id}`} action="push" target="window">
+                  <Link class="article-summary" to={`${prefixPathname.value}/detail?id=${item.id}`} action="push" target="window">
                     {item.summary}
                   </Link>
                   <div class="article-operation">
@@ -192,11 +195,11 @@ const Component = defineComponent({
               ))}
               <Pagination totalPages={listSummary.value.totalPages} pageCurrent={listSummary.value.pageCurrent} baseUrl={paginationBaseUrl.value} />
               /*# if:taro #*/
-              <div class="ad" onClick={onNavToShop}>
+              <div class="g-ad" onClick={onNavToShop}>
                 -- 特惠商城，盛大开业 --
               </div>
               /*# else #*/
-              <Link class="ad" to="/shop/list" action="relaunch" target="window">
+              <Link class="g-ad" to="/shop/list" action="push" target="window">
                 -- 特惠商城，盛大开业 --
               </Link>
               /*# end #*/

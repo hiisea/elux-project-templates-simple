@@ -40,18 +40,26 @@ export class Model extends BaseModel<ModuleState, APPState> {
 
   //初始化或路由变化时都需要重新挂载Model
   //在此钩子中必需完成ModuleState的初始赋值，可以异步
-  public onMount(): void {
+  public /*# =post?async : #*/onMount(env: 'init' | 'route' | 'update'): /*# =post?Promise<void>:void #*/ {
     this.routeParams = this.getRouteParams();
     const {subModule} = this.routeParams;
+    //复用之前的state
+    const prevState = this.getPrevState();
     /*# if:admin #*/
     const dialogMode = this.getRouter().location.classname.startsWith('_');
-    const initState: ModuleState = {subModule, dialogMode};
+    const initState: ModuleState = {...prevState, subModule, dialogMode};
     /*# else #*/
-    const initState: ModuleState = {subModule};
+    const initState: ModuleState = {...prevState, subModule};
     /*# end #*/
     //_initState是基类BaseModel中内置的一个reducer
     //this.dispatch是this.store.dispatch的快捷方式
     this.dispatch(this.privateActions._initState(initState));
+    /*# if:post #*/
+    //使用路由后置风格时，要等待子模块数据取回来
+    if (subModule && this.hasLogin()) {
+      await this.store.mount(subModule, env);
+    }
+    /*# end #*/
   }
 
   private hasLogin(): boolean {
@@ -68,7 +76,9 @@ export class Model extends BaseModel<ModuleState, APPState> {
   onActive(): void {
     //轮询获取通知
     if (!noticesTimer && this.hasLogin()) {
-      this.getNotices();
+      if(!this.state.notices){
+        this.getNotices();
+      }
       noticesTimer = setInterval(this.getNotices, 10000);
     }
   }

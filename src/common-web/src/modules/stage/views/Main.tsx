@@ -69,7 +69,11 @@ const Component: FC<StoreProps> = ({subModule, curView, globalLoading, error}) =
           })}
         {curView === 'login' && <LoginForm />}
       </Switch>
+      /*# if:admin #*/
+      {subModule !== 'admin' && <LoadingPanel loadingState={globalLoading} />}
+      /*# else #*/
       <LoadingPanel loadingState={globalLoading} />
+      /*# end #*/
     </>
   );
 };
@@ -103,7 +107,11 @@ const Component = defineComponent({
           })}
           {curView.value === 'login' && <LoginForm />}
         </Switch>
+        /*# if:admin #*/
+        {subModule.value !== 'admin' && <LoadingPanel loadingState={globalLoading.value} />}
+        /*# else #*/
         <LoadingPanel loadingState={globalLoading.value} />
+        /*# end #*/
       </>
     );
   },

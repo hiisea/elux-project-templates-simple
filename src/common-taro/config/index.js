@@ -5,7 +5,6 @@ const srcPath = path.resolve(__dirname, '..', 'src');
 
 const config = {
   projectName: '<%= projectName %>',
-  date: '2022-5-1',
   designWidth: 640,
   deviceRatio: {
     640: 3.5 / 2,

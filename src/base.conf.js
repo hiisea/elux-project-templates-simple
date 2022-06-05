@@ -26,9 +26,9 @@ function replaceLess(code, css) {
   return code;
 }
 
-function replaceTaroCss(code, css) {
-  return code.replace(/> \*/g, "> .h5-div").replace(/> :/g, "> .h5-div:");
-}
+// function replaceTaroCss(code, css) {
+//   return code.replace(/> \*/g, "> .h5-div").replace(/> :/g, "> .h5-div:");
+// }
 
 function replaceTsx(code, css) {
   code = code.replace(/\s+\/\*#\s+\[\[\[([+-]\d+)\s+#\*\/([\s\S]*?\n)\s*\/\*#\s+\]\]\]\s+#\*\/\s*\n/g, (a, cmd, str) => {
@@ -58,7 +58,7 @@ function replacePackage(code, filepath, projectName) {
     const subProjectName = arr[arr.length - 2];
     const publishs = Publishs[subProjectName];
     if (publishs) {
-      code = code.replace('    "dev": "elux dev",', '    "publish:lerna": "lerna publish",\n    "dev": "elux dev",');
+      code = code.replace('    "dev": "elux webpack-dev",', '    "publish:lerna": "lerna publish",\n    "dev": "elux webpack-dev",');
     }
     code = code.replace(`name": "${projectName}`, `name": "@${projectName}/${subProjectName}`);
     code = code.replace(/(workspaces": \[)[^\]]+(\])/, (_, $1, $2) => {
@@ -193,9 +193,9 @@ function afterRender(data, filepath, code) {
       return replacePackage(code, filepath, data.projectName);
     }
   } else if (data.platform === "taro") {
-    if (filepath.endsWith(".less")) {
-      code = replaceTaroCss(code, data.css);
-    }
+    // if (filepath.endsWith(".less")) {
+    //   code = replaceTaroCss(code, data.css);
+    // }
   }
   if (filepath.endsWith(".tsx")) {
     return replaceTsx(code, data.css);

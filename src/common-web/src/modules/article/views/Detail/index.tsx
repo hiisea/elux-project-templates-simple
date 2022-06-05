@@ -27,6 +27,9 @@ const Component: FC<Props> = ({itemDetail}) => {
   return (
     <div className={`${styles.root} g-page-content`}>
       <DocumentHead title={/*# =pre?itemDetail?.title || '......':itemDetail.title #*/} />
+      /*# if:admin #*/
+      <h2>文章管理</h2>
+      /*# end #*/
       <div className="hd">
         <Link className="back" to={1} action="back" target="window"></Link>
         <div className="title">{/*# =pre?itemDetail?.title || '......':itemDetail.title #*/}</div>
@@ -46,6 +49,9 @@ const Component = defineComponent({
     return () => (
       <div class={`${styles.root} g-page-content`}>
         <DocumentHead title={/*# =pre?props.itemDetail?.title || '......':props.itemDetail.title #*/} />
+        /*# if:admin #*/
+        <h2>文章管理</h2>
+        /*# end #*/
         <div class="hd">
           <Link class="back" to={1} action="back" target="window"></Link>
           <div class="title">{/*# =pre?props.itemDetail?.title || '......':props.itemDetail.title #*/}</div>

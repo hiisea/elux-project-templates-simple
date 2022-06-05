@@ -48,5 +48,5 @@ app.use(fallback('index.html', {root: staticPath}));
 /*# end #*/
 
 app.listen(port, () =>
-  console.info(`\n \n.....${new Date().toLocaleString()} starting ${chalk.redBright('Server')} on ${chalk.underline.redBright(serverUrl)} \n`)
+  console.info(`\n🚀...Starting ${chalk.yellowBright.bgRedBright(' ProdServer ')} on ${chalk.underline.redBright(serverUrl)} \n`)
 );

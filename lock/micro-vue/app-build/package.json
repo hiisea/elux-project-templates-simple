@@ -33,10 +33,7 @@
     "vue": "^3.2.22",
     "axios": "^0.21.1",
     "query-string": "^7.1.1",
-    "path-to-regexp": "^6.2.0",
-    "@micro-vue/stage": "^1.0.0",
-    "@micro-vue/article": "^1.0.0",
-    "@micro-vue/my": "^1.0.0"
+    "path-to-regexp": "^6.2.0"
   },
   "devDependencies": {
     "@elux/cli": "^2.0.0",
