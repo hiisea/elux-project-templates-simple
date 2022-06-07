@@ -1,7 +1,10 @@
 export interface UpdateUserInfo {
   nickname: string;
 }
-export type CurrentView = 'userSummary';
+
+export enum CurView {
+  'userSummary' = 'userSummary',
+}
 
 class API {}
 

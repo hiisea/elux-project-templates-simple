@@ -22,10 +22,7 @@
     "app-runtime/public",
     "basic-team/public",
     "article-team/public",
-    "user-team/public",
-    "basic-team/src/modules/*",
-    "article-team/src/modules/*",
-    "user-team/src/modules/*"
+    "user-team/public"
   ],
   "scripts": {
     "mock": "lerna run mock --scope @micro-vue/app-runtime --parallel",

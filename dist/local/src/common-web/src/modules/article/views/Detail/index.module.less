@@ -9,7 +9,7 @@
       padding-top: 50px;
       /*# end #*/
       padding-left: 52px;
-      background-color: @primaryColor;
+      background-color: /*# =admin?@slightColor:@primaryColor #*/;
 
       .back {
         position: absolute;
@@ -22,12 +22,12 @@
         width: 34px;
         text-align: center;
         cursor: pointer;
-        background-color: #fff;
+        background-color: /*# =admin?@activeColor:#fff #*/;
         border-radius: 5px 0 0 5px;
 
         &::before {
           font-size: 23px;
-          color: @primaryColor;
+          color: /*# =admin?#fff:@primaryColor #*/;
           content: '<';
         }
       }
@@ -36,20 +36,21 @@
         padding-bottom: 10px;
         font-size: 18px;
         font-weight: bold;
+        /*# if:!admin #*/
         color: #fff;
+        /*# end #*/
       }
 
       .summary {
         font-size: 12px;
         line-height: 1.8;
-        color: @secondaryColor;
+        color: /*# =admin?@infoColor:@secondaryColor #*/;
       }
     }
 
     > .bd {
       padding: 15px;
       overflow: auto;
-      font-size: 16px;
       line-height: 1.8;
       text-indent: 2em;
     }

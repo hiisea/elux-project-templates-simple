@@ -5,12 +5,12 @@
   "main": "base.conf.js",
   "scripts": {
     "recommit": "git commit --amend --no-edit",
-    "lock:web-react": "elux lock-file ./_locks/web-react",
-    "lock:web-vue": "elux lock-file ./_locks/web-vue",
-    "lock:micro-react": "elux lock-file ./_locks/micro-react",
-    "lock:micro-vue": "elux lock-file ./_locks/micro-vue",
-    "lock:taro-react": "elux lock-file ./_locks/taro-react",
-    "lock:taro-vue": "elux lock-file ./_locks/taro-vue",
+    "lock:web-react": "elux tpl-lock ./lock/web-react",
+    "lock:web-vue": "elux tpl-lock ./lock/web-vue",
+    "lock:micro-react": "elux tpl-lock ./lock/micro-react",
+    "lock:micro-vue": "elux tpl-lock ./lock/micro-vue",
+    "lock:taro-react": "elux tpl-lock ./lock/taro-react",
+    "lock:taro-vue": "elux tpl-lock ./lock/taro-vue",
     "build:local": "node build/local.js",
     "build:online": "node build/online.js"
   },
@@ -25,6 +25,8 @@
   },
   "homepage": "https://github.com/hiisea/elux-project-templates-simple#readme",
   "dependencies": {
-    "@elux/cli": "^2.2.0"
+    "@elux/cli": "^2.5.1",
+    "@elux/cli-tpl": "^2.1.0",
+    "archiver": "^5.3.1"
   }
 }

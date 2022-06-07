@@ -25,7 +25,11 @@ export interface ItemDetail extends ListItem {
   content: string;
 }
 
-export type CurrentView = 'list' | 'detail' | 'edit';
+export enum CurView {
+  'list' = 'list',
+  'detail' = 'detail',
+  'edit' = 'edit',
+}
 
 export type IGetList = IRequest<ListSearch, {list: ListItem[]; listSummary: ListSummary}>;
 export type IGetItem = IRequest<{id: string}, ItemDetail>;

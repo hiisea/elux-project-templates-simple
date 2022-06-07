@@ -1,2 +1,2 @@
-export const HomeUrl: string = '/article/list';
+export const HomeUrl: string = '/*# =admin?/admin/article/list:/article/list #*/';
 export const LoginUrl: string = '/stage/login';

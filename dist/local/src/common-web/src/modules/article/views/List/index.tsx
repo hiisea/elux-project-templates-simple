@@ -1,33 +1,41 @@
-/*# if:react #*/
-import {FC, useCallback, useMemo} from 'react';
-/*# else:vue #*/
-import {defineComponent, computed} from 'vue';
-/*# end #*/
-import {DocumentHead, Link, /*# =react?Dispatch, connectRedux,:ComputedStore, exportView, #*/ locationToUrl} from '<%= elux %>';
-import {APPState, Modules, useRouter/*# =vue?, useStore: #*/} from '@/Global';
-import {excludeDefaultParams} from '@/utils/tools';
+import NavBar from '@/components/NavBar';
 /*# if:!taro #*/
 import TabBar from '@/components/TabBar';
 /*# end #*/
-import NavBar from '@/components/NavBar';
-import SearchBar from '../../components/SearchBar';
+import {APPState, Modules, useRouter/*# =vue?, useStore: #*/} from '@/Global';
+import {excludeDefaultParams} from '@/utils/tools';
+/*# if:react #*/
+import {connectRedux, Dispatch, DocumentHead, Link, locationToUrl} from '<%= elux %>';
+/*# else:vue #*/
+import {ComputedStore, DocumentHead, exportView, Link, locationToUrl} from '<%= elux %>';
+/*# end #*/
+/*# if:taro #*/
+import {navigateTo} from '@tarojs/taro';
+/*# end #*/
+/*# if:react #*/
+import {FC, useCallback, useMemo} from 'react';
+/*# else:vue #*/
+import {computed, defineComponent} from 'vue';
+/*# end #*/
 import Pagination from '../../components/Pagination';
-import {ListItem, ListSearch, ListSummary, defaultListSearch} from '../../entity';
+import SearchBar from '../../components/SearchBar';
+import {defaultListSearch, ListItem, ListSearch, ListSummary} from '../../entity';
 import styles from './index.module.less';
 
 interface StoreProps {
-  listSearch/*# =pre??: #*/: ListSearch;
+  prefixPathname: string;
+  listSearch: ListSearch;
   list/*# =pre??: #*/: ListItem[];
   listSummary/*# =pre??: #*/: ListSummary;
 }
 
 /*# if:react #*/
 function mapStateToProps(appState: APPState): StoreProps {
-  const {listSearch, list, listSummary} = appState.article!;
+  const {prefixPathname, listSearch, list, listSummary} = appState.article!;
   /*# if:pre #*/
-  return {listSearch, list, listSummary};
+  return {prefixPathname, listSearch, list, listSummary};
   /*# else #*/
-  return {listSearch: listSearch!, list: list!, listSummary: listSummary!};
+  return {prefixPathname, listSearch: listSearch, list: list!, listSummary: listSummary!};
   /*# end #*/
 }
 /*# else:vue #*/
@@ -35,7 +43,8 @@ function mapStateToProps(appState: APPState): StoreProps {
 function mapStateToProps(appState: APPState): ComputedStore<StoreProps> {
   const article = appState.article!;
   return {
-    listSearch: () => article.listSearch/*# =post?!: #*/,
+    prefixPathname: () => article.prefixPathname,
+    listSearch: () => article.listSearch,
     list: () => article.list/*# =post?!: #*/,
     listSummary: () => article.listSummary/*# =post?!: #*/,
   };
@@ -43,21 +52,21 @@ function mapStateToProps(appState: APPState): ComputedStore<StoreProps> {
 /*# end #*/
 
 /*# if:react #*/
-const Component: FC<StoreProps & {dispatch: Dispatch}> = ({listSearch, list, listSummary, dispatch}) => {
+const Component: FC<StoreProps & {dispatch: Dispatch}> = ({prefixPathname, listSearch, list, listSummary, dispatch}) => {
   const router = useRouter();
   const paginationBaseUrl = useMemo(
     () =>
       locationToUrl({
-        pathname: '/article/list',
+        pathname: `${prefixPathname}/list`,
         searchQuery: excludeDefaultParams(defaultListSearch, {keyword: listSearch?.keyword, pageCurrent: 0}),
       }),
-    [listSearch?.keyword]
+    [listSearch?.keyword, prefixPathname]
   );
   const onSearch = useCallback(
     (keyword: string) => {
-      router.push({pathname: '/article/list', searchQuery: excludeDefaultParams(defaultListSearch, {keyword})});
+      router.push({pathname: `${prefixPathname}/list`, searchQuery: excludeDefaultParams(defaultListSearch, {keyword})});
     },
-    [router]
+    [router, prefixPathname]
   );
   const onDeleteItem = useCallback(
     (id) => {
@@ -67,48 +76,55 @@ const Component: FC<StoreProps & {dispatch: Dispatch}> = ({listSearch, list, lis
   );
   const onEditItem = useCallback(
     (id = '0') => {
-      router.push({url: `/article/edit?id=${id}`}, 'window');
+      router.push({url: `${prefixPathname}/edit?id=${id}`}, 'window');
     },
-    [router]
+    [router, prefixPathname]
   );
+  /*# if:taro #*/
+  const onNavToShop = useCallback(() => navigateTo({url: '/modules/shop/pages/list'}), []);
+  /*# end #*/
+
   return (
     <>
-      <DocumentHead title="文章" />
       <NavBar title="文章列表" />
       <div className={`${styles.root} g-page-content`}>
+        <DocumentHead title="文章列表" />
+        <SearchBar keyword={listSearch.keyword} onSubmit={onSearch} onCreate={onEditItem} />
         /*# if:pre #*/
-        {listSearch && list && listSummary && (
-          <>
-        /*# else #*/
-          /*# [[[-4 #*/
+        {list && listSummary && (
         /*# end #*/
-            <SearchBar keyword={listSearch.keyword} onSubmit={onSearch} onCreate={onEditItem} />
-            <div className="article-list">
-              {list.map((item) => (
-                <div key={item.id} className="article-item">
-                  <Link className="article-title" to={`/article/detail?id=${item.id}`} target="window">
-                    {item.title}
-                  </Link>
-                  <Link className="article-summary" to={`/article/detail?id=${item.id}`} target="window">
-                    {item.summary}
-                  </Link>
-                  <div className="article-operation">
-                    <div className="item" onClick={() => onEditItem(item.id)}>
-                      修改
-                    </div>
-                    <div className="item" onClick={() => onDeleteItem(item.id)}>
-                      删除
-                    </div>
+          <div className="list">
+            {list.map((item) => (
+              <div key={item.id} className="article-item">
+                <Link className="article-title" to={`${prefixPathname}/detail?id=${item.id}`} action="push" target="window">
+                  {item.title}
+                </Link>
+                <Link className="article-summary" to={`${prefixPathname}/detail?id=${item.id}`} action="push" target="window">
+                  {item.summary}
+                </Link>
+                <div className="article-operation">
+                  <div className="item" onClick={() => onEditItem(item.id)}>
+                    修改
+                  </div>
+                  <div className="item" onClick={() => onDeleteItem(item.id)}>
+                    删除
                   </div>
                 </div>
-              ))}
-              <Pagination totalPages={listSummary.totalPages} pageCurrent={listSummary.pageCurrent} baseUrl={paginationBaseUrl} />
+              </div>
+            ))}
+            <Pagination totalPages={listSummary.totalPages} pageCurrent={listSummary.pageCurrent} baseUrl={paginationBaseUrl} />
+            /*# if:taro #*/
+            <div className="g-ad" onClick={onNavToShop}>
+              -- 特惠商城，盛大开业 --
             </div>
+            /*# else #*/
+            <Link className="g-ad" to="/shop/list" action="push" target="window">
+              -- 特惠商城，盛大开业 --
+            </Link>
+            /*# end #*/
+          </div>
         /*# if:pre #*/
-          </>
         )}
-        /*# else #*/
-          /*# ]]] #*/
         /*# end #*/
       </div>
       /*# if:!taro #*/
@@ -126,63 +142,70 @@ const Component = defineComponent({
     const router = useRouter();
     const store = useStore();
     const computedStore = mapStateToProps(store.getState());
+    const prefixPathname = computed(computedStore.prefixPathname);
     const listSearch = computed(computedStore.listSearch);
     const list = computed(computedStore.list);
     const listSummary = computed(computedStore.listSummary);
     const paginationBaseUrl = computed(() =>
       locationToUrl({
-        pathname: '/article/list',
+        pathname: `${prefixPathname.value}/list`,
         searchQuery: excludeDefaultParams(defaultListSearch, {keyword: listSearch.value?.keyword, pageCurrent: 0}),
       })
     );
     const onSearch = (keyword: string) => {
-      router.push({pathname: '/article/list', searchQuery: excludeDefaultParams(defaultListSearch, {pageCurrent: 1, keyword})});
+      router.push({pathname: `${prefixPathname.value}/list`, searchQuery: excludeDefaultParams(defaultListSearch, {pageCurrent: 1, keyword})});
     };
     const onDeleteItem = (id: string) => {
       store.dispatch(Modules.article.actions.deleteItem(id));
     };
     const onEditItem = (id: string = '0') => {
-      router.push({url: `/article/edit?id=${id}`}, 'window');
+      router.push({url: `${prefixPathname.value}/edit?id=${id}`}, 'window');
     };
+    /*# if:taro #*/
+    const onNavToShop = () => navigateTo({url: '/modules/shop/pages/list'});
+    /*# end #*/
 
     return () => (
       <>
-        <DocumentHead title="文章" />
         <NavBar title="文章列表" />
         <div class={`${styles.root} g-page-content`}>
+          <DocumentHead title="文章列表" />
+          <SearchBar keyword={listSearch.value.keyword} onSubmit={onSearch} onCreate={onEditItem} />
           /*# if:pre #*/
-          {listSearch.value && list.value && listSummary.value && (
-            <>
-          /*# else #*/
-            /*# [[[-4 #*/
+          {list.value && listSummary.value && (
           /*# end #*/
-              <SearchBar keyword={listSearch.value.keyword} onSubmit={onSearch} onCreate={onEditItem} />
-              <div class="article-list">
-                {list.value.map((item) => (
-                  <div key={item.id} class="article-item">
-                    <Link class="article-title" to={`/article/detail?id=${item.id}`} target="window">
-                      {item.title}
-                    </Link>
-                    <Link class="article-summary" to={`/article/detail?id=${item.id}`} target="window">
-                      {item.summary}
-                    </Link>
-                    <div class="article-operation">
-                      <div class="item" onClick={() => onEditItem(item.id)}>
-                        修改
-                      </div>
-                      <div class="item" onClick={() => onDeleteItem(item.id)}>
-                        删除
-                      </div>
+            <div class="list">
+              {list.value.map((item) => (
+                <div key={item.id} class="article-item">
+                  <Link class="article-title" to={`${prefixPathname.value}/detail?id=${item.id}`} action="push" target="window">
+                    {item.title}
+                  </Link>
+                  <Link class="article-summary" to={`${prefixPathname.value}/detail?id=${item.id}`} action="push" target="window">
+                    {item.summary}
+                  </Link>
+                  <div class="article-operation">
+                    <div class="item" onClick={() => onEditItem(item.id)}>
+                      修改
+                    </div>
+                    <div class="item" onClick={() => onDeleteItem(item.id)}>
+                      删除
                     </div>
                   </div>
-                ))}
-                <Pagination totalPages={listSummary.value.totalPages} pageCurrent={listSummary.value.pageCurrent} baseUrl={paginationBaseUrl.value} />
+                </div>
+              ))}
+              <Pagination totalPages={listSummary.value.totalPages} pageCurrent={listSummary.value.pageCurrent} baseUrl={paginationBaseUrl.value} />
+              /*# if:taro #*/
+              <div class="g-ad" onClick={onNavToShop}>
+                -- 特惠商城，盛大开业 --
               </div>
+              /*# else #*/
+              <Link class="g-ad" to="/shop/list" action="push" target="window">
+                -- 特惠商城，盛大开业 --
+              </Link>
+              /*# end #*/
+            </div>
           /*# if:pre #*/
-            </>
           )}
-          /*# else #*/
-            /*# ]]] #*/
           /*# end #*/
         </div>
         /*# if:!taro #*/

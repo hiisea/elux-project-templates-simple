@@ -12,6 +12,8 @@ const valueKeys = {
   taro: "platform",
   pre: "route",
   post: "route",
+  admin: "style",
+  h5: "style",
 };
 
 function replaceLess(code, css) {
@@ -24,9 +26,14 @@ function replaceLess(code, css) {
   return code;
 }
 
+// function replaceTaroCss(code, css) {
+//   return code.replace(/> \*/g, "> .h5-div").replace(/> :/g, "> .h5-div:");
+// }
+
 function replaceTsx(code, css) {
-  code = code.replace(/\s+\/\*#\s+\[\[\[([+-]\d+)\s+#\*\/([\s\S]*?)\/\*#\s+\]\]\]\s+#\*\/\s+/g, (a, cmd, str) => {
-    return str.replace(/\n[ ]{4}/g, "\n");
+  code = code.replace(/\s+\/\*#\s+\[\[\[([+-]\d+)\s+#\*\/([\s\S]*?\n)\s*\/\*#\s+\]\]\]\s+#\*\/\s*\n/g, (a, cmd, str) => {
+    const num = parseInt(cmd.substr(1));
+    return str.replace(new RegExp(`\n[ ]{${num}}`, "g"), "\n");
   });
 
   if (css === "sass") {
@@ -51,7 +58,7 @@ function replacePackage(code, filepath, projectName) {
     const subProjectName = arr[arr.length - 2];
     const publishs = Publishs[subProjectName];
     if (publishs) {
-      code = code.replace('    "dev": "elux dev",', '    "publish:lerna": "lerna publish",\n    "dev": "elux dev",');
+      code = code.replace('    "dev": "elux webpack-dev",', '    "publish:lerna": "lerna publish",\n    "dev": "elux webpack-dev",');
     }
     code = code.replace(`name": "${projectName}`, `name": "@${projectName}/${subProjectName}`);
     code = code.replace(/(workspaces": \[)[^\]]+(\])/, (_, $1, $2) => {
@@ -73,20 +80,21 @@ function replacePackage(code, filepath, projectName) {
   return code;
 }
 
-function getTitle(options, route) {
+function getTitle(options, route, style) {
   const routeSubject = route === "pre" ? "路由前置" : "路由后置";
-  const platform = options.platform === "rn" ? "开发中" : options.platform === "taro" ? "taro" : "web";
+  const platform = options.platform === "rn" ? "开发中" : options.platform === "Taro" ? "Taro" : style === "admin" ? "Admin" : "H5";
   const ui = options.framework === "react" ? "react" : "vue3";
   return `${platform}-${ui}（${routeSubject}）`;
 }
 
-function getData(options, route) {
+function getData(options, route, style) {
   const platform = options.platform === "rn" ? "rn" : options.platform === "taro" ? "taro" : "web";
   const ui = options.framework;
   return {
     ...options,
     elux: `@elux/${ui}-${platform}`,
     route,
+    style,
   };
 }
 
@@ -98,11 +106,12 @@ function getNpmLockFile(options) {
   } else {
     arr.push(platform);
   }
-  arr.push(framework, 'lock');
+  arr.push(framework, "lock");
   return arr.join("-");
 }
 
-function operation(options) {
+function operation(options, style) {
+  console.log(3333, style);
   if (options.platform === "rn") {
     return [{ action: "copy", from: "./common-rn", to: "$" }];
   } else if (options.platform === "micro") {
@@ -122,10 +131,14 @@ function operation(options) {
       { action: "copy", from: "$/article-team/", to: "$/app-runtime" },
       { action: "move", from: "$/basic-team/src/modules/article", to: "" },
       { action: "move", from: "$/basic-team/src/modules/my", to: "" },
+      { action: "move", from: "$/basic-team/src/modules/admin", to: "" },
+      { action: "move", from: "$/basic-team/src/modules/shop", to: "" },
       { action: "move", from: "$/article-team/src/modules/stage", to: "" },
       { action: "move", from: "$/article-team/src/modules/my", to: "" },
+      { action: "move", from: "$/article-team/src/modules/admin", to: "" },
       { action: "move", from: "$/user-team/src/modules/stage", to: "" },
       { action: "move", from: "$/user-team/src/modules/article", to: "" },
+      { action: "move", from: "$/user-team/src/modules/shop", to: "" },
       { action: "move", from: "$/app-build/src/modules", to: "" },
       { action: "move", from: "$/app-runtime/src/modules", to: "" },
       { action: "copy", from: "./common-micro", to: "$" },
@@ -139,6 +152,11 @@ function operation(options) {
       { action: "move", from: "$/src/components/TabBar", to: "" },
       { action: "move", from: "$/src/index.ts", to: "" },
     ];
+  } else if (style === "admin") {
+    return [
+      { action: "copy", from: "./common-web", to: "$" },
+      { action: "copy", from: "./common-admin", to: "$" },
+    ];
   } else {
     return [{ action: "copy", from: "./common-web", to: "$" }];
   }
@@ -147,15 +165,15 @@ function operation(options) {
 function beforeRender(data, filepath, code) {
   return code
     .replace(
-      /\/\*#\s+\=(react|vue|ssr|csr|micro|taro|less|sass|post|pre)\?([^:]+?):(.*?)\s+#\*\//g,
-      (str, $1, $2, $3) => `<%= ${valueKeys[$1]}==='${$1}'?\`${$2}\`:\`${$3}\` %>`
+      /\/\*#\s+\=(!?)(react|vue|ssr|csr|micro|taro|less|sass|post|pre|admin|h5)\?([^:]+?):(.*?)\s+#\*\//g,
+      (str, v1, v2, v3, v4) => `<%= ${valueKeys[v2]}${v1 || "="}=='${v2}'?\`${v3}\`:\`${v4}\` %>`
     )
     .replace(
-      /\/\*#\s+if:(!?)(react|vue|ssr|csr|micro|taro|less|sass|post|pre)\s+#\*\//g,
+      /\/\*#\s+if:(!?)(react|vue|ssr|csr|micro|taro|less|sass|post|pre|admin|h5)\s+#\*\//g,
       (str, v1, v2) => `<%_ if(${valueKeys[v2]}${v1 || "="}=='${v2}'){ -%>`
     )
     .replace(
-      /\/\*#\s+else:(!?)(react|vue|ssr|csr|micro|taro|less|sass|post|pre)\s+#\*\//g,
+      /\/\*#\s+else:(!?)(react|vue|ssr|csr|micro|taro|less|sass|post|pre|admin|h5)\s+#\*\//g,
       (str, v1, v2) => `<%_ }else if(${valueKeys[v2]}${v1 || "="}=='${v2}'){ -%>`
     )
     .replace(/\/\*#\s+else\s+#\*\//g, `<%_ }else{ -%>`)
@@ -174,6 +192,10 @@ function afterRender(data, filepath, code) {
     if (filepath.endsWith("package.json")) {
       return replacePackage(code, filepath, data.projectName);
     }
+  } else if (data.platform === "taro") {
+    // if (filepath.endsWith(".less")) {
+    //   code = replaceTaroCss(code, data.css);
+    // }
   }
   if (filepath.endsWith(".tsx")) {
     return replaceTsx(code, data.css);

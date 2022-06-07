@@ -1,6 +1,6 @@
 import {exportModule} from '<%= elux %>';
-import main from './views/Main';
 import {Model} from './model';
+import main from './views/Main';
 
 const shop = exportModule('shop', Model, {main});
 export default shop;

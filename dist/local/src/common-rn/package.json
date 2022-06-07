@@ -5,7 +5,7 @@
   "author": "hiisea <hiisea@qq.com>",
   "license": "MIT",
   "engines": {
-    "node": ">=16.0.0"
+    "node": ">=14.0.0"
   },
   "private": true,
   "browserslist": [

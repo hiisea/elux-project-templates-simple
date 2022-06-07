@@ -1,58 +1,81 @@
+/*# if:!admin #*/
+import NavBar from '@/components/NavBar';
+/*# end #*/
+import {GetActions/*# =vue?, useStore: #*/} from '@/Global';
+/*# if:react #*/
+import {connectRedux, Dispatch, DocumentHead/*# =!taro?, Link: #*/} from '<%= elux %>';
+/*# else:vue #*/
+import {DocumentHead, exportView/*# =!taro?, Link: #*/} from '<%= elux %>';
+/*# end #*/
 /*# if:react #*/
 import {FC, useCallback, useState} from 'react';
 /*# else:vue #*/
 import {defineComponent, ref} from 'vue';
 /*# end #*/
-import {DocumentHead, /*# =react?Dispatch, connectRedux:exportView #*/} from '<%= elux %>';
-import NavBar from '@/components/NavBar';
-import {Modules, useRouter/*# =vue?, useStore: #*/} from '@/Global';
+/*# if:taro #*/
+import {navigateTo} from '@tarojs/taro';
+/*# end #*/
 import styles from './index.module.less';
+
+const {stage: stageActions} = GetActions('stage');
 
 /*# if:react #*/
 const Component: FC<{dispatch: Dispatch}> = ({dispatch}) => {
-  const router = useRouter();
-  const onCancel = useCallback(() => router.back(1, 'window'), [router]);
   const [errorMessage, setErrorMessage] = useState('');
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState('admin');
+  const [password, setPassword] = useState('123456');
   const onSubmit = useCallback(() => {
     if (!username || !password) {
       setErrorMessage('请输入用户名、密码');
     } else {
       //这样的写法可以使用TS的类型提示，等同于dispatch({type:'stage.login',payload:{username, password}})
       //可以await这个action的所有handler执行完成
-      const result = dispatch(Modules.stage.actions.login({username, password})) as Promise<void>;
+      const result = dispatch(stageActions.login({username, password})) as Promise<void>;
       result.catch(({message}) => {
         setErrorMessage(message);
       });
     }
   }, [dispatch, password, username]);
+  const onCancel = useCallback(() => {
+    dispatch(stageActions.cancelLogin());
+  }, [dispatch]);
+  /*# if:taro #*/
+  const onNavToShop = useCallback(() => navigateTo({url: '/modules/shop/pages/list'}), []);
+  /*# end #*/
 
   return (
+    /*# if:admin #*/
+    <div className="wrap">
+      <div className={`${styles.root} g-page-dialog`}>
+    /*# else #*/
     <>
-      <DocumentHead title="登录" />
       <NavBar title="登录" />
       <div className={`${styles.root} g-page-content`}>
-        <div className="form-body">
-          <div className="form-item">
-            <div className="label">用户名:</div>
+    /*# end #*/
+        <DocumentHead title="登录" />
+        /*# if:admin #*/
+        <h2>请登录</h2>
+        /*# end #*/
+        <div className="g-form">
+          <div className="item">
+            <div className="item">用户名</div>
             <div className="item">
               <input
                 name="username"
-                className="g-input"
                 type="text"
+                className="g-input"
                 placeholder="请输入"
                 onChange={(e) => setUsername(e.target.value.trim())}
                 value={username}
               />
             </div>
           </div>
-          <div className="form-item">
-            <div className="label">密码:</div>
+          <div className="item item-last">
+            <div className="item">密码</div>
             <div className="item">
               <input
                 name="password"
-                type="password"
+                type="text"
                 className="g-input"
                 placeholder="请输入"
                 onChange={(e) => setPassword(e.target.value.trim())}
@@ -60,9 +83,12 @@ const Component: FC<{dispatch: Dispatch}> = ({dispatch}) => {
               />
             </div>
           </div>
-          {errorMessage && <div className="error">{`* ${errorMessage}`}</div>}
+          <div className="item item-error">
+            <div className="item"></div>
+            <div className="item">{errorMessage}</div>
+          </div>
         </div>
-        <div className="form-control">
+        <div className="g-control">
           <button type="submit" className="g-button primary" onClick={onSubmit}>
             登 录
           </button>
@@ -70,8 +96,17 @@ const Component: FC<{dispatch: Dispatch}> = ({dispatch}) => {
             取 消
           </button>
         </div>
+        /*# if:taro #*/
+        <div className="g-ad" onClick={onNavToShop}>
+          -- 特惠商城，盛大开业 --
+        </div>
+        /*# else #*/
+        <Link className="g-ad" to="/shop/list" action="push" target="window">
+          -- 特惠商城，盛大开业 --
+        </Link>
+        /*# end #*/
       </div>
-    </>
+    /*# =admin?</div>:</> #*/
   );
 };
 
@@ -81,45 +116,61 @@ export default connectRedux()(Component);
 const Component = defineComponent({
   name: 'StageLoginForm',
   setup() {
-    const router = useRouter();
     const store = useStore();
     const errorMessage = ref('');
-    const username = ref('');
-    const password = ref('');
-    const onCancel = () => router.back(1, 'window');
+    const username = ref('admin');
+    const password = ref('123456');
     const onSubmit = () => {
       if (!username.value || !password.value) {
         errorMessage.value = '请输入用户名、密码';
       } else {
         //这样的写法可以使用TS的类型提示，等同于dispatch({type:'stage.login',payload:{username, password}})
         //可以await这个action的所有handler执行完成
-        const result = store.dispatch(Modules.stage.actions.login({username: username.value, password: password.value})) as Promise<void>;
+        const result = store.dispatch(stageActions.login({username: username.value, password: password.value})) as Promise<void>;
         result.catch(({message}) => {
           errorMessage.value = message;
         });
       }
     };
+    const onCancel = () => {
+      store.dispatch(stageActions.cancelLogin());
+    };
+    /*# if:taro #*/
+    const onNavToShop = () => navigateTo({url: '/modules/shop/pages/list'});
+    /*# end #*/
+
     return () => (
+      /*# if:admin #*/
+      <div class="wrap">
+        <div class={`${styles.root} g-page-dialog`}>
+      /*# else #*/
       <>
-        <DocumentHead title="登录" />
         <NavBar title="登录" />
         <div class={`${styles.root} g-page-content`}>
-          <div class="form-body">
-            <div class="form-item">
-              <div class="label">用户名:</div>
+      /*# end #*/
+          <DocumentHead title="登录" />
+          /*# if:admin #*/
+          <h2>请登录</h2>
+          /*# end #*/
+          <div class="g-form">
+            <div class="item">
+              <div class="item">用户名</div>
               <div class="item">
                 <input name="username" class="g-input" type="text" placeholder="请输入" v-model={username.value} />
               </div>
             </div>
-            <div class="form-item">
-              <div class="label">密码:</div>
+            <div class="item item-last">
+              <div class="item">密码</div>
               <div class="item">
-                <input name="password" type="password" class="g-input" placeholder="请输入" v-model={password.value} />
+                <input name="password" class="g-input" type="text" placeholder="请输入" v-model={password.value} />
               </div>
             </div>
-            {errorMessage.value && <div class="error">{`* ${errorMessage.value}`}</div>}
+            <div class="item item-error">
+              <div class="item"></div>
+              <div class="item">{errorMessage.value}</div>
+            </div>
           </div>
-          <div class="form-control">
+          <div class="g-control">
             <button type="submit" class="g-button primary" onClick={onSubmit}>
               登 录
             </button>
@@ -127,8 +178,17 @@ const Component = defineComponent({
               取 消
             </button>
           </div>
+          /*# if:taro #*/
+          <div class="g-ad" onClick={onNavToShop}>
+            -- 特惠商城，盛大开业 --
+          </div>
+          /*# else #*/
+          <Link class="g-ad" to="/shop/list" action="push" target="window">
+            -- 特惠商城，盛大开业 --
+          </Link>
+          /*# end #*/
         </div>
-      </>
+      /*# =admin?</div>:</> #*/
     );
   },
 });

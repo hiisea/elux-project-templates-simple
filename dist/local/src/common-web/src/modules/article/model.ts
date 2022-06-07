@@ -1,15 +1,17 @@
 //定义本模块的业务模型
-import /*# =taro?pathToRegexp:{pathToRegexp} #*/ from 'path-to-regexp';
-import {BaseModel, reducer, effect} from '<%= elux %>';
 import {APPState} from '@/Global';
+import {CommonErrorCode, CustomError} from '@/utils/errors';
 import {mergeDefaultParams} from '@/utils/tools';
-import {CurrentView, ListSearch, ListItem, ListSummary, ItemDetail, defaultListSearch, api} from './entity';
+import {BaseModel, effect, reducer} from '<%= elux %>';
+import /*# =taro?pathToRegexp:{pathToRegexp} #*/ from 'path-to-regexp';
+import {api, CurView, defaultListSearch, ItemDetail, ListItem, ListSearch, ListSummary} from './entity';
 
 //定义本模块的状态结构
 //通常都是`列表/详情/编辑`结构
 export interface ModuleState {
-  currentView?: CurrentView; //该字段用来表示当前路由下展示本模块的哪个View
-  listSearch?: ListSearch; //该字段用来记录列表时搜索条件
+  prefixPathname: string;
+  curView?: CurView; //该字段用来表示当前路由下展示本模块的哪个View
+  listSearch: ListSearch; //该字段用来记录列表时搜索条件
   list?: ListItem[]; //该字段用来记录列表
   listSummary?: ListSummary; //该字段用来记录当前列表的摘要信息
   itemId?: string; //该字段用来记录某条记录的ID
@@ -18,7 +20,8 @@ export interface ModuleState {
 
 //每个不同的模块都可以在路由中提取自己想要的信息
 interface RouteParams {
-  currentView?: CurrentView;
+  prefixPathname: string;
+  curView?: CurView;
   listSearch: ListSearch;
   itemId?: string;
 }
@@ -34,10 +37,17 @@ export class Model extends BaseModel<ModuleState, APPState> {
   //提取当前路由中的本模块感兴趣的信息
   protected getRouteParams(): RouteParams {
     const {pathname, searchQuery} = this.getRouter().location;
-    const [, currentView] = pathToRegexp('/article/:currentView').exec(pathname) || [];
+    /*# if:admin #*/
+    const [, admin, article, curViewStr = ''] = pathToRegexp('/:admin/:article/:curView').exec(pathname) || [];
+    const prefixPathname = ['', admin, article].join('/');
+    /*# else #*/
+    const [, article, curViewStr = ''] = pathToRegexp('/:article/:curView').exec(pathname) || [];
+    const prefixPathname = ['', article].join('/');
+    /*# end #*/
+    const curView: CurView | undefined = CurView[curViewStr] || undefined;
     const {pageCurrent = '', keyword, id} = searchQuery as Record<string, string | undefined>;
     const listSearch = {pageCurrent: parseInt(pageCurrent) || undefined, keyword};
-    return {currentView: currentView as CurrentView, itemId: id, listSearch: mergeDefaultParams(defaultListSearch, listSearch)};
+    return {prefixPathname, curView, itemId: id, listSearch: mergeDefaultParams(defaultListSearch, listSearch)};
   }
 
   //每次路由发生变化，都会引起Model重新挂载到Store
@@ -48,6 +58,7 @@ export class Model extends BaseModel<ModuleState, APPState> {
   //也可以不做任何await，直接Render，此时需要设计Loading界面
   public /*# =post?async : #*/onMount(env: 'init' | 'route' | 'update'): /*# =post?Promise<void>:void #*/ {
     this.routeParams = this.getRouteParams();
+    /*# if:!admin #*/
     /*# if:ssr #*/
     const prevState = this.getPrevState();
     //服务器渲染时，client端直接复用server端的state即可
@@ -56,11 +67,12 @@ export class Model extends BaseModel<ModuleState, APPState> {
       return;
     }
     /*# end #*/
-    const {currentView, listSearch, itemId} = this.routeParams;
-    this.dispatch(this.privateActions._initState({currentView}));
-    if (currentView === 'list') {
+    /*# end #*/
+    const {prefixPathname, curView, listSearch, itemId} = this.routeParams;
+    this.dispatch(this.privateActions._initState({prefixPathname, curView, listSearch}));
+    if (curView === 'list') {
       /*# =post?await : #*/this.dispatch(this.actions.fetchList(listSearch));
-    } else if (currentView && itemId) {
+    } else if (curView && itemId) {
       /*# =post?await : #*/this.dispatch(this.actions.fetchItem(itemId));
     }
   }
@@ -90,6 +102,10 @@ export class Model extends BaseModel<ModuleState, APPState> {
   //也可以在ModuleState中增加一个loading状态，effect('this.deleteLoading')
   @effect()
   public async deleteItem(id: string): Promise<void> {
+    //删除需要登录
+    if (!this.hasLogin()) {
+      throw new CustomError(CommonErrorCode.unauthorized, '请登录！', this.getRouter().location.url, true);
+    }
     await api.deleteItem({id});
     this.dispatch(this.actions.fetchList());
   }
@@ -111,7 +127,7 @@ export class Model extends BaseModel<ModuleState, APPState> {
     const router = this.getRouter();
     await api.createItem(item);
     await router.back(1, 'window');
-    router.replace({pathname: '/article/list', searchQuery: {pageCurrent: 1}});
+    router.replace({pathname: `${this.state.prefixPathname}/list`, searchQuery: {pageCurrent: 1}});
   }
 
   //定义一个effect，用来执行列表查询的业务逻辑
@@ -129,5 +145,9 @@ export class Model extends BaseModel<ModuleState, APPState> {
   public async fetchItem(itemId: string): Promise<void> {
     const item = await api.getItem({id: itemId});
     this.dispatch(this.privateActions.putCurrentItem(itemId, item));
+  }
+
+  private hasLogin(): boolean {
+    return this.getRootState().stage!.curUser.hasLogin;
   }
 }

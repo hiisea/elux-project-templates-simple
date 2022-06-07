@@ -1,13 +1,13 @@
-import pathToRegexp from 'path-to-regexp';
 import {BaseModel} from '<%= elux %>';
-import {CurrentView} from './entity';
+import /*# =taro?pathToRegexp:{pathToRegexp} #*/ from 'path-to-regexp';
+import {CurView} from './entity';
 
 export interface ModuleState {
-  currentView?: CurrentView;
+  curView?: CurView;
 }
 
 interface RouteParams {
-  currentView?: CurrentView;
+  curView?: CurView;
 }
 
 export class Model extends BaseModel<ModuleState> {
@@ -16,14 +16,15 @@ export class Model extends BaseModel<ModuleState> {
 
   protected getRouteParams(): RouteParams {
     const {pathname} = this.getRouter().location;
-    const [, currentView] = pathToRegexp('/shop/:currentView').exec(pathname) || [];
-    return {currentView} as RouteParams;
+    const [, , curViewStr = ''] = pathToRegexp('/:shop/:curView').exec(pathname) || [];
+    const curView: CurView | undefined = CurView[curViewStr] || undefined;
+    return {curView};
   }
 
   public onMount(): void {
     this.routeParams = this.getRouteParams();
-    const {currentView} = this.routeParams;
-    const initState: ModuleState = {currentView};
+    const {curView} = this.routeParams;
+    const initState: ModuleState = {curView};
     this.dispatch(this.privateActions._initState(initState));
   }
 }

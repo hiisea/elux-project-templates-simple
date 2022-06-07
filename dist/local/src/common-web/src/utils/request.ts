@@ -1,5 +1,5 @@
-import axios, {AxiosError, AxiosResponse} from 'axios';
 import {ApiPrefix} from '@/Global';
+import axios, {AxiosError, AxiosResponse} from 'axios';
 import {CommonErrorCode, CustomError} from './errors';
 
 export interface IRequest<Req, Res> {

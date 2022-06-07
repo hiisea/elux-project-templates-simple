@@ -25,8 +25,8 @@ Taro工程使用的是Taro官方脚手架，具体使用方法见Taro官方
 案例中假设有3个Team来合作开发这个项目：
 
 1. basic-team 负责开发根模块：stage，独立运行端口：4003
-2. article-team 负责开发模块：article，独立运行端口：4001
-3. user-team 负责开发模块：my，独立运行端口：4002
+2. article-team 负责开发模块：article、shop，独立运行端口：4001
+3. user-team 负责开发模块：admin、my，独立运行端口：4002
 
 每个Team都是一个独立工程，它们都可以独立运行，示例中为了安装和演示方便将它们放在一个父工程中，并使用lerna进行管理，
 实际项目中不需要这个父工程中，而可以使用lerna管理子模块

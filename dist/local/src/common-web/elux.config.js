@@ -10,13 +10,13 @@
   };
   const type = typeMap[framework + '-' + platform];
 -%>
-const {localIP} = require('@elux/cli-utils');
+const {getLocalIP} = require('@elux/cli-utils');
 const serverPort = 4003;
 /*# if:ssr #*/
-const testUrl = `http://${localIP}:${serverPort}`;
+const testUrl = `http://${getLocalIP()}:${serverPort}`;
 /*# end #*/
 const apiHosts = {
-  local: `http://${localIP}:3003/`,
+  local: `http://${getLocalIP()}:3003/`,
   test: 'http://10.201.0.212:31088/',
 };
 const APP_ENV = process.env.APP_ENV || 'local';

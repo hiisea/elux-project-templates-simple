@@ -1,4 +1,6 @@
-export type CurrentView = 'goodsList';
+export enum CurView {
+  'list' = 'list',
+}
 
 class API {}
 
