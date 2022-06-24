@@ -4,7 +4,8 @@ import {CommonErrorCode, CustomError} from '@/utils/errors';
 import {mergeDefaultParams} from '@/utils/tools';
 import {BaseModel, effect, reducer} from '<%= elux %>';
 import /*# =taro?pathToRegexp:{pathToRegexp} #*/ from 'path-to-regexp';
-import {api, CurView, defaultListSearch, ItemDetail, ListItem, ListSearch, ListSummary} from './entity';
+import {CurView, api, defaultListSearch} from './entity';
+import type {ItemDetail, ListItem, ListSearch, ListSummary} from './entity';
 
 //定义本模块的状态结构
 //通常都是`列表/详情/编辑`结构
