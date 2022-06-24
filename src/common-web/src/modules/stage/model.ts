@@ -7,7 +7,8 @@ import {BaseModel, effect, ErrorCodes, LoadingState/*# =ssr?, getTplInSSR, isSer
 import {showToast} from '@tarojs/taro';
 /*# end #*/
 import /*# =taro?pathToRegexp:{pathToRegexp} #*/ from 'path-to-regexp';
-import {api, CurUser, CurView, guest, LoginParams, SubModule} from './entity';
+import {CurView, SubModule, api, guest} from './entity';
+import type {CurUser, LoginParams} from './entity';
 
 //定义本模块的状态结构
 export interface ModuleState {
