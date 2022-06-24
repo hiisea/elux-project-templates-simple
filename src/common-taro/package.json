@@ -67,7 +67,7 @@
     "@tarojs/webpack-runner": "3.4.11",
     "@tarojs/plugin-html": "3.4.11",
     "babel-preset-taro": "3.4.11",   
-    "@elux/cli": "^2.5.1",
+    "@elux/cli": "^2.5.2",
     "@elux/cli-utils": "^2.3.1",
     "@elux/cli-mock": "^2.1.0",
     "@elux/eslint-plugin": "^1.2.2",

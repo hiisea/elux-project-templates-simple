@@ -1,4 +1,4 @@
-/* create-elux@^1.0.0 */
+/* create-elux@^2.0.0 */
 
 function replaceLess(code, css) {
   if (css === "sass") {
