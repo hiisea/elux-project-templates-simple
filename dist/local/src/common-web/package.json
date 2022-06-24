@@ -52,7 +52,7 @@
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
     /*# end #*/
-    "@elux/cli": "^2.5.1",
+    "@elux/cli": "^2.5.2",
     "@elux/cli-utils": "^2.3.1",
     "@elux/cli-webpack": "^2.2.1",
     "@elux/cli-mock": "^2.1.0",

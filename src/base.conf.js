@@ -1,4 +1,4 @@
-/* ^2.0.0 */
+/* @elux/cli-init@^2.0.0 */
 let Alias, Publishs, Depes;
 
 const valueKeys = {
