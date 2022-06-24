@@ -7,23 +7,6 @@ return {
   },
   data(options) {
     const projectName = options.projectName;
-    Alias = {
-      "basic-team": [`"@/Global": ["./Global"]`, `"@${projectName}/stage": ["./modules/stage"]`, `"@${projectName}/stage/*": ["./modules/stage/*"]`],
-      "article-team": [
-        `"@/Global": ["./Global"]`,
-        `"@${projectName}/article": ["./modules/article"]`,
-        `"@${projectName}/article/*": ["./modules/article/*"]`,
-        `"@${projectName}/shop": ["./modules/shop"]`,
-        `"@${projectName}/shop/*": ["./modules/shop/*"]`,
-      ],
-      "user-team": [
-        `"@/Global": ["./Global"]`,
-        `"@${projectName}/admin": ["./modules/admin"]`,
-        `"@${projectName}/admin/*": ["./modules/admin/*"]`,
-        `"@${projectName}/my": ["./modules/my"]`,
-        `"@${projectName}/my/*": ["./modules/my/*"]`,
-      ],
-    };
     const stageModule = `    "@${projectName}/stage": "^1.0.0"`;
     const articleModule = `    "@${projectName}/article": "^1.0.0"`;
     const shopModule = `    "@${projectName}/shop": "^1.0.0"`;

@@ -42,16 +42,6 @@ function replaceTsx(code, css) {
   return code;
 }
 
-function replaceTsconfig(code, filepath) {
-  const arr = filepath.split("/");
-  const subProjectName = arr[arr.length - 3];
-  const paths = Alias[subProjectName];
-  if (paths) {
-    return code.replace('"@/*": ["./*"]', paths.join(",\n      "));
-  }
-  return code;
-}
-
 function replacePackage(code, filepath, projectName) {
   if (/\.\/[\w-]+\/package\.json/.test(filepath)) {
     const arr = filepath.split("/");
@@ -185,9 +175,6 @@ function afterRender(data, filepath, code) {
     if (filepath.endsWith(".tsx") || filepath.endsWith(".ts") || filepath.endsWith(".less")) {
       code = code.replace(/(['"])@\/(components|utils|assets)\//g, `$1@${data.projectName}/stage/$2/`);
       code = code.replace(/(['"])@\/modules\//g, `$1@${data.projectName}/`);
-    }
-    if (filepath.endsWith("tsconfig.json")) {
-      return replaceTsconfig(code, filepath);
     }
     if (filepath.endsWith("package.json")) {
       return replacePackage(code, filepath, data.projectName);
