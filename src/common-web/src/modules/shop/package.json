@@ -4,7 +4,7 @@
   "main": "index.ts",
   "peerDependencies": {
     "@<%= projectName %>/stage": "^1.0.0",
-    "<%= elux %>": "^2.2.0",
+    "<%= elux %>": "~2.2.0",
     /*# if:react #*/
     "react": "^17.0.0",
     "react-dom": "^17.0.0",
