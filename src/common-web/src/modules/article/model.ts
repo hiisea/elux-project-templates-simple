@@ -128,7 +128,7 @@ export class Model extends BaseModel<ModuleState, APPState> {
     const router = this.getRouter();
     await api.createItem(item);
     await router.back(1, 'window');
-    router.replace({pathname: `${this.state.prefixPathname}/list`, searchQuery: {pageCurrent: 1}});
+    router.replace({pathname: `${this.state.prefixPathname}/list`, searchQuery: {pageCurrent: 1}}, 'page');
   }
 
   //定义一个effect，用来执行列表查询的业务逻辑

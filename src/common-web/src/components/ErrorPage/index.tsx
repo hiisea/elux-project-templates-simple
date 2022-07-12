@@ -22,7 +22,7 @@ const props = {
 /*# if:react #*/
 const Component: FC<Props> = ({message = '(404) Not Found!'}) => {
   const router = useRouter();
-  const onBack = useCallback(() => router.back(1), [router]);
+  const onBack = useCallback(() => router.back(1, 'page'), [router]);
   return (
     <div className={styles.root}>
       <div className="message">{message}</div>

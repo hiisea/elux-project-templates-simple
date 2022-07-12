@@ -52,13 +52,13 @@ const Component: FC<StoreProps & {dispatch: Dispatch}> = ({prefixPathname, listS
       router.push({
         pathname: `${prefixPathname}/list`,
         searchQuery: excludeDefaultParams(defaultListSearch, {keyword: listSearch.keyword, pageCurrent}),
-      });
+      }, 'page');
     },
     [router, prefixPathname, listSearch?.keyword]
   );
   const onSearch = useCallback(
     (keyword: string) => {
-      router.push({pathname: `${prefixPathname}/list`, searchQuery: excludeDefaultParams(defaultListSearch, {keyword})});
+      router.push({pathname: `${prefixPathname}/list`, searchQuery: excludeDefaultParams(defaultListSearch, {keyword})}, 'page');
     },
     [router, prefixPathname]
   );
@@ -104,16 +104,16 @@ const Component: FC<StoreProps & {dispatch: Dispatch}> = ({prefixPathname, listS
                 <tr key={item.id}>
                   <td className="item-id">{item.id}</td>
                   <td className="item-title">
-                    <Link to={`${prefixPathname}/detail?id=${item.id}`} target="window">
+                    <Link to={`${prefixPathname}/detail?id=${item.id}`} action="push" target="window">
                       {item.title}
                     </Link>
                   </td>
                   <td className="item-summary">{item.summary}</td>
                   <td className="item-action">
-                    <Link to={`${prefixPathname}/detail?id=${item.id}`} target="window">
+                    <Link to={`${prefixPathname}/detail?id=${item.id}`} action="push" target="window">
                       查看
                     </Link>
-                    <Link to={`${prefixPathname}/edit?id=${item.id}&__c=_dialog`} target="window">
+                    <Link to={`${prefixPathname}/edit?id=${item.id}&__c=_dialog`} action="push" target="window">
                       修改
                     </Link>
                     <a className="item" onClick={() => onDeleteItem(item.id)}>
@@ -153,11 +153,11 @@ const Component = defineComponent({
     const onPageChange = (pageCurrent: number) => {
       router.push({
         pathname: `${prefixPathname.value}/list`,
-        searchQuery: excludeDefaultParams(defaultListSearch, {keyword: listSearch.value.keyword, pageCurrent}),
+        searchQuery: excludeDefaultParams(defaultListSearch, {keyword: listSearch.value.keyword, pageCurrent}, 'page'),
       });
     };
     const onSearch = (keyword: string) => {
-      router.push({pathname: `${prefixPathname.value}/list`, searchQuery: excludeDefaultParams(defaultListSearch, {pageCurrent: 1, keyword})});
+      router.push({pathname: `${prefixPathname.value}/list`, searchQuery: excludeDefaultParams(defaultListSearch, {pageCurrent: 1, keyword})}, 'page');
     };
     const onDeleteItem = (id: string) => {
       store.dispatch(Modules.article.actions.deleteItem(id));
@@ -195,16 +195,16 @@ const Component = defineComponent({
                   <tr key={item.id}>
                     <td class="item-id">{item.id}</td>
                     <td class="item-title">
-                      <Link to={`${prefixPathname.value}/detail?id=${item.id}`} target="window">
+                      <Link to={`${prefixPathname.value}/detail?id=${item.id}`} action="push" target="window">
                         {item.title}
                       </Link>
                     </td>
                     <td class="item-summary">{item.summary}</td>
                     <td class="item-action">
-                      <Link to={`${prefixPathname.value}/detail?id=${item.id}`} target="window">
+                      <Link to={`${prefixPathname.value}/detail?id=${item.id}`} action="push" target="window">
                         查看
                       </Link>
-                      <Link to={`${prefixPathname.value}/edit?id=${item.id}&__c=_dialog`} target="window">
+                      <Link to={`${prefixPathname.value}/edit?id=${item.id}&__c=_dialog`} action="push" target="window">
                         修改
                       </Link>
                       <a class="item" onClick={() => onDeleteItem(item.id)}>

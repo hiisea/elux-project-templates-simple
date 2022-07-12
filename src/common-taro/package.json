@@ -52,7 +52,7 @@
     "@tarojs/react": "3.4.11",
     "react": "^17.0.0",
     "react-dom": "^17.0.0",
-    "@elux/react-taro": "~2.2.0",
+    "@elux/react-taro": "^2.3.0",
     /*# else #*/
     "@tarojs/plugin-framework-vue3": "3.4.11",
     "vue": "^3.0.0",
