@@ -1,25 +1,19 @@
 /*# if:react #*/
-import {Dispatch, Link, LoadingState, connectRedux} from '<%= elux %>';
-/*# else:vue #*/
-import {ComputedStore, exportView, Link, LoadingState} from '<%= elux %>';
-/*# end #*/
-/*# if:react #*/
+import {Dispatch, Link, connectRedux} from '<%= elux %>';
 import {FC, ReactNode, useCallback} from 'react';
 /*# else:vue #*/
+import {ComputedStore, exportView, Link} from '<%= elux %>';
 import {computed, defineComponent} from 'vue';
 /*# end #*/
-import LoadingPanel from '@/components/LoadingPanel';
 import {APPState, Modules, StaticPrefix/*# =vue?, useStore: #*/} from '@/Global';
 import {CurUser} from '@/modules/stage/entity';
 import {Notices, SubModule} from '../../entity';
 import styles from './index.module.less';
 
 interface StoreProps {
-  dialogMode: boolean;
   curUser: CurUser;
   subModule?: SubModule;
   notices?: Notices;
-  globalLoading?: LoadingState;
 }
 
 /*# if:react #*/
@@ -28,9 +22,9 @@ interface OwnerProps {
 }
 
 function mapStateToProps(appState: APPState): StoreProps {
-  const {curUser, globalLoading} = appState.stage!;
-  const {dialogMode, subModule, notices} = appState.admin!;
-  return {dialogMode, curUser, subModule, notices, globalLoading};
+  const {curUser} = appState.stage!;
+  const {subModule, notices} = appState.admin!;
+  return {curUser, subModule, notices};
 }
 /*# else:vue #*/
 //这里保持和Redux的风格一致，也可以省去这一步，直接使用computed
@@ -39,9 +33,7 @@ function mapStateToProps(appState: APPState): ComputedStore<StoreProps> {
   const admin = appState.admin!;
   return {
     curUser: () => stage.curUser,
-    globalLoading: () => stage.globalLoading,
     subModule: () => admin.subModule,
-    dialogMode: () => admin.dialogMode,
     notices: () => admin.notices,
   };
 }
@@ -49,22 +41,15 @@ function mapStateToProps(appState: APPState): ComputedStore<StoreProps> {
 
 /*# if:react #*/
 const Component: FC<StoreProps & OwnerProps & {dispatch: Dispatch}> = ({
-  dialogMode,
   children,
   curUser,
   subModule,
   notices,
-  globalLoading,
   dispatch,
 }) => {
   const onLogout = useCallback(() => dispatch(Modules.stage.actions.logout()), [dispatch]);
 
-  return dialogMode ? (
-    <div className="wrap">
-      {children}
-      <LoadingPanel loadingState={globalLoading} />
-    </div>
-  ) : (
+  return (
     <div className={styles.root}>
       <div className="side">
         <div className="flag">
@@ -93,7 +78,6 @@ const Component: FC<StoreProps & OwnerProps & {dispatch: Dispatch}> = ({
           </div>
         </div>
         <div className="content">{children}</div>
-        <LoadingPanel loadingState={globalLoading} />
       </div>
     </div>
   );
@@ -107,52 +91,42 @@ const Component = defineComponent({
     const store = useStore();
     const computedStore = mapStateToProps(store.getState());
     const curUser = computed(computedStore.curUser);
-    const globalLoading = computed(computedStore.globalLoading);
     const subModule = computed(computedStore.subModule);
-    const dialogMode = computed(computedStore.dialogMode);
     const notices = computed(computedStore.notices);
     const onLogout = () => store.dispatch(Modules.stage.actions.logout());
 
-    return () => {
-      return dialogMode.value ? (
-        <div class="wrap">
-          {context.slots.default!()}
-          <LoadingPanel loadingState={globalLoading.value} />
-        </div>
-      ) : (
-        <div class={styles.root}>
-          <div class="side">
-            <div class="flag">
-              Elux后台管理系统<span class="ver">v1.2</span>
-            </div>
-            <ul class="nav">
-              <li class={`item ${subModule.value === 'article' ? 'on' : ''}`}>
-                <Link to="/admin/article/list" action="relaunch" target="window">
-                  文章管理
-                </Link>
-              </li>
-              <li class={`item ${subModule.value === 'my' ? 'on' : ''}`}>
-                <Link to="/admin/my/userSummary" action="relaunch" target="window">
-                  个人中心
-                </Link>
-              </li>
-            </ul>
+    return () => (
+      <div class={styles.root}>
+        <div class="side">
+          <div class="flag">
+            Elux后台管理系统<span class="ver">v1.2</span>
           </div>
-          <div class="main">
-            <div class="header">
-              <div class="avatar" style={{backgroundImage: `url(${StaticPrefix + curUser.value.avatar})`}} />
-              <div class="nickname">{curUser.value.username}</div>
-              <div class="notices">{notices.value?.num || '..'}</div>
-              <div class="logout" onClick={onLogout}>
-                退出登录
-              </div>
-            </div>
-            <div class="content">{context.slots.default!()}</div>
-            <LoadingPanel loadingState={globalLoading.value} />
-          </div>
+          <ul class="nav">
+            <li class={`item ${subModule.value === 'article' ? 'on' : ''}`}>
+              <Link to="/admin/article/list" action="relaunch" target="window">
+                文章管理
+              </Link>
+            </li>
+            <li class={`item ${subModule.value === 'my' ? 'on' : ''}`}>
+              <Link to="/admin/my/userSummary" action="relaunch" target="window">
+                个人中心
+              </Link>
+            </li>
+          </ul>
         </div>
-      );
-    };
+        <div class="main">
+          <div class="header">
+            <div class="avatar" style={{backgroundImage: `url(${StaticPrefix + curUser.value.avatar})`}} />
+            <div class="nickname">{curUser.value.username}</div>
+            <div class="notices">{notices.value?.num || '..'}</div>
+            <div class="logout" onClick={onLogout}>
+              退出登录
+            </div>
+          </div>
+          <div class="content">{context.slots.default!()}</div>
+        </div>
+      </div>
+    );
   },
 });
 

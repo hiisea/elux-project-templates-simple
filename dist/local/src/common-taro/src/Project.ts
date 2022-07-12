@@ -1,7 +1,6 @@
 //该文件可以看作应用的配置文件
 import {stringify, parse} from 'query-string';
 import {setConfig, AppConfig} from '<%= elux %>';
-import {HomeUrl} from '@/utils/const';
 import stage from '@/modules/stage';
 import admin from '@/modules/admin';
 import article from '@/modules/article';
@@ -29,21 +28,20 @@ export const appConfig: AppConfig = setConfig({
   //Elux并没定死怎么解析路由参数，你可以使用常用的'query-string'或者'json'
   //只需要将parse(解析)和stringify(序列化)方法设置给Elux
   QueryString: {parse, stringify},
-  HomeUrl,
   //因为小程序的路由与目录结构是强关联的，此处可以与Elux中的虚拟路由做映射
   NativePathnameMapping: {
     in(nativePathname) {
       if (nativePathname === '/') {
         nativePathname = '/modules/article/pages/list';
       }
-      //小程序page中并没有admin这个路由逻辑
+      //小程序page中并没有admin
       const Prefix = {my: '/admin'};
       return nativePathname.replace(/^\/modules\/(\w+)\/pages\//, (match: string, moduleName: string) => {
         return `${Prefix[moduleName] || ''}/${moduleName}/`;
       });
     },
     out(internalPathname) {
-      //小程序page中并没有admin这个路由逻辑
+      //小程序page中并没有admin
       internalPathname = internalPathname.replace('/admin/','/');
       return internalPathname.replace(/^\/(\w+)\//, '/modules/$1/pages/');
     },

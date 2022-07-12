@@ -41,10 +41,10 @@ export default defineComponent({
   setup(props) {
     return () => (
       <div class={styles.root}>
-        <Link to="/article/list" action="relaunch" class={{item: true, on: props.selected === 'article'}}>
+        <Link to="/article/list" action="relaunch" target="window" class={{item: true, on: props.selected === 'article'}}>
           文章
         </Link>
-        <Link to="/admin/my/userSummary" action="relaunch" class={{item: true, on: props.selected === 'my'}}>
+        <Link to="/admin/my/userSummary" action="relaunch" target="window" class={{item: true, on: props.selected === 'my'}}>
           我的
         </Link>
       </div>

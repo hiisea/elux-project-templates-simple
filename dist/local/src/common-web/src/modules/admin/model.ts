@@ -20,8 +20,6 @@ export interface RouteParams {
   subModule?: SubModule;
 }
 
-let noticesTimer = 0;
-
 //定义本模块的业务模型，必需继承BaseModel
 //模型中的属性和方法尽量使用非public
 export class Model extends BaseModel<ModuleState, APPState> {
@@ -92,3 +90,5 @@ export class Model extends BaseModel<ModuleState, APPState> {
     }
   }
 }
+
+let noticesTimer = 0;

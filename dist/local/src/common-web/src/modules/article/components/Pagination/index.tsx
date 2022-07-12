@@ -38,12 +38,12 @@ const Component: FC<Props> = ({totalPages, pageCurrent, baseUrl}) => {
   return (
     <div className={styles.root}>
       {pageCurrent > 1 && (
-        <Link className="item" action="push" to={replacePageNumber(baseUrl, pageCurrent - 1)}>
+        <Link className="item" action="push" target="page" to={replacePageNumber(baseUrl, pageCurrent - 1)}>
           上一页
         </Link>
       )}
       {pageCurrent < totalPages && (
-        <Link className="item" action="push" to={replacePageNumber(baseUrl, pageCurrent + 1)}>
+        <Link className="item" action="push" target="page" to={replacePageNumber(baseUrl, pageCurrent + 1)}>
           下一页
         </Link>
       )}
@@ -63,12 +63,12 @@ export default defineComponent({
     return () => (
       <div class={styles.root}>
         {props.pageCurrent > 1 && (
-          <Link class="item" action="push" to={prevPage.value}>
+          <Link class="item" action="push" target="page" to={prevPage.value}>
             上一页
           </Link>
         )}
         {props.pageCurrent < props.totalPages && (
-          <Link class="item" action="push" to={nextPage.value}>
+          <Link class="item" action="push" target="page" to={nextPage.value}>
             下一页
           </Link>
         )}

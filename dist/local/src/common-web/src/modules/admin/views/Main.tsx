@@ -4,25 +4,15 @@ import {APPState, LoadComponent/*# =vue?, useStore: #*/} from '@/Global';
 import {CurUser} from '@/modules/stage/entity';
 /*# if:react #*/
 import {connectRedux, Switch} from '<%= elux %>';
-/*# else:vue #*/
-import {ComputedStore, exportView, Switch} from '<%= elux %>';
-/*# end #*/
-/*# if:react #*/
 import {FC} from 'react';
 /*# else:vue #*/
+import {ComputedStore, exportView, Switch} from '<%= elux %>';
 import {computed, defineComponent} from 'vue';
 /*# end #*/
-import Forbidden from '../components/Forbidden';
 import {SubModule} from '../entity';
-/*# if:admin #*/
-import Layout from './Layout';
-/*# end #*/
 
 //采用LoadComponent来加载视图，可以懒执行，并自动初始化与之对应的model
 const My = LoadComponent('my', 'main');
-/*# if:admin #*/
-const Article = LoadComponent('article', 'main');
-/*# end #*/
 
 export interface StoreProps {
   curUser: CurUser;
@@ -49,20 +39,14 @@ function mapStateToProps(appState: APPState): ComputedStore<StoreProps> {
 
 /*# if:react #*/
 const Component: FC<StoreProps> = ({curUser, subModule}) => {
-  /*# if:admin #*/
-  return curUser.hasLogin ? (
-    <Layout>
-      <Switch elseView={<ErrorPage />}>
-        {subModule === 'article' && <Article />}
-        {subModule === 'my' && <My />}
-      </Switch>
-    </Layout>
-  ) : (
-    <Forbidden />
+  if (!curUser.hasLogin) {
+    return null;
+  }
+  return (
+    <Switch elseView={<ErrorPage />}>
+      {subModule === 'my' && <My />}
+    </Switch>
   );
-  /*# else #*/
-  return curUser.hasLogin ? <Switch elseView={<ErrorPage />}>{subModule === 'my' && <My />}</Switch> : <Forbidden />;
-  /*# end #*/
 };
 
 //connectRedux中包含了exportView()的执行
@@ -77,20 +61,14 @@ const Component = defineComponent({
     const curUser = computed(computedStore.curUser);
 
     return () => {
-      /*# if:admin #*/
-      return curUser.value.hasLogin ? (
-        <Layout>
-          <Switch elseView={<ErrorPage />}>
-            {subModule.value === 'article' && <Article />}
-            {subModule.value === 'my' && <My />}
-          </Switch>
-        </Layout>
-      ) : (
-        <Forbidden />
+      if (!curUser.value.hasLogin) {
+        return null;
+      }
+      return (
+        <Switch elseView={<ErrorPage />}>
+          {subModule.value === 'my' && <My />}
+        </Switch>
       );
-      /*# else #*/
-      return curUser.value.hasLogin ? <Switch elseView={<ErrorPage />}>{subModule.value === 'my' && <My />}</Switch> : <Forbidden />;
-      /*# end #*/
     };
   },
 });

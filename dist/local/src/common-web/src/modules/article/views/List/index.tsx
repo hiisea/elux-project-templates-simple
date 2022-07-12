@@ -64,7 +64,7 @@ const Component: FC<StoreProps & {dispatch: Dispatch}> = ({prefixPathname, listS
   );
   const onSearch = useCallback(
     (keyword: string) => {
-      router.push({pathname: `${prefixPathname}/list`, searchQuery: excludeDefaultParams(defaultListSearch, {keyword})});
+      router.push({pathname: `${prefixPathname}/list`, searchQuery: excludeDefaultParams(defaultListSearch, {keyword})}, 'page');
     },
     [router, prefixPathname]
   );
@@ -153,7 +153,7 @@ const Component = defineComponent({
       })
     );
     const onSearch = (keyword: string) => {
-      router.push({pathname: `${prefixPathname.value}/list`, searchQuery: excludeDefaultParams(defaultListSearch, {pageCurrent: 1, keyword})});
+      router.push({pathname: `${prefixPathname.value}/list`, searchQuery: excludeDefaultParams(defaultListSearch, {pageCurrent: 1, keyword})}, 'page');
     };
     const onDeleteItem = (id: string) => {
       store.dispatch(Modules.article.actions.deleteItem(id));

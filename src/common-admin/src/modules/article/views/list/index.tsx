@@ -151,13 +151,19 @@ const Component = defineComponent({
     const list = computed(computedStore.list);
     const listSummary = computed(computedStore.listSummary);
     const onPageChange = (pageCurrent: number) => {
-      router.push({
-        pathname: `${prefixPathname.value}/list`,
-        searchQuery: excludeDefaultParams(defaultListSearch, {keyword: listSearch.value.keyword, pageCurrent}, 'page'),
-      });
+      router.push(
+        {
+          pathname: `${prefixPathname.value}/list`,
+          searchQuery: excludeDefaultParams(defaultListSearch, {keyword: listSearch.value.keyword, pageCurrent}),
+        },
+        'page'
+      );
     };
     const onSearch = (keyword: string) => {
-      router.push({pathname: `${prefixPathname.value}/list`, searchQuery: excludeDefaultParams(defaultListSearch, {pageCurrent: 1, keyword})}, 'page');
+      router.push(
+        {pathname: `${prefixPathname.value}/list`, searchQuery: excludeDefaultParams(defaultListSearch, {pageCurrent: 1, keyword})},
+        'page'
+      );
     };
     const onDeleteItem = (id: string) => {
       store.dispatch(Modules.article.actions.deleteItem(id));

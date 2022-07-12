@@ -75,24 +75,8 @@
   }
   /*# if:admin #*/
 
-  :local(.page-dialog) {
-    box-sizing: border-box;
-    height: 100%;
-    padding: 20px 30px;
-    overflow: auto;
-    background: #fff;
-
-    > h2 {
-      padding-bottom: 10px;
-      font-size: 14px;
-      color: @tipColor;
-      border-bottom: 1px solid @borderColor;
-
-      &::before {
-        margin-right: 5px;
-        content: '◎';
-      }
-    }
+  :local(.dialog-content) {
+    margin: 20px 25px 25px;
   }
 
   :local(.page-content) {

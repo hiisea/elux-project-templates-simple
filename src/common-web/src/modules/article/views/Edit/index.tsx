@@ -1,8 +1,10 @@
 /*# if:!admin #*/
 import NavBar from '@/components/NavBar';
+/*# else #*/
+import DialogPage from '@/components/DialogPage';
 /*# end #*/
 import {Modules} from '@/Global';
-import {Dispatch, DocumentHead, exportView, Link} from '<%= elux %>';
+import {Dispatch, /*# =!admin?DocumentHead, : #*/exportView, Link} from '<%= elux %>';
 /*# if:react #*/
 import {FC, memo, useMemo, useState} from 'react';
 /*# else:vue #*/
@@ -64,9 +66,8 @@ const Component: FC<Props> = ({itemDetail, dispatch}) => {
       <div className={`${styles.root} g-page-content`}>
         <DocumentHead title="编辑文章" />
     /*# else #*/
-    <div className={`${styles.root} g-page-dialog`}>
-        <DocumentHead title="编辑文章" />
-        <h2>编辑文章</h2>
+    <DialogPage title="编辑文章" subject="编辑文章" mask>
+      <div className={`${styles.root} g-dialog-content`}>
     /*# end #*/
         <div className="g-form">
           <div className="item">
@@ -132,6 +133,8 @@ const Component: FC<Props> = ({itemDetail, dispatch}) => {
       </div>
     /*# if:!admin #*/
     </>
+    /*# else #*/
+    </DialogPage>
     /*# end #*/
   );
 };
@@ -174,9 +177,8 @@ const Component = defineComponent({
         <div class={`${styles.root} g-page-content`}>
           <DocumentHead title="编辑文章" />
       /*# else #*/
-      <div class={`${styles.root} g-page-dialog`}>
-          <DocumentHead title="编辑文章" />
-          <h2>编辑文章</h2>
+      <DialogPage title="编辑文章" subject="编辑文章" mask>
+        <div class={`${styles.root} g-dialog-content`}>
       /*# end #*/
           <div class="g-form">
             <div class="item">
@@ -213,6 +215,8 @@ const Component = defineComponent({
         </div>
       /*# if:!admin #*/
       </>
+      /*# else #*/
+      </DialogPage>
       /*# end #*/
     );
   },

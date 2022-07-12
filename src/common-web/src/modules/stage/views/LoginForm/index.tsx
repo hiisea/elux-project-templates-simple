@@ -1,11 +1,13 @@
 /*# if:!admin #*/
 import NavBar from '@/components/NavBar';
+/*# else #*/
+import DialogPage from '@/components/DialogPage';
 /*# end #*/
 import {GetActions/*# =vue?, useStore: #*/} from '@/Global';
 /*# if:react #*/
-import {connectRedux, Dispatch, DocumentHead/*# =!taro?, Link: #*/} from '<%= elux %>';
+import {connectRedux, /*# =!admin?DocumentHead, : #*/Dispatch/*# =!taro?, Link: #*/} from '<%= elux %>';
 /*# else:vue #*/
-import {DocumentHead, exportView/*# =!taro?, Link: #*/} from '<%= elux %>';
+import {/*# =!admin?DocumentHead, : #*/exportView/*# =!taro?, Link: #*/} from '<%= elux %>';
 /*# end #*/
 /*# if:react #*/
 import {FC, useCallback, useState} from 'react';
@@ -45,17 +47,14 @@ const Component: FC<{dispatch: Dispatch}> = ({dispatch}) => {
 
   return (
     /*# if:admin #*/
-    <div className="wrap">
-      <div className={`${styles.root} g-page-dialog`}>
+    <DialogPage title="用户登录" subject="用户登录">
+      <div className={`${styles.root} g-dialog-content`}>
     /*# else #*/
     <>
       <NavBar title="登录" />
       <div className={`${styles.root} g-page-content`}>
-    /*# end #*/
         <DocumentHead title="登录" />
-        /*# if:admin #*/
-        <h2>请登录</h2>
-        /*# end #*/
+    /*# end #*/
         <div className="g-form">
           <div className="item">
             <div className="item">用户名</div>
@@ -101,12 +100,12 @@ const Component: FC<{dispatch: Dispatch}> = ({dispatch}) => {
           -- 特惠商城，盛大开业 --
         </div>
         /*# else #*/
-        <Link className="g-ad" to="/shop/list" action="push" target="window">
+        <Link className="g-ad" to="/shop/list" action="push" target="window" cname="">
           -- 特惠商城，盛大开业 --
         </Link>
         /*# end #*/
       </div>
-    /*# =admin?</div>:</> #*/
+    /*# =admin?</DialogPage>:</> #*/
   );
 };
 
@@ -141,17 +140,14 @@ const Component = defineComponent({
 
     return () => (
       /*# if:admin #*/
-      <div class="wrap">
-        <div class={`${styles.root} g-page-dialog`}>
+      <DialogPage title="用户登录" subject="用户登录">
+        <div class={`${styles.root} g-dialog-content`}>
       /*# else #*/
       <>
         <NavBar title="登录" />
         <div class={`${styles.root} g-page-content`}>
-      /*# end #*/
           <DocumentHead title="登录" />
-          /*# if:admin #*/
-          <h2>请登录</h2>
-          /*# end #*/
+      /*# end #*/
           <div class="g-form">
             <div class="item">
               <div class="item">用户名</div>
@@ -183,12 +179,12 @@ const Component = defineComponent({
             -- 特惠商城，盛大开业 --
           </div>
           /*# else #*/
-          <Link class="g-ad" to="/shop/list" action="push" target="window">
+          <Link class="g-ad" to="/shop/list" action="push" target="window" cname="">
             -- 特惠商城，盛大开业 --
           </Link>
           /*# end #*/
         </div>
-      /*# =admin?</div>:</> #*/
+      /*# =admin?</DialogPage>:</> #*/
     );
   },
 });

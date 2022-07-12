@@ -96,7 +96,7 @@ function onCssSelect(css, options) {
   options.css = css;
   return {
     subject: "请选择:模版风格",
-    choices: options.platform === "micro" || options.platform === "taro" ? ["h5|H5手机风格"] : ["admin|Admin后台风格", "h5|H5手机风格"],
+    choices: options.platform === "micro" || options.platform === "taro" ? ["h5|H5手机风格"] : ["h5|H5手机风格", "admin|Admin后台风格"],
     onSelect: onStyleSelect,
   };
 }

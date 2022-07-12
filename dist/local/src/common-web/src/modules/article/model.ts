@@ -117,8 +117,8 @@ export class Model extends BaseModel<ModuleState, APPState> {
   public async updateItem(item: ItemDetail): Promise<void> {
     const router = this.getRouter();
     await api.updateItem(item);
-    await this.getRouter().back(1, 'window');
-    router.getActivePage().store.dispatch(this.actions.fetchList());
+    await router.back(1, 'window'); //关闭编辑弹窗
+    router.back(0, 'page'); //刷新列表页
   }
 
   //定义一个effect，用来执行创建的业务逻辑
@@ -127,8 +127,8 @@ export class Model extends BaseModel<ModuleState, APPState> {
   public async createItem(item: ItemDetail): Promise<void> {
     const router = this.getRouter();
     await api.createItem(item);
-    await router.back(1, 'window');
-    router.replace({pathname: `${this.state.prefixPathname}/list`, searchQuery: {pageCurrent: 1}});
+    await router.back(1, 'window'); //关闭编辑弹窗
+    router.back(0, 'page'); //刷新列表页
   }
 
   //定义一个effect，用来执行列表查询的业务逻辑

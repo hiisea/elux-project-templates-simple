@@ -22,7 +22,17 @@ export const appConfig: AppConfig = setConfig({
   //Elux并没定死怎么解析路由参数，你可以使用常用的'query-string'或者'json'
   //只需要将parse(解析)和stringify(序列化)方法设置给Elux
   QueryString: {parse, stringify},
-  HomeUrl,
+  NativePathnameMapping: {
+    in(nativePathname) {
+      if (nativePathname === '/') {
+        nativePathname = HomeUrl;
+      }
+      return nativePathname;
+    },
+    out(internalPathname) {
+      return internalPathname;
+    },
+  },
 });
 
 export type IModuleGetter = typeof ModuleGetter;
