@@ -2,7 +2,6 @@
   "name": "elux-project-templates-simple",
   "version": "2.0.0",
   "description": "",
-  "main": "base.conf.js",
   "scripts": {
     "recommit": "git commit --amend --no-edit",
     "lock:web-react": "elux tpl-lock ./lock/web-react",

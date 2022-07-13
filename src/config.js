@@ -10,16 +10,11 @@ function replaceLess(code, css) {
   return code;
 }
 
-// function replaceTaroCss(code, css) {
-//   return code.replace(/> \*/g, "> .h5-div").replace(/> :/g, "> .h5-div:");
-// }
-
 function replaceTsx(code, css) {
-  code = code.replace(/\s+\/\*#\s+\[\[\[([+-]\d+)\s+#\*\/([\s\S]*?\n)\s*\/\*#\s+\]\]\]\s+#\*\/\s*\n/g, (a, cmd, str) => {
-    const num = parseInt(cmd.substr(1));
-    return str.replace(new RegExp(`\n[ ]{${num}}`, "g"), "\n");
-  });
-
+  // code = code.replace(/\s+\/\*#\s+\[\[\[([+-]\d+)\s+#\*\/([\s\S]*?\n)\s*\/\*#\s+\]\]\]\s+#\*\/\s*\n/g, (a, cmd, str) => {
+  //   const num = parseInt(cmd.substr(1));
+  //   return str.replace(new RegExp(`\n[ ]{${num}}`, "g"), "\n");
+  // });
   if (css === "sass") {
     return code.replace(/(import .*?['"].+?)\.less/g, "$1.scss");
   }
@@ -275,5 +270,8 @@ return {
       return replaceLess(code, options.css);
     }
     return code;
+  },
+  shouldEslint(options) {
+    return true;
   },
 };
