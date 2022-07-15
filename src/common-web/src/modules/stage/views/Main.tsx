@@ -1,18 +1,17 @@
 import '@/assets/css/global.module.less';
+/*# if:react #*/
+import {DocumentHead, LoadingState, Switch, connectRedux} from '<%= elux %>';
+import {FC} from 'react';
+import {APPState, LoadComponent} from '@/Global';
+import {CurView, SubModule} from '../entity';
+/*# else #*/
+import {DocumentHead, Switch, exportView} from '<%= elux %>';
+import {computed, defineComponent} from 'vue';;
+import {LoadComponent, useStore} from '@/Global';
+import {SubModule} from '../entity';
+/*# end #*/
 import ErrorPage from '@/components/ErrorPage';
 import LoadingPanel from '@/components/LoadingPanel';
-import {APPState, LoadComponent/*# =vue?, useStore: #*/} from '@/Global';
-/*# if:react #*/
-import {connectRedux, DocumentHead, LoadingState, Switch} from '<%= elux %>';
-/*# else:vue #*/
-import {ComputedStore, DocumentHead, exportView, LoadingState, Switch} from '<%= elux %>';
-/*# end #*/
-/*# if:react #*/
-import {FC} from 'react';
-/*# else:vue #*/
-import {computed, defineComponent} from 'vue';
-/*# end #*/
-import {CurView, SubModule} from '../entity';
 import LoginForm from './LoginForm';
 
 //LoadComponent是懒执行的，不用担心
@@ -21,6 +20,7 @@ const SubModuleViews: {[moduleName: string]: () => JSX.Element} = Object.keys(Su
   return cache;
 }, {});
 
+/*# if:react #*/
 export interface StoreProps {
   subModule?: SubModule;
   curView?: CurView;
@@ -28,7 +28,6 @@ export interface StoreProps {
   error?: string;
 }
 
-/*# if:react #*/
 function mapStateToProps(appState: APPState): StoreProps {
   const {subModule, curView, globalLoading, error} = appState.stage!;
   return {
@@ -38,19 +37,8 @@ function mapStateToProps(appState: APPState): StoreProps {
     error,
   };
 }
-/*# else:vue #*/
-//这里保持和Redux的风格一致，也可以省去这一步，直接使用computed
-function mapStateToProps(appState: APPState): ComputedStore<StoreProps> {
-  const stage = appState.stage!;
-  return {
-    subModule: () => stage.subModule,
-    curView: () => stage.curView,
-    globalLoading: () => stage.globalLoading,
-    error: () => stage.error,
-  };
-}
-/*# end #*/
 
+/*# end #*/
 /*# if:react #*/
 const Component: FC<StoreProps> = ({subModule, curView, globalLoading, error}) => {
   return (
@@ -81,11 +69,10 @@ const Component = defineComponent({
   name: 'StageMain',
   setup() {
     const store = useStore();
-    const computedStore = mapStateToProps(store.getState());
-    const subModule = computed(computedStore.subModule);
-    const curView = computed(computedStore.curView);
-    const globalLoading = computed(computedStore.globalLoading);
-    const error = computed(computedStore.error);
+    const subModule = computed(() => store.state.stage!.subModule);
+    const curView = computed(() => store.state.stage!.curView);
+    const globalLoading = computed(() => store.state.stage!.globalLoading);
+    const error = computed(() => store.state.stage!.error);
 
     return () => (
       <>

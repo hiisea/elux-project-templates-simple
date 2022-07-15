@@ -1,47 +1,36 @@
 //通常模块可以定义一个根视图，根视图中显示什么由模块自行决定，父级不干涉，相当于子路由
-import ErrorPage from '@/components/ErrorPage';
-import {APPState, LoadComponent/*# =vue?, useStore: #*/} from '@/Global';
-import {CurUser} from '@/modules/stage/entity';
 /*# if:react #*/
 import {connectRedux, Switch} from '<%= elux %>';
 import {FC, useMemo} from 'react';
-/*# else:vue #*/
-import {ComputedStore, exportView, Switch} from '<%= elux %>';
-import {computed, defineComponent} from 'vue';
-/*# end #*/
-import Layout from './Layout';
+import {APPState, LoadComponent} from '@/Global';
+import {CurUser} from '@/modules/stage/entity';
 import {SubModule} from '../entity';
-
+/*# else #*/
+import {exportView, Switch} from '<%= elux %>';
+import {computed, defineComponent, DefineComponent} from 'vue';
+import {LoadComponent, useStore} from '@/Global';
+/*# end #*/
+import ErrorPage from '@/components/ErrorPage';
+import Layout from './Layout';
 
 //采用LoadComponent来加载视图，可以懒执行，并自动初始化与之对应的model
 const My = LoadComponent('my', 'main');
 const Article = LoadComponent('article', 'main');
 
+/*# if:react #*/
 export interface StoreProps {
   curUser: CurUser;
   dialogMode: boolean;
   subModule?: SubModule;
 }
 
-/*# if:react #*/
 function mapStateToProps(appState: APPState): StoreProps {
   const {curUser} = appState.stage!;
   const {dialogMode, subModule} = appState.admin!;
   return {curUser, dialogMode, subModule};
 }
-/*# else:vue #*/
-//这里保持和Redux的风格一致，也可以省去这一步，直接使用computed
-function mapStateToProps(appState: APPState): ComputedStore<StoreProps> {
-  const stage = appState.stage!;
-  const admin = appState.admin!;
-  return {
-    curUser: () => stage.curUser,
-    dialogMode: () => admin.dialogMode,
-    subModule: () => admin.subModule,
-  };
-}
-/*# end #*/
 
+/*# end #*/
 /*# if:react #*/
 const Component: FC<StoreProps> = ({curUser, dialogMode, subModule}) => {
   const content = useMemo(
@@ -62,14 +51,13 @@ const Component: FC<StoreProps> = ({curUser, dialogMode, subModule}) => {
 //connectRedux中包含了exportView()的执行
 export default connectRedux(mapStateToProps)(Component);
 /*# else:vue #*/
-const Component = defineComponent({
+const Component: DefineComponent<{}> = defineComponent({
   name: 'AdminMain',
   setup() {
     const store = useStore();
-    const computedStore = mapStateToProps(store.getState());
-    const subModule = computed(computedStore.subModule);
-    const dialogMode = computed(computedStore.dialogMode);
-    const curUser = computed(computedStore.curUser);
+    const curUser = computed(() => store.state.stage!.curUser);
+    const subModule = computed(() => store.state.admin!.subModule);
+    const dialogMode = computed(() => store.state.admin!.dialogMode);
 
     const content = computed(()=>(
       <Switch elseView={<ErrorPage />}>

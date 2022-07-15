@@ -1,27 +1,27 @@
-import NavBar from '@/components/NavBar';
-/*# if:!taro #*/
-import TabBar from '@/components/TabBar';
-/*# end #*/
-import {APPState, Modules, useRouter/*# =vue?, useStore: #*/} from '@/Global';
-import {excludeDefaultParams} from '@/utils/tools';
+
 /*# if:react #*/
-import {connectRedux, Dispatch, DocumentHead, Link, locationToUrl} from '<%= elux %>';
-/*# else:vue #*/
-import {ComputedStore, DocumentHead, exportView, Link, locationToUrl} from '<%= elux %>';
+import {Dispatch, DocumentHead, Link, connectRedux, locationToUrl} from '<%= elux %>';
+import {FC, useCallback, useMemo} from 'react';
+import {APPState, Modules, useRouter} from '@/Global';
+import {defaultListSearch, ListItem, ListSearch, ListSummary} from '../../entity';
+/*# else #*/
+import {DocumentHead, Link, exportView, locationToUrl} from '<%= elux %>';
+import {computed, defineComponent} from 'vue';
+import {Modules, useRouter, useStore} from '@/Global';
+import {defaultListSearch} from '../../entity';
 /*# end #*/
 /*# if:taro #*/
 import {navigateTo} from '@tarojs/taro';
+/*# else #*/
+import TabBar from '@/components/TabBar';
 /*# end #*/
-/*# if:react #*/
-import {FC, useCallback, useMemo} from 'react';
-/*# else:vue #*/
-import {computed, defineComponent} from 'vue';
-/*# end #*/
+import {excludeDefaultParams} from '@/utils/tools';
+import NavBar from '@/components/NavBar';
 import Pagination from '../../components/Pagination';
 import SearchBar from '../../components/SearchBar';
-import {defaultListSearch, ListItem, ListSearch, ListSummary} from '../../entity';
 import styles from './index.module.less';
 
+/*# if:react #*/
 interface StoreProps {
   prefixPathname: string;
   listSearch: ListSearch;
@@ -29,7 +29,6 @@ interface StoreProps {
   listSummary/*# =pre??: #*/: ListSummary;
 }
 
-/*# if:react #*/
 function mapStateToProps(appState: APPState): StoreProps {
   const {prefixPathname, listSearch, list, listSummary} = appState.article!;
   /*# if:pre #*/
@@ -38,19 +37,8 @@ function mapStateToProps(appState: APPState): StoreProps {
   return {prefixPathname, listSearch: listSearch, list: list!, listSummary: listSummary!};
   /*# end #*/
 }
-/*# else:vue #*/
-//这里保持和Redux的风格一致，也可以省去这一步，直接使用computed
-function mapStateToProps(appState: APPState): ComputedStore<StoreProps> {
-  const article = appState.article!;
-  return {
-    prefixPathname: () => article.prefixPathname,
-    listSearch: () => article.listSearch,
-    list: () => article.list/*# =post?!: #*/,
-    listSummary: () => article.listSummary/*# =post?!: #*/,
-  };
-}
-/*# end #*/
 
+/*# end #*/
 /*# if:react #*/
 const Component: FC<StoreProps & {dispatch: Dispatch}> = ({prefixPathname, listSearch, list, listSummary, dispatch}) => {
   const router = useRouter();
@@ -135,17 +123,16 @@ const Component: FC<StoreProps & {dispatch: Dispatch}> = ({prefixPathname, listS
 };
 
 export default connectRedux(mapStateToProps)(Component);
-/*# else:vue #*/
+/*# else #*/
 const Component = defineComponent({
   name: 'ArticleList',
   setup() {
     const router = useRouter();
     const store = useStore();
-    const computedStore = mapStateToProps(store.getState());
-    const prefixPathname = computed(computedStore.prefixPathname);
-    const listSearch = computed(computedStore.listSearch);
-    const list = computed(computedStore.list);
-    const listSummary = computed(computedStore.listSummary);
+    const prefixPathname = computed(() => store.state.article!.prefixPathname);
+    const listSearch = computed(() => store.state.article!.listSearch);
+    const list = computed(() => store.state.article!.list/*# =post?!: #*/);
+    const listSummary = computed(() => store.state.article!.listSummary/*# =post?!: #*/);
     const paginationBaseUrl = computed(() =>
       locationToUrl({
         pathname: `${prefixPathname.value}/list`,

@@ -1,42 +1,31 @@
 //通常模块可以定义一个根视图，根视图中显示什么由模块自行决定，父级不干涉，相当于子路由
-import ErrorPage from '@/components/ErrorPage';
-import {APPState/*# =vue?, useStore: #*/} from '@/Global';
 /*# if:react #*/
-import {connectRedux, Dispatch, Switch} from '<%= elux %>';
-/*# else:vue #*/
-import {ComputedStore, exportView, Switch} from '<%= elux %>';
-/*# end #*/
-/*# if:react #*/
+import {Dispatch, Switch, connectRedux} from '<%= elux %>';
 import {FC} from 'react';
-/*# else:vue #*/
-import {computed, defineComponent} from 'vue';
-/*# end #*/
+import {APPState} from '@/Global';
 import {CurView, ItemDetail} from '../entity';
+/*# else #*/
+import {Switch, exportView} from '<%= elux %>';
+import {computed, defineComponent} from 'vue';
+import {useStore} from '@/Global';
+/*# end #*/
+import ErrorPage from '@/components/ErrorPage';
 import Detail from './Detail';
 import Edit from './Edit';
 import List from './List';
 
+/*# if:react #*/
 export interface StoreProps {
   curView?: CurView;
   itemDetail?: ItemDetail;
 }
 
-/*# if:react #*/
 function mapStateToProps(appState: APPState): StoreProps {
   const {curView, itemDetail} = appState.article!;
   return {curView, itemDetail};
 }
-/*# else:vue #*/
-//这里保持Redux的风格一致，也可以省去这一步，直接使用computed
-function mapStateToProps(appState: APPState): ComputedStore<StoreProps> {
-  const article = appState.article!;
-  return {
-    curView: () => article.curView,
-    itemDetail: () => article.itemDetail,
-  };
-}
-/*# end #*/
 
+/*# end #*/
 /*# if:react #*/
 const Component: FC<StoreProps & {dispatch: Dispatch}> = ({curView, itemDetail, dispatch}) => {
   return (
@@ -49,14 +38,14 @@ const Component: FC<StoreProps & {dispatch: Dispatch}> = ({curView, itemDetail, 
 };
 
 export default connectRedux(mapStateToProps)(Component);
-/*# else:vue #*/
+/*# else #*/
 const Component = defineComponent({
   name: 'ArticleMain',
   setup() {
     const store = useStore();
-    const computedStore = mapStateToProps(store.getState());
-    const curView = computed(computedStore.curView);
-    const itemDetail = computed(computedStore.itemDetail);
+    const curView = computed(() => store.state.article!.curView);
+    const itemDetail = computed(() => store.state.article!.itemDetail);
+
     return () => (
       <Switch elseView={<ErrorPage />}>
         {curView.value === 'list' && <List />}

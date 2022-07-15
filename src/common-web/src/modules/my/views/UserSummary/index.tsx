@@ -1,27 +1,25 @@
+/*# if:react #*/
+import {Dispatch, DocumentHead, connectRedux} from '<%= elux %>';
+import {FC, useCallback} from 'react';
+import {APPState, Modules, StaticPrefix} from '@/Global';
+import {Notices} from '@/modules/admin/entity';
+import {CurUser} from '@/modules/stage/entity';
+/*# else #*/
+import {DocumentHead, exportView} from '<%= elux %>';
+import {computed, defineComponent} from 'vue';
+import {Modules, StaticPrefix, useStore} from '@/Global';
+/*# end #*/
 /*# if:!taro #*/
 import TabBar from '@/components/TabBar';
 /*# end #*/
-import {APPState, Modules, StaticPrefix/*# =vue?, useStore: #*/} from '@/Global';
-import {CurUser} from '@/modules/stage/entity';
-import {Notices} from '@/modules/admin/entity';
-/*# if:react #*/
-import {connectRedux, Dispatch, DocumentHead} from '<%= elux %>';
-/*# else:vue #*/
-import {ComputedStore, DocumentHead, exportView} from '<%= elux %>';
-/*# end #*/
-/*# if:react #*/
-import {FC, useCallback} from 'react';
-/*# else:vue #*/
-import {computed, defineComponent} from 'vue';
-/*# end #*/
 import styles from './index.module.less';
 
+/*# if:react #*/
 interface StoreProps {
   curUser: CurUser;
   notices?: Notices;
 }
 
-/*# if:react #*/
 function mapStateToProps(appState: APPState): StoreProps {
   return {curUser: appState.stage!.curUser, notices: appState.admin!.notices};
 }
@@ -29,16 +27,8 @@ function mapStateToProps(appState: APPState): StoreProps {
 interface DispatchProps {
   dispatch: Dispatch;
 }
-/*# else:vue #*/
-//这里保持和Redux的风格一致，也可以省去这一步，直接使用computed
-function mapStateToProps(appState: APPState): ComputedStore<StoreProps> {
-  return {
-    curUser: () => appState.stage!.curUser,
-    notices: () => appState.admin!.notices,
-  };
-}
-/*# end #*/
 
+/*# end #*/
 /*# if:react #*/
 const Component: FC<StoreProps & DispatchProps> = ({curUser, notices, dispatch}) => {
   const onLogout = useCallback(() => dispatch(Modules.stage.actions.logout()), [dispatch]);
@@ -69,9 +59,8 @@ const Component = defineComponent({
   name: 'MyUserSummary',
   setup() {
     const store = useStore();
-    const computedStore = mapStateToProps(store.getState());
-    const curUser = computed(computedStore.curUser);
-    const notices = computed(computedStore.notices);
+    const curUser = computed(() => store.state.stage!.curUser);
+    const notices = computed(() => store.state.admin!.notices);
     const onLogout = () => store.dispatch(Modules.stage.actions.logout());
     
     return () => {
