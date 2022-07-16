@@ -1,22 +1,23 @@
 /*# if:react #*/
 import {Dispatch, Link, connectRedux} from '<%= elux %>';
 import {FC, ReactNode, useCallback} from 'react';
-/*# else:vue #*/
-import {ComputedStore, exportView, Link} from '<%= elux %>';
-import {computed, defineComponent} from 'vue';
-/*# end #*/
-import {APPState, Modules, StaticPrefix/*# =vue?, useStore: #*/} from '@/Global';
+import {APPState, Modules, StaticPrefix} from '@/Global';
 import {CurUser} from '@/modules/stage/entity';
 import {Notices, SubModule} from '../../entity';
+/*# else #*/
+import {exportView, Link} from '<%= elux %>';
+import {computed, defineComponent} from 'vue';
+import {Modules, StaticPrefix, useStore} from '@/Global';
+/*# end #*/
 import styles from './index.module.less';
 
+/*# if:react #*/
 interface StoreProps {
   curUser: CurUser;
   subModule?: SubModule;
   notices?: Notices;
 }
 
-/*# if:react #*/
 interface OwnerProps {
   children: ReactNode;
 }
@@ -26,19 +27,8 @@ function mapStateToProps(appState: APPState): StoreProps {
   const {subModule, notices} = appState.admin!;
   return {curUser, subModule, notices};
 }
-/*# else:vue #*/
-//这里保持和Redux的风格一致，也可以省去这一步，直接使用computed
-function mapStateToProps(appState: APPState): ComputedStore<StoreProps> {
-  const stage = appState.stage!;
-  const admin = appState.admin!;
-  return {
-    curUser: () => stage.curUser,
-    subModule: () => admin.subModule,
-    notices: () => admin.notices,
-  };
-}
-/*# end #*/
 
+/*# end #*/
 /*# if:react #*/
 const Component: FC<StoreProps & OwnerProps & {dispatch: Dispatch}> = ({
   children,
@@ -89,10 +79,9 @@ const Component = defineComponent({
   name: 'AdminLayout',
   setup(props, context) {
     const store = useStore();
-    const computedStore = mapStateToProps(store.getState());
-    const curUser = computed(computedStore.curUser);
-    const subModule = computed(computedStore.subModule);
-    const notices = computed(computedStore.notices);
+    const notices = computed(() => store.state.admin!.notices);
+    const subModule = computed(() => store.state.admin!.subModule);
+    const curUser = computed(() => store.state.stage!.curUser);
     const onLogout = () => store.dispatch(Modules.stage.actions.logout());
 
     return () => (

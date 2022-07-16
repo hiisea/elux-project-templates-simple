@@ -1,34 +1,24 @@
-import {APPState, StaticPrefix/*# =vue?, useStore: #*/} from '@/Global';
-import {CurUser} from '@/modules/stage/entity';
 /*# if:react #*/
 import {connectRedux, DocumentHead} from '<%= elux %>';
-/*# else:vue #*/
-import {ComputedStore, DocumentHead, exportView} from '<%= elux %>';
-/*# end #*/
-/*# if:react #*/
 import {FC} from 'react';
+import {CurUser} from '@/modules/stage/entity';
 /*# else:vue #*/
+import {DocumentHead, exportView} from '<%= elux %>';
 import {computed, defineComponent} from 'vue';
 /*# end #*/
+import {/*# =vue?useStore:APPState #*/, StaticPrefix} from '@/Global';
 import styles from './index.module.less';
 
+/*# if:react #*/
 interface StoreProps {
   curUser: CurUser;
 }
 
-/*# if:react #*/
 function mapStateToProps(appState: APPState): StoreProps {
   return {curUser: appState.stage!.curUser};
 }
-/*# else:vue #*/
-//这里保持和Redux的风格一致，也可以省去这一步，直接使用computed
-function mapStateToProps(appState: APPState): ComputedStore<StoreProps> {
-  return {
-    curUser: () => appState.stage!.curUser,
-  };
-}
-/*# end #*/
 
+/*# end #*/
 /*# if:react #*/
 const Component: FC<StoreProps> = ({curUser}) => {
   return (
@@ -65,8 +55,7 @@ const Component = defineComponent({
   name: 'MyUserSummary',
   setup() {
     const store = useStore();
-    const computedStore = mapStateToProps(store.getState());
-    const curUser = computed(computedStore.curUser);
+    const curUser = computed(() => store.state.stage!.curUser);
     
     return () => {
       return (

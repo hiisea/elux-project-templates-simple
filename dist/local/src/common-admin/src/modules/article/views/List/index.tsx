@@ -1,20 +1,20 @@
-import {APPState, Modules, useRouter/*# =vue?, useStore: #*/} from '@/Global';
-import {excludeDefaultParams} from '@/utils/tools';
+
 /*# if:react #*/
 import {connectRedux, Dispatch, DocumentHead, Link} from '<%= elux %>';
-/*# else:vue #*/
-import {ComputedStore, DocumentHead, exportView, Link} from '<%= elux %>';
-/*# end #*/
-/*# if:react #*/
 import {FC, useCallback} from 'react';
+import {defaultListSearch, ListItem, ListSearch, ListSummary} from '../../entity';
 /*# else:vue #*/
+import {DocumentHead, exportView, Link} from '<%= elux %>';
 import {computed, defineComponent} from 'vue';
+import {defaultListSearch} from '../../entity';
 /*# end #*/
+import {/*# =vue?useStore:APPState #*/, Modules, useRouter} from '@/Global';
+import {excludeDefaultParams} from '@/utils/tools';
 import Pagination from '../../components/Pagination';
 import SearchBar from '../../components/SearchBar';
-import {defaultListSearch, ListItem, ListSearch, ListSummary} from '../../entity';
 import styles from './index.module.less';
 
+/*# if:react #*/
 interface StoreProps {
   prefixPathname: string;
   listSearch: ListSearch;
@@ -22,7 +22,6 @@ interface StoreProps {
   listSummary/*# =pre??: #*/: ListSummary;
 }
 
-/*# if:react #*/
 function mapStateToProps(appState: APPState): StoreProps {
   const {prefixPathname, listSearch, list, listSummary} = appState.article!;
   /*# if:pre #*/
@@ -31,19 +30,8 @@ function mapStateToProps(appState: APPState): StoreProps {
   return {prefixPathname, listSearch: listSearch, list: list!, listSummary: listSummary!};
   /*# end #*/
 }
-/*# else:vue #*/
-//这里保持和Redux的风格一致，也可以省去这一步，直接使用computed
-function mapStateToProps(appState: APPState): ComputedStore<StoreProps> {
-  const article = appState.article!;
-  return {
-    prefixPathname: () => article.prefixPathname,
-    listSearch: () => article.listSearch,
-    list: () => article.list/*# =post?!: #*/,
-    listSummary: () => article.listSummary/*# =post?!: #*/,
-  };
-}
-/*# end #*/
 
+/*# end #*/
 /*# if:react #*/
 const Component: FC<StoreProps & {dispatch: Dispatch}> = ({prefixPathname, listSearch, list, listSummary, dispatch}) => {
   const router = useRouter();
@@ -145,11 +133,10 @@ const Component = defineComponent({
   setup() {
     const router = useRouter();
     const store = useStore();
-    const computedStore = mapStateToProps(store.getState());
-    const prefixPathname = computed(computedStore.prefixPathname);
-    const listSearch = computed(computedStore.listSearch);
-    const list = computed(computedStore.list);
-    const listSummary = computed(computedStore.listSummary);
+    const prefixPathname = computed(() => store.state.article!.prefixPathname);
+    const listSearch = computed(() => store.state.article!.listSearch);
+    const list = computed(() => store.state.article!.list/*# =post?!: #*/);
+    const listSummary = computed(() => store.state.article!.listSummary/*# =post?!: #*/);
     const onPageChange = (pageCurrent: number) => {
       router.push(
         {
