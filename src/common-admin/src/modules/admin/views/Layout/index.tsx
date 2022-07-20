@@ -1,5 +1,5 @@
 /*# if:react #*/
-import {Dispatch, Link, connectRedux} from '<%= elux %>';
+import {Dispatch, Link, connectStore} from '<%= elux %>';
 import {FC, ReactNode, useCallback} from 'react';
 import {APPState, Modules, StaticPrefix} from '@/Global';
 import {CurUser} from '@/modules/stage/entity';
@@ -73,7 +73,7 @@ const Component: FC<StoreProps & OwnerProps & {dispatch: Dispatch}> = ({
   );
 };
 
-export default connectRedux(mapStateToProps)(Component);
+export default connectStore(mapStateToProps)(Component);
 /*# else:vue #*/
 const Component = defineComponent({
   name: 'AdminLayout',

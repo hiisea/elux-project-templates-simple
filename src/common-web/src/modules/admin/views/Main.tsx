@@ -1,6 +1,6 @@
 //通常模块可以定义一个根视图，根视图中显示什么由模块自行决定，父级不干涉，相当于子路由
 /*# if:react #*/
-import {Switch, connectRedux} from '<%= elux %>';
+import {Switch, connectStore} from '<%= elux %>';
 import {FC} from 'react';
 import {APPState, LoadComponent} from '@/Global';
 import {CurUser} from '@/modules/stage/entity';
@@ -41,7 +41,7 @@ const Component: FC<StoreProps> = ({curUser, subModule}) => {
 };
 
 //connectRedux中包含了exportView()的执行
-export default connectRedux(mapStateToProps)(Component);
+export default connectStore(mapStateToProps)(Component);
 /*# else #*/
 const Component = defineComponent({
   name: 'AdminMain',

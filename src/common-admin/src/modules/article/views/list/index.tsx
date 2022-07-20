@@ -1,6 +1,6 @@
 
 /*# if:react #*/
-import {connectRedux, Dispatch, DocumentHead, Link} from '<%= elux %>';
+import {connectStore, Dispatch, DocumentHead, Link} from '<%= elux %>';
 import {FC, useCallback} from 'react';
 import {defaultListSearch, ListItem, ListSearch, ListSummary} from '../../entity';
 /*# else:vue #*/
@@ -126,7 +126,7 @@ const Component: FC<StoreProps & {dispatch: Dispatch}> = ({prefixPathname, listS
   );
 };
 
-export default connectRedux(mapStateToProps)(Component);
+export default connectStore(mapStateToProps)(Component);
 /*# else:vue #*/
 const Component = defineComponent({
   name: 'ArticleList',

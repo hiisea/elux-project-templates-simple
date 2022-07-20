@@ -1,5 +1,5 @@
 /*# if:react #*/
-import {connectRedux, DocumentHead} from '<%= elux %>';
+import {connectStore, DocumentHead} from '<%= elux %>';
 import {FC} from 'react';
 import {CurUser} from '@/modules/stage/entity';
 /*# else:vue #*/
@@ -49,7 +49,7 @@ const Component: FC<StoreProps> = ({curUser}) => {
   );
 };
 
-export default connectRedux(mapStateToProps)(Component);
+export default connectStore(mapStateToProps)(Component);
 /*# else:vue #*/
 const Component = defineComponent({
   name: 'MyUserSummary',

@@ -1,5 +1,5 @@
 /*# if:react #*/
-import {Dispatch, DocumentHead, connectRedux} from '<%= elux %>';
+import {Dispatch, DocumentHead, connectStore} from '<%= elux %>';
 import {FC, useCallback} from 'react';
 import {APPState, Modules, StaticPrefix} from '@/Global';
 import {Notices} from '@/modules/admin/entity';
@@ -53,7 +53,7 @@ const Component: FC<StoreProps & DispatchProps> = ({curUser, notices, dispatch})
   );
 };
 
-export default connectRedux(mapStateToProps)(Component);
+export default connectStore(mapStateToProps)(Component);
 /*# else:vue #*/
 const Component = defineComponent({
   name: 'MyUserSummary',

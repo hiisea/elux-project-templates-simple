@@ -5,7 +5,7 @@ import DialogPage from '@/components/DialogPage';
 /*# end #*/
 import {GetActions/*# =vue?, useStore: #*/} from '@/Global';
 /*# if:react #*/
-import {connectRedux, /*# =!admin?DocumentHead, : #*/Dispatch/*# =!taro?, Link: #*/} from '<%= elux %>';
+import {connectStore, /*# =!admin?DocumentHead, : #*/Dispatch/*# =!taro?, Link: #*/} from '<%= elux %>';
 /*# else:vue #*/
 import {/*# =!admin?DocumentHead, : #*/exportView/*# =!taro?, Link: #*/} from '<%= elux %>';
 /*# end #*/
@@ -110,7 +110,7 @@ const Component: FC<{dispatch: Dispatch}> = ({dispatch}) => {
 };
 
 //connectRedux中包含了exportView()的执行
-export default connectRedux()(Component);
+export default connectStore()(Component);
 /*# else:vue #*/
 const Component = defineComponent({
   name: 'StageLoginForm',

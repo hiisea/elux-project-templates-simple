@@ -1,6 +1,6 @@
 
 /*# if:react #*/
-import {Switch, connectRedux} from '<%= elux %>';
+import {Switch, connectStore} from '<%= elux %>';
 import {FC} from 'react';
 import {APPState} from '@/Global';
 import {CurView} from '../entity';
@@ -27,7 +27,7 @@ const Component: FC<StoreProps> = ({curView}) => {
   return <Switch elseView={<ErrorPage />}>{curView === 'list' && <List />}</Switch>;
 };
 
-export default connectRedux(mapStateToProps)(Component);
+export default connectStore(mapStateToProps)(Component);
 /*# else:vue #*/
 const Component = defineComponent({
   name: 'ShopMain',

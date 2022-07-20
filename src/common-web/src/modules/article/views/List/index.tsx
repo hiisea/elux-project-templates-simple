@@ -1,6 +1,6 @@
 
 /*# if:react #*/
-import {Dispatch, DocumentHead, Link, connectRedux, locationToUrl} from '<%= elux %>';
+import {Dispatch, DocumentHead, Link, connectStore, locationToUrl} from '<%= elux %>';
 import {FC, useCallback, useMemo} from 'react';
 import {APPState, Modules, useRouter} from '@/Global';
 import {defaultListSearch, ListItem, ListSearch, ListSummary} from '../../entity';
@@ -122,7 +122,7 @@ const Component: FC<StoreProps & {dispatch: Dispatch}> = ({prefixPathname, listS
   );
 };
 
-export default connectRedux(mapStateToProps)(Component);
+export default connectStore(mapStateToProps)(Component);
 /*# else #*/
 const Component = defineComponent({
   name: 'ArticleList',

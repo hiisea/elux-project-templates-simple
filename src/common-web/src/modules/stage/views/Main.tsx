@@ -1,6 +1,6 @@
 import '@/assets/css/global.module.less';
 /*# if:react #*/
-import {DocumentHead, LoadingState, Switch, connectRedux} from '<%= elux %>';
+import {DocumentHead, LoadingState, Switch, connectStore} from '<%= elux %>';
 import {FC} from 'react';
 import {APPState, LoadComponent} from '@/Global';
 import {CurView, SubModule} from '../entity';
@@ -63,7 +63,7 @@ const Component: FC<StoreProps> = ({subModule, curView, globalLoading, error}) =
 };
 
 //connectRedux中包含了exportView()的执行
-export default connectRedux(mapStateToProps)(Component);
+export default connectStore(mapStateToProps)(Component);
 /*# else:vue #*/
 const Component = defineComponent({
   name: 'StageMain',
