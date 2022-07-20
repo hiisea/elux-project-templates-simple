@@ -1,15 +1,13 @@
 /*# if:react #*/
-import {connectStore, DocumentHead} from '<%= elux %>';
 import {FC} from 'react';
-import {CurUser} from '@/modules/stage/entity';
-/*# else:vue #*/
-import {DocumentHead, exportView} from '<%= elux %>';
-import {computed, defineComponent} from 'vue';
+/*# else #*/
+import {defineComponent} from 'vue';
 /*# end #*/
-import {/*# =vue?useStore:APPState #*/, StaticPrefix} from '@/Global';
+import {connectStore, DocumentHead} from '<%= elux %>';
+import {CurUser} from '@/modules/stage/entity';
+import {APPState, StaticPrefix} from '@/Global';
 import styles from './index.module.less';
 
-/*# if:react #*/
 interface StoreProps {
   curUser: CurUser;
 }
@@ -18,7 +16,6 @@ function mapStateToProps(appState: APPState): StoreProps {
   return {curUser: appState.stage!.curUser};
 }
 
-/*# end #*/
 /*# if:react #*/
 const Component: FC<StoreProps> = ({curUser}) => {
   return (
@@ -54,10 +51,10 @@ export default connectStore(mapStateToProps)(Component);
 const Component = defineComponent({
   name: 'MyUserSummary',
   setup() {
-    const store = useStore();
-    const curUser = computed(() => store.state.stage!.curUser);
+    const storeProps = connectStore(mapStateToProps);
     
     return () => {
+      const {curUser} = storeProps;
       return (
         <div class={`${styles.root} g-page-content`}>
           <DocumentHead title="个人中心" />
@@ -66,19 +63,19 @@ const Component = defineComponent({
             <li class="item">
               <label class="item">头像</label>
               <div class="item">
-                <div class="avatar" style={{backgroundImage: `url(${StaticPrefix + curUser.value.avatar})`}} />
+                <div class="avatar" style={{backgroundImage: `url(${StaticPrefix + curUser.avatar})`}} />
               </div>
             </li>
             <li class="item">
               <label class="item">昵称</label>
               <div class="item">
-                <input disabled name="username" class="g-input" type="text" value={curUser.value.username} />
+                <input disabled name="username" class="g-input" type="text" value={curUser.username} />
               </div>
             </li>
             <li class="item">
               <label class="item">电话</label>
               <div class="item">
-                <input disabled name="mobile" class="g-input" type="text" value={curUser.value.mobile} />
+                <input disabled name="mobile" class="g-input" type="text" value={curUser.mobile} />
               </div>
             </li>
           </ul>
@@ -88,5 +85,5 @@ const Component = defineComponent({
   },
 });
 
-export default exportView(Component);
+export default Component;
 /*# end #*/

@@ -1,20 +1,17 @@
 /*# if:react #*/
-import {Dispatch, DocumentHead, connectRedux} from '<%= elux %>';
 import {FC, useCallback} from 'react';
-import {APPState, Modules, StaticPrefix} from '@/Global';
-import {Notices} from '@/modules/admin/entity';
-import {CurUser} from '@/modules/stage/entity';
 /*# else #*/
-import {DocumentHead, exportView} from '<%= elux %>';
-import {computed, defineComponent} from 'vue';
-import {Modules, StaticPrefix, useStore} from '@/Global';
+import {defineComponent} from 'vue';
 /*# end #*/
 /*# if:!taro #*/
 import TabBar from '@/components/TabBar';
 /*# end #*/
+import {/*# =react?Dispatch,: #*/ DocumentHead, connectStore} from '<%= elux %>';
+import {APPState, Modules, StaticPrefix} from '@/Global';
+import {Notices} from '@/modules/admin/entity';
+import {CurUser} from '@/modules/stage/entity';
 import styles from './index.module.less';
 
-/*# if:react #*/
 interface StoreProps {
   curUser: CurUser;
   notices?: Notices;
@@ -24,13 +21,8 @@ function mapStateToProps(appState: APPState): StoreProps {
   return {curUser: appState.stage!.curUser, notices: appState.admin!.notices};
 }
 
-interface DispatchProps {
-  dispatch: Dispatch;
-}
-
-/*# end #*/
 /*# if:react #*/
-const Component: FC<StoreProps & DispatchProps> = ({curUser, notices, dispatch}) => {
+const Component: FC<StoreProps & {dispatch: Dispatch}> = ({curUser, notices, dispatch}) => {
   const onLogout = useCallback(() => dispatch(Modules.stage.actions.logout()), [dispatch]);
 
   return (
@@ -53,26 +45,25 @@ const Component: FC<StoreProps & DispatchProps> = ({curUser, notices, dispatch})
   );
 };
 
-export default connectRedux(mapStateToProps)(Component);
+export default connectStore(mapStateToProps)(Component);
 /*# else:vue #*/
 const Component = defineComponent({
   name: 'MyUserSummary',
   setup() {
-    const store = useStore();
-    const curUser = computed(() => store.state.stage!.curUser);
-    const notices = computed(() => store.state.admin!.notices);
-    const onLogout = () => store.dispatch(Modules.stage.actions.logout());
+    const storeProps = connectStore(mapStateToProps);
+    const onLogout = () => storeProps.dispatch(Modules.stage.actions.logout());
     
     return () => {
+      const {curUser, notices} = storeProps;
       return (
         <>
           <DocumentHead title="个人中心" />
           <div class={`${styles.root} g-page-content`}>
             <div class="title">个人中心</div>
-            <div class="avatar" style={{backgroundImage: `url(${StaticPrefix + curUser.value.avatar})`}} />
-            <div class="notices">{notices.value?.num || '..'}</div>
-            <div class="nickname">{curUser.value.username}</div>
-            <div class="score">{`✆ ${curUser.value.mobile}`}</div>
+            <div class="avatar" style={{backgroundImage: `url(${StaticPrefix + curUser.avatar})`}} />
+            <div class="notices">{notices?.num || '..'}</div>
+            <div class="nickname">{curUser.username}</div>
+            <div class="score">{`✆ ${curUser.mobile}`}</div>
             <div class="logout" onClick={onLogout}>
               退出登录
             </div>
@@ -86,5 +77,5 @@ const Component = defineComponent({
   },
 });
 
-export default exportView(Component);
+export default Component;
 /*# end #*/

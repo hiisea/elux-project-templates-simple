@@ -36,7 +36,7 @@
     "demo": "run-p mock dist"
   },
   "dependencies": {
-    "<%= elux %>": "^2.3.2",
+    "<%= elux %>": "^2.5.1",
     /*# if:react #*/
     "react": "^17.0.0",
     "react-dom": "^17.0.0",

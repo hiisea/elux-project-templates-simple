@@ -139,11 +139,22 @@ export class Model extends BaseModel<ModuleState, APPState> {
   //注意如果继续抛出，请抛出原错误，不要创建新的错误，以防止无穷递归
   @effect(null)
   protected async ['this._error'](error: CustomError): Promise<void> {
+    const router = this.getRouter();
     if (error.code === CommonErrorCode.unauthorized) {
-      this.getRouter().push({url: LoginUrl(error.detail)}, 'window');
+      router.push({url: LoginUrl(error.detail)}, 'window');
     } else if (error.code === ErrorCodes.ROUTE_BACK_OVERFLOW) {
+      //用户后退溢出时会触发这个错误
       const redirect: string = error.detail.redirect || HomeUrl;
-      setTimeout(() => this.getRouter().relaunch({url: redirect}, 'window'), 0);
+      /*# if:taro #*/
+      setTimeout(() => router.relaunch({url: redirect}, 'window'), 0);
+      /*# else #*/
+      if (router.location.url === redirect && window.confirm('确定要退出本站吗？')) {
+        //注意: back('')可以退出本站
+        setTimeout(() => router.back('', 'window'), 0);
+      } else {
+        setTimeout(() => router.relaunch({url: redirect}, 'window'), 0);
+      }
+      /*# end #*/
     } else if (!error.quiet) {
       // eslint-disable-next-line no-alert
       /*# if:ssr #*/

@@ -1,18 +1,15 @@
 
 /*# if:react #*/
-import {Switch, connectRedux} from '<%= elux %>';
 import {FC} from 'react';
-import {APPState} from '@/Global';
-import {CurView} from '../entity';
 /*# else #*/
-import {Switch, exportView} from '<%= elux %>';
-import {computed, defineComponent} from 'vue';
-import {useStore} from '@/Global';
+import {defineComponent} from 'vue';
 /*# end #*/
+import {/*# =vue?exportView,: #*/ Switch, connectStore} from '<%= elux %>';
+import {APPState} from '@/Global';
 import ErrorPage from '@/components/ErrorPage';
+import {CurView} from '../entity';
 import List from './List';
 
-/*# if:react #*/
 export interface StoreProps {
   curView?: CurView;
 }
@@ -21,22 +18,21 @@ function mapStateToProps(appState: APPState): StoreProps {
   return {curView: appState.shop!.curView};
 }
 
-/*# end #*/
 /*# if:react #*/
 const Component: FC<StoreProps> = ({curView}) => {
   return <Switch elseView={<ErrorPage />}>{curView === 'list' && <List />}</Switch>;
 };
 
-export default connectRedux(mapStateToProps)(Component);
+export default connectStore(mapStateToProps)(Component);
 /*# else:vue #*/
 const Component = defineComponent({
   name: 'ShopMain',
   setup() {
-    const store = useStore();
-    const curView = computed(() => store.state.shop!.curView);
+    const storeProps = connectStore(mapStateToProps);
     
     return () => {
-      return <Switch elseView={<ErrorPage />}>{curView.value === 'list' && <List />}</Switch>;
+      const {curView} = storeProps;
+      return <Switch elseView={<ErrorPage />}>{curView === 'list' && <List />}</Switch>;
     };
   },
 });

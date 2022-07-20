@@ -1,15 +1,12 @@
 import '@/assets/css/global.module.less';
 /*# if:react #*/
-import {DocumentHead, LoadingState, Switch, connectRedux} from '<%= elux %>';
 import {FC} from 'react';
+/*# else #*/
+import {defineComponent} from 'vue';;
+/*# end #*/
+import {/*# =vue?exportView,: #*/ DocumentHead, LoadingState, Switch, connectStore} from '<%= elux %>';
 import {APPState, LoadComponent} from '@/Global';
 import {CurView, SubModule} from '../entity';
-/*# else #*/
-import {DocumentHead, Switch, exportView} from '<%= elux %>';
-import {computed, defineComponent} from 'vue';;
-import {LoadComponent, useStore} from '@/Global';
-import {SubModule} from '../entity';
-/*# end #*/
 import ErrorPage from '@/components/ErrorPage';
 import LoadingPanel from '@/components/LoadingPanel';
 import LoginForm from './LoginForm';
@@ -20,7 +17,6 @@ const SubModuleViews: {[moduleName: string]: () => JSX.Element} = Object.keys(Su
   return cache;
 }, {});
 
-/*# if:react #*/
 export interface StoreProps {
   subModule?: SubModule;
   curView?: CurView;
@@ -38,7 +34,6 @@ function mapStateToProps(appState: APPState): StoreProps {
   };
 }
 
-/*# end #*/
 /*# if:react #*/
 const Component: FC<StoreProps> = ({subModule, curView, globalLoading, error}) => {
   return (
@@ -63,36 +58,35 @@ const Component: FC<StoreProps> = ({subModule, curView, globalLoading, error}) =
 };
 
 //connectRedux中包含了exportView()的执行
-export default connectRedux(mapStateToProps)(Component);
+export default connectStore(mapStateToProps)(Component);
 /*# else:vue #*/
 const Component = defineComponent({
   name: 'StageMain',
   setup() {
-    const store = useStore();
-    const subModule = computed(() => store.state.stage!.subModule);
-    const curView = computed(() => store.state.stage!.curView);
-    const globalLoading = computed(() => store.state.stage!.globalLoading);
-    const error = computed(() => store.state.stage!.error);
+    const storeProps = connectStore(mapStateToProps);
 
-    return () => (
-      <>
-        <DocumentHead title="EluxDemo" />
-        <Switch elseView={<ErrorPage />}>
-          {!!error.value && <ErrorPage message={error.value} />}
-          {subModule.value &&
-          Object.keys(SubModule).map((moduleName) => {
-            if (subModule.value === moduleName) {
-              const SubView = SubModuleViews[subModule.value];
-              return <SubView key={moduleName} />;
-            } else {
-              return null;
-            }
-          })}
-          {curView.value === 'login' && <LoginForm />}
-        </Switch>
-        <LoadingPanel loadingState={globalLoading.value} />
-      </>
-    );
+    return () => {
+      const {subModule, curView, globalLoading, error} = storeProps;
+      return (
+        <>
+          <DocumentHead title="EluxDemo" />
+          <Switch elseView={<ErrorPage />}>
+            {!!error && <ErrorPage message={error} />}
+            {subModule &&
+            Object.keys(SubModule).map((moduleName) => {
+              if (subModule === moduleName) {
+                const SubView = SubModuleViews[subModule];
+                return <SubView key={moduleName} />;
+              } else {
+                return null;
+              }
+            })}
+            {curView === 'login' && <LoginForm />}
+          </Switch>
+          <LoadingPanel loadingState={globalLoading} />
+        </>
+      );
+    }
   },
 });
 

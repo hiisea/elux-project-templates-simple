@@ -1,25 +1,18 @@
 /*# if:react #*/
-import {Dispatch, Link, connectRedux} from '<%= elux %>';
 import {FC, ReactNode, useCallback} from 'react';
-import {APPState, Modules, StaticPrefix} from '@/Global';
-import {CurUser} from '@/modules/stage/entity';
-import {Notices, SubModule} from '../../entity';
 /*# else #*/
-import {exportView, Link} from '<%= elux %>';
-import {computed, defineComponent} from 'vue';
-import {Modules, StaticPrefix, useStore} from '@/Global';
+import {defineComponent} from 'vue';
 /*# end #*/
+import {/*# =react?Dispatch,: #*/ connectStore, Link} from '<%= elux %>';
+import {CurUser} from '@/modules/stage/entity';
+import {APPState, Modules, StaticPrefix} from '@/Global';
+import {Notices, SubModule} from '../../entity';
 import styles from './index.module.less';
 
-/*# if:react #*/
 interface StoreProps {
   curUser: CurUser;
   subModule?: SubModule;
   notices?: Notices;
-}
-
-interface OwnerProps {
-  children: ReactNode;
 }
 
 function mapStateToProps(appState: APPState): StoreProps {
@@ -28,8 +21,11 @@ function mapStateToProps(appState: APPState): StoreProps {
   return {curUser, subModule, notices};
 }
 
-/*# end #*/
 /*# if:react #*/
+interface OwnerProps {
+  children: ReactNode;
+}
+
 const Component: FC<StoreProps & OwnerProps & {dispatch: Dispatch}> = ({
   children,
   curUser,
@@ -73,51 +69,51 @@ const Component: FC<StoreProps & OwnerProps & {dispatch: Dispatch}> = ({
   );
 };
 
-export default connectRedux(mapStateToProps)(Component);
+export default connectStore(mapStateToProps)(Component);
 /*# else:vue #*/
 const Component = defineComponent({
   name: 'AdminLayout',
   setup(props, context) {
-    const store = useStore();
-    const notices = computed(() => store.state.admin!.notices);
-    const subModule = computed(() => store.state.admin!.subModule);
-    const curUser = computed(() => store.state.stage!.curUser);
-    const onLogout = () => store.dispatch(Modules.stage.actions.logout());
+    const storeProps = connectStore(mapStateToProps);
+    const onLogout = () => storeProps.dispatch(Modules.stage.actions.logout());
 
-    return () => (
-      <div class={styles.root}>
-        <div class="side">
-          <div class="flag">
-            Elux后台管理系统<span class="ver">v1.2</span>
-          </div>
-          <ul class="nav">
-            <li class={`item ${subModule.value === 'article' ? 'on' : ''}`}>
-              <Link to="/admin/article/list" action="relaunch" target="window">
-                文章管理
-              </Link>
-            </li>
-            <li class={`item ${subModule.value === 'my' ? 'on' : ''}`}>
-              <Link to="/admin/my/userSummary" action="relaunch" target="window">
-                个人中心
-              </Link>
-            </li>
-          </ul>
-        </div>
-        <div class="main">
-          <div class="header">
-            <div class="avatar" style={{backgroundImage: `url(${StaticPrefix + curUser.value.avatar})`}} />
-            <div class="nickname">{curUser.value.username}</div>
-            <div class="notices">{notices.value?.num || '..'}</div>
-            <div class="logout" onClick={onLogout}>
-              退出登录
+    return () => {
+      const {notices, subModule, curUser} = storeProps;
+      return (
+        <div class={styles.root}>
+          <div class="side">
+            <div class="flag">
+              Elux后台管理系统<span class="ver">v1.2</span>
             </div>
+            <ul class="nav">
+              <li class={`item ${subModule === 'article' ? 'on' : ''}`}>
+                <Link to="/admin/article/list" action="relaunch" target="window">
+                  文章管理
+                </Link>
+              </li>
+              <li class={`item ${subModule === 'my' ? 'on' : ''}`}>
+                <Link to="/admin/my/userSummary" action="relaunch" target="window">
+                  个人中心
+                </Link>
+              </li>
+            </ul>
           </div>
-          <div class="content">{context.slots.default!()}</div>
+          <div class="main">
+            <div class="header">
+              <div class="avatar" style={{backgroundImage: `url(${StaticPrefix + curUser.avatar})`}} />
+              <div class="nickname">{curUser.username}</div>
+              <div class="notices">{notices?.num || '..'}</div>
+              <div class="logout" onClick={onLogout}>
+                退出登录
+              </div>
+            </div>
+            <div class="content">{context.slots.default!()}</div>
+          </div>
         </div>
-      </div>
-    );
+      );
+    };
   },
 });
 
-export default exportView(Component);
+export default Component;
 /*# end #*/

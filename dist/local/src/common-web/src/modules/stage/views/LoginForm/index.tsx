@@ -3,20 +3,17 @@ import NavBar from '@/components/NavBar';
 /*# else #*/
 import DialogPage from '@/components/DialogPage';
 /*# end #*/
-import {GetActions/*# =vue?, useStore: #*/} from '@/Global';
 /*# if:react #*/
-import {connectRedux, /*# =!admin?DocumentHead, : #*/Dispatch/*# =!taro?, Link: #*/} from '<%= elux %>';
-/*# else:vue #*/
-import {/*# =!admin?DocumentHead, : #*/exportView/*# =!taro?, Link: #*/} from '<%= elux %>';
-/*# end #*/
-/*# if:react #*/
+import {connectStore, /*# =!admin?DocumentHead, : #*/Dispatch/*# =!taro?, Link: #*/} from '<%= elux %>';
 import {FC, useCallback, useState} from 'react';
 /*# else:vue #*/
+import {connectStore, /*# =!admin?DocumentHead, : #*/exportView/*# =!taro?, Link: #*/} from '<%= elux %>';
 import {defineComponent, ref} from 'vue';
 /*# end #*/
 /*# if:taro #*/
 import {navigateTo} from '@tarojs/taro';
 /*# end #*/
+import {GetActions} from '@/Global';
 import styles from './index.module.less';
 
 const {stage: stageActions} = GetActions('stage');
@@ -110,12 +107,12 @@ const Component: FC<{dispatch: Dispatch}> = ({dispatch}) => {
 };
 
 //connectRedux中包含了exportView()的执行
-export default connectRedux()(Component);
+export default connectStore()(Component);
 /*# else:vue #*/
 const Component = defineComponent({
   name: 'StageLoginForm',
   setup() {
-    const store = useStore();
+    const storeProps = connectStore();
     const errorMessage = ref('');
     const username = ref('admin');
     const password = ref('123456');
@@ -125,14 +122,14 @@ const Component = defineComponent({
       } else {
         //这样的写法可以使用TS的类型提示，等同于dispatch({type:'stage.login',payload:{username, password}})
         //可以await这个action的所有handler执行完成
-        const result = store.dispatch(stageActions.login({username: username.value, password: password.value})) as Promise<void>;
+        const result = storeProps.dispatch(stageActions.login({username: username.value, password: password.value})) as Promise<void>;
         result.catch(({message}) => {
           errorMessage.value = message;
         });
       }
     };
     const onCancel = () => {
-      store.dispatch(stageActions.cancelLogin());
+      storeProps.dispatch(stageActions.cancelLogin());
     };
     /*# if:taro #*/
     const onNavToShop = () => navigateTo({url: '/modules/shop/pages/list'});

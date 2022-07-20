@@ -1,20 +1,17 @@
 
 /*# if:react #*/
-import {connectStore, Dispatch, DocumentHead, Link} from '<%= elux %>';
 import {FC, useCallback} from 'react';
-import {defaultListSearch, ListItem, ListSearch, ListSummary} from '../../entity';
 /*# else:vue #*/
-import {DocumentHead, exportView, Link} from '<%= elux %>';
-import {computed, defineComponent} from 'vue';
-import {defaultListSearch} from '../../entity';
+import {defineComponent} from 'vue';
 /*# end #*/
-import {/*# =vue?useStore:APPState #*/, Modules, useRouter} from '@/Global';
+import {/*# =react?Dispatch,: #*/ connectStore, DocumentHead, Link} from '<%= elux %>';
+import {APPState, Modules, useRouter} from '@/Global';
 import {excludeDefaultParams} from '@/utils/tools';
+import {defaultListSearch, ListItem, ListSearch, ListSummary} from '../../entity';
 import Pagination from '../../components/Pagination';
 import SearchBar from '../../components/SearchBar';
 import styles from './index.module.less';
 
-/*# if:react #*/
 interface StoreProps {
   prefixPathname: string;
   listSearch: ListSearch;
@@ -31,7 +28,6 @@ function mapStateToProps(appState: APPState): StoreProps {
   /*# end #*/
 }
 
-/*# end #*/
 /*# if:react #*/
 const Component: FC<StoreProps & {dispatch: Dispatch}> = ({prefixPathname, listSearch, list, listSummary, dispatch}) => {
   const router = useRouter();
@@ -132,40 +128,39 @@ const Component = defineComponent({
   name: 'ArticleList',
   setup() {
     const router = useRouter();
-    const store = useStore();
-    const prefixPathname = computed(() => store.state.article!.prefixPathname);
-    const listSearch = computed(() => store.state.article!.listSearch);
-    const list = computed(() => store.state.article!.list/*# =post?!: #*/);
-    const listSummary = computed(() => store.state.article!.listSummary/*# =post?!: #*/);
+    const storeProps = connectStore(mapStateToProps);
     const onPageChange = (pageCurrent: number) => {
+      const {prefixPathname, listSearch} = storeProps;
       router.push(
         {
-          pathname: `${prefixPathname.value}/list`,
-          searchQuery: excludeDefaultParams(defaultListSearch, {keyword: listSearch.value.keyword, pageCurrent}),
+          pathname: `${prefixPathname}/list`,
+          searchQuery: excludeDefaultParams(defaultListSearch, {keyword: listSearch.keyword, pageCurrent}),
         },
         'page'
       );
     };
     const onSearch = (keyword: string) => {
       router.push(
-        {pathname: `${prefixPathname.value}/list`, searchQuery: excludeDefaultParams(defaultListSearch, {pageCurrent: 1, keyword})},
+        {pathname: `${storeProps.prefixPathname}/list`, searchQuery: excludeDefaultParams(defaultListSearch, {pageCurrent: 1, keyword})},
         'page'
       );
     };
     const onDeleteItem = (id: string) => {
-      store.dispatch(Modules.article.actions.deleteItem(id));
+      storeProps.dispatch(Modules.article.actions.deleteItem(id));
     };
     const onEditItem = (id: string = '0') => {
-      router.push({url: `${prefixPathname.value}/edit?id=${id}`, classname: '_dialog'}, 'window');
+      router.push({url: `${storeProps.prefixPathname}/edit?id=${id}`, classname: '_dialog'}, 'window');
     };
 
-    return () => (
+    return () => {
+      const {listSearch, list, listSummary, prefixPathname} = storeProps;
+      return (
       <div class={`${styles.root} g-page-content`}>
         <DocumentHead title="文章列表" />
         <h2>文章管理</h2>
-        <SearchBar keyword={listSearch.value.keyword} onSubmit={onSearch} onCreate={onEditItem} />
+        <SearchBar keyword={listSearch.keyword} onSubmit={onSearch} onCreate={onEditItem} />
         /*# if:pre #*/
-        {list.value && listSummary.value && (
+        {list && listSummary && (
         /*# end #*/
           <>
             <table class="list">
@@ -184,20 +179,20 @@ const Component = defineComponent({
                 </tr>
               </thead>
               <tbody>
-                {list.value.map((item) => (
+                {list.map((item) => (
                   <tr key={item.id}>
                     <td class="item-id">{item.id}</td>
                     <td class="item-title">
-                      <Link to={`${prefixPathname.value}/detail?id=${item.id}`} action="push" target="window">
+                      <Link to={`${prefixPathname}/detail?id=${item.id}`} action="push" target="window">
                         {item.title}
                       </Link>
                     </td>
                     <td class="item-summary">{item.summary}</td>
                     <td class="item-action">
-                      <Link to={`${prefixPathname.value}/detail?id=${item.id}`} action="push" target="window">
+                      <Link to={`${prefixPathname}/detail?id=${item.id}`} action="push" target="window">
                         查看
                       </Link>
-                      <Link to={`${prefixPathname.value}/edit?id=${item.id}&__c=_dialog`} action="push" target="window">
+                      <Link to={`${prefixPathname}/edit?id=${item.id}&__c=_dialog`} action="push" target="window">
                         修改
                       </Link>
                       <a class="item" onClick={() => onDeleteItem(item.id)}>
@@ -209,7 +204,7 @@ const Component = defineComponent({
               </tbody>
             </table>
             <div>
-              <Pagination totalPages={listSummary.value.totalPages} pageCurrent={listSummary.value.pageCurrent} onChange={onPageChange} />
+              <Pagination totalPages={listSummary.totalPages} pageCurrent={listSummary.pageCurrent} onChange={onPageChange} />
             </div>
             <Link class="g-ad" to="/shop/list" action="push" target="window">
               -- 特惠商城，盛大开业 --
@@ -220,8 +215,9 @@ const Component = defineComponent({
         /*# end #*/
       </div>
     );
+    };
   },
 });
 
-export default exportView(Component);
+export default Component;
 /*# end #*/

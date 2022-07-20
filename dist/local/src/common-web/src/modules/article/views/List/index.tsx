@@ -1,27 +1,23 @@
 
 /*# if:react #*/
-import {Dispatch, DocumentHead, Link, connectRedux, locationToUrl} from '<%= elux %>';
 import {FC, useCallback, useMemo} from 'react';
-import {APPState, Modules, useRouter} from '@/Global';
-import {defaultListSearch, ListItem, ListSearch, ListSummary} from '../../entity';
 /*# else #*/
-import {DocumentHead, Link, exportView, locationToUrl} from '<%= elux %>';
 import {computed, defineComponent} from 'vue';
-import {Modules, useRouter, useStore} from '@/Global';
-import {defaultListSearch} from '../../entity';
 /*# end #*/
 /*# if:taro #*/
 import {navigateTo} from '@tarojs/taro';
 /*# else #*/
 import TabBar from '@/components/TabBar';
 /*# end #*/
+import {/*# =react?Dispatch,: #*/ DocumentHead, Link, connectStore, locationToUrl} from '<%= elux %>';
+import {APPState, Modules, useRouter} from '@/Global';
 import {excludeDefaultParams} from '@/utils/tools';
 import NavBar from '@/components/NavBar';
+import {defaultListSearch, ListItem, ListSearch, ListSummary} from '../../entity';
 import Pagination from '../../components/Pagination';
 import SearchBar from '../../components/SearchBar';
 import styles from './index.module.less';
 
-/*# if:react #*/
 interface StoreProps {
   prefixPathname: string;
   listSearch: ListSearch;
@@ -38,7 +34,6 @@ function mapStateToProps(appState: APPState): StoreProps {
   /*# end #*/
 }
 
-/*# end #*/
 /*# if:react #*/
 const Component: FC<StoreProps & {dispatch: Dispatch}> = ({prefixPathname, listSearch, list, listSummary, dispatch}) => {
   const router = useRouter();
@@ -122,86 +117,86 @@ const Component: FC<StoreProps & {dispatch: Dispatch}> = ({prefixPathname, listS
   );
 };
 
-export default connectRedux(mapStateToProps)(Component);
+export default connectStore(mapStateToProps)(Component);
 /*# else #*/
 const Component = defineComponent({
   name: 'ArticleList',
   setup() {
     const router = useRouter();
-    const store = useStore();
-    const prefixPathname = computed(() => store.state.article!.prefixPathname);
-    const listSearch = computed(() => store.state.article!.listSearch);
-    const list = computed(() => store.state.article!.list/*# =post?!: #*/);
-    const listSummary = computed(() => store.state.article!.listSummary/*# =post?!: #*/);
+    const storeProps = connectStore(mapStateToProps);
+  
     const paginationBaseUrl = computed(() =>
       locationToUrl({
-        pathname: `${prefixPathname.value}/list`,
-        searchQuery: excludeDefaultParams(defaultListSearch, {keyword: listSearch.value?.keyword, pageCurrent: 0}),
+        pathname: `${storeProps.prefixPathname}/list`,
+        searchQuery: excludeDefaultParams(defaultListSearch, {keyword: storeProps.listSearch?.keyword, pageCurrent: 0}),
       })
     );
     const onSearch = (keyword: string) => {
-      router.push({pathname: `${prefixPathname.value}/list`, searchQuery: excludeDefaultParams(defaultListSearch, {pageCurrent: 1, keyword})}, 'page');
+      router.push({pathname: `${storeProps.prefixPathname}/list`, searchQuery: excludeDefaultParams(defaultListSearch, {pageCurrent: 1, keyword})}, 'page');
     };
     const onDeleteItem = (id: string) => {
-      store.dispatch(Modules.article.actions.deleteItem(id));
+      storeProps.dispatch(Modules.article.actions.deleteItem(id));
     };
     const onEditItem = (id: string = '0') => {
-      router.push({url: `${prefixPathname.value}/edit?id=${id}`}, 'window');
+      router.push({url: `${storeProps.prefixPathname}/edit?id=${id}`}, 'window');
     };
     /*# if:taro #*/
     const onNavToShop = () => navigateTo({url: '/modules/shop/pages/list'});
     /*# end #*/
 
-    return () => (
-      <>
-        <NavBar title="文章列表" />
-        <div class={`${styles.root} g-page-content`}>
-          <DocumentHead title="文章列表" />
-          <SearchBar keyword={listSearch.value.keyword} onSubmit={onSearch} onCreate={onEditItem} />
-          /*# if:pre #*/
-          {list.value && listSummary.value && (
-          /*# end #*/
-            <div class="list">
-              {list.value.map((item) => (
-                <div key={item.id} class="article-item">
-                  <Link class="article-title" to={`${prefixPathname.value}/detail?id=${item.id}`} action="push" target="window">
-                    {item.title}
-                  </Link>
-                  <Link class="article-summary" to={`${prefixPathname.value}/detail?id=${item.id}`} action="push" target="window">
-                    {item.summary}
-                  </Link>
-                  <div class="article-operation">
-                    <div class="item" onClick={() => onEditItem(item.id)}>
-                      修改
-                    </div>
-                    <div class="item" onClick={() => onDeleteItem(item.id)}>
-                      删除
+    return () => {
+      const {prefixPathname, listSearch, list, listSummary} = storeProps;
+      return (
+        <>
+          <NavBar title="文章列表" />
+          <div class={`${styles.root} g-page-content`}>
+            <DocumentHead title="文章列表" />
+            <SearchBar keyword={listSearch.keyword} onSubmit={onSearch} onCreate={onEditItem} />
+            /*# if:pre #*/
+            {list && listSummary && (
+            /*# end #*/
+              <div class="list">
+                {list.map((item) => (
+                  <div key={item.id} class="article-item">
+                    <Link class="article-title" to={`${prefixPathname}/detail?id=${item.id}`} action="push" target="window">
+                      {item.title}
+                    </Link>
+                    <Link class="article-summary" to={`${prefixPathname}/detail?id=${item.id}`} action="push" target="window">
+                      {item.summary}
+                    </Link>
+                    <div class="article-operation">
+                      <div class="item" onClick={() => onEditItem(item.id)}>
+                        修改
+                      </div>
+                      <div class="item" onClick={() => onDeleteItem(item.id)}>
+                        删除
+                      </div>
                     </div>
                   </div>
+                ))}
+                <Pagination totalPages={listSummary.totalPages} pageCurrent={listSummary.pageCurrent} baseUrl={paginationBaseUrl.value} />
+                /*# if:taro #*/
+                <div class="g-ad" onClick={onNavToShop}>
+                  -- 特惠商城，盛大开业 --
                 </div>
-              ))}
-              <Pagination totalPages={listSummary.value.totalPages} pageCurrent={listSummary.value.pageCurrent} baseUrl={paginationBaseUrl.value} />
-              /*# if:taro #*/
-              <div class="g-ad" onClick={onNavToShop}>
-                -- 特惠商城，盛大开业 --
+                /*# else #*/
+                <Link class="g-ad" to="/shop/list" action="push" target="window">
+                  -- 特惠商城，盛大开业 --
+                </Link>
+                /*# end #*/
               </div>
-              /*# else #*/
-              <Link class="g-ad" to="/shop/list" action="push" target="window">
-                -- 特惠商城，盛大开业 --
-              </Link>
-              /*# end #*/
-            </div>
-          /*# if:pre #*/
-          )}
+            /*# if:pre #*/
+            )}
+            /*# end #*/
+          </div>
+          /*# if:!taro #*/
+          <TabBar selected="article" />
           /*# end #*/
-        </div>
-        /*# if:!taro #*/
-        <TabBar selected="article" />
-        /*# end #*/
-      </>
-    );
+        </>
+      );
+    }
   },
 });
 
-export default exportView(Component);
+export default Component;
 /*# end #*/

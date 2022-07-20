@@ -1,5 +1,5 @@
 /*# if:react #*/
-import {FC, memo, useCallback, useState} from 'react';
+import {FC, memo, useCallback, useState, useMemo} from 'react';
 /*# else:vue #*/
 import {defineComponent, PropType, ref, watch} from 'vue';
 /*# end #*/
@@ -29,16 +29,15 @@ const props = {
 /*# end #*/
 
 /*# if:react #*/
-const Component: FC<Props> = ({keyword, onSubmit, onCreate}) => {
-  const [keywordProp, setKeywordProp] = useState(keyword);
-  const [keywordInput, setKeywordInput] = useState(keyword);
-  if (keyword !== keywordProp) {
-    setKeywordProp(keyword);
-    setKeywordInput(keyword);
-  }
+const Component: FC<Props> = (props) => {
+  const {onSubmit, onCreate} = props;
+  const [keyword, setKeyword] = useState(props.keyword);
+  useMemo(() => {
+    setKeyword(props.keyword);
+  }, [props.keyword]);
   const onSubmitHandler = useCallback(() => {
-    onSubmit(keywordInput);
-  }, [keywordInput, onSubmit]);
+    onSubmit(keyword);
+  }, [keyword, onSubmit]);
   const onCreateHandler = useCallback(() => {
     onCreate();
   }, [onCreate]);
@@ -50,8 +49,8 @@ const Component: FC<Props> = ({keyword, onSubmit, onCreate}) => {
         name="keyword"
         type="text"
         placeholder="请输入搜索关键字..."
-        value={keywordInput}
-        onChange={(e) => setKeywordInput(e.target.value.trim())}
+        value={keyword}
+        onChange={(e) => setKeyword(e.target.value.trim())}
       />
       <button className="search" onClick={onSubmitHandler}>
         搜索
