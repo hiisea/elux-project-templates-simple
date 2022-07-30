@@ -4,10 +4,12 @@
   "main": "index.ts",
   "peerDependencies": {
     "@<%= projectName %>/stage": "*",
+    /*# if:model #*/
+    "@react-team/my-model": "*",
+    /*# end #*/
     "<%= elux %>": "*",
     /*# if:react #*/
     "react": "*",
-    "react-dom": "*",
     /*# else:vue #*/
     "vue": "*",
     /*# end #*/

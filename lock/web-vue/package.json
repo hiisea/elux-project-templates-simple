@@ -9,8 +9,7 @@
   },
   "private": true,
   "workspaces": [
-    "./mock",
-    "./public"
+    "./mock"
   ],
   "browserslist": [
     "chrome >= 70"
@@ -30,7 +29,7 @@
     "demo": "run-p mock dist"
   },
   "dependencies": {
-    "@elux/vue-web": "^2.0.0",
+    "@elux/vue-web": "^2.6.0",
     "vue": "^3.2.22",
     "axios": "^0.21.1",
     "query-string": "^7.1.1",

@@ -1,5 +1,5 @@
 {
-  "name": "@micro-vue/basic-team",
+  "name": "basic-team",
   "version": "1.0.0",
   "description": "",
   "author": "hiisea <hiisea@qq.com>",
@@ -8,10 +8,6 @@
     "node": ">=16.0.0"
   },
   "private": true,
-  "__workspaces": [
-    "./public",
-    "./src/modules/*"
-  ],
   "browserslist": [
     "chrome >= 70"
   ],
@@ -31,7 +27,7 @@
     "demo": "run-p mock dist"
   },
   "dependencies": {
-    "@elux/vue-web": "^2.0.0",
+    "@elux/vue-web": "^2.6.0",
     "vue": "^3.2.22",
     "axios": "^0.21.1",
     "query-string": "^7.1.1",

@@ -1,15 +1,10 @@
 {
-  "name": "@<%= projectName %>/<%= platform==="micro"?"app-api":"mock" %>",
+  "name": "<%= projectName %>",
   "version": "1.0.0",
   "dependencies": {
     "@types/express": "^4.17.9",
     "@types/morgan": "^1.9.3",
     "@types/mockjs": "^1.0.4",
-    /*# if:micro #*/
-    "@<%= projectName %>/stage": "*",
-    "@<%= projectName %>/article": "*",
-    "@<%= projectName %>/my": "*",
-    /*# end #*/
     "mockjs": "^1.1.0",
     "express": "^4.0.0",
     "morgan": "^1.9.0"

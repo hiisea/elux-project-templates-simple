@@ -1,5 +1,5 @@
 {
-  "name": "@micro-react/app-runtime",
+  "name": "app-runtime",
   "version": "1.0.0",
   "description": "",
   "author": "hiisea <hiisea@qq.com>",
@@ -8,9 +8,6 @@
     "node": ">=16.0.0"
   },
   "private": true,
-  "__workspaces": [
-    "./public"
-  ],
   "browserslist": [
     "chrome >= 70"
   ],
@@ -29,9 +26,10 @@
     "demo": "run-p mock dist"
   },
   "dependencies": {
-    "@elux/react-web": "^2.0.0",
+    "@elux/react-web": "^2.6.0",
     "react": "^17.0.0",
     "react-dom": "^17.0.0",
+    "react-redux": "^7.0.0",
     "axios": "^0.21.1",
     "query-string": "^7.1.1",
     "path-to-regexp": "^6.2.0"

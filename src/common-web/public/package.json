@@ -1,5 +1,5 @@
 {
-  "name": "@<%= projectName %>/demo",
+  "name": "<%= projectName %>-demo",
   "version": "1.0.0",
   "description": "",
   "main": "start.js",

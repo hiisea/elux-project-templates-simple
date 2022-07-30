@@ -3,9 +3,11 @@
   const typeMap = {
     'react-csr': 'react',
     'react-micro': 'react',
+    'react-model': 'react',
     'react-ssr': 'react ssr',
     'vue-csr': 'vue',
     'vue-micro': 'vue',
+    'vue-model': 'vue',
     'vue-ssr': 'vue ssr',
   };
   const type = typeMap[framework + '-' + platform];
@@ -22,7 +24,11 @@ const apiHosts = {
 const APP_ENV = process.env.APP_ENV || 'local';
 module.exports = {
   type: '<%= type %>',
+  /*# if:model #*/
+  mockServer: {port: 3003, dir: '../app-api'},
+  /*# else #*/
   mockServer: {port: 3003},
+  /*# end #*/
   cssProcessors: {/*# =less?less:sass #*/: true},
   all: {
     //开发和生成环境都使用的配置
