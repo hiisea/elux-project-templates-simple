@@ -5,7 +5,3 @@ export interface UpdateUserInfo {
 export enum CurView {
   'userSummary' = 'userSummary',
 }
-
-class API {}
-
-export const api = new API();

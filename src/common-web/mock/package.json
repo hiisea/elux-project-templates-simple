@@ -6,9 +6,9 @@
     "@types/morgan": "^1.9.3",
     "@types/mockjs": "^1.0.4",
     /*# if:micro #*/
-    "@<%= projectName %>/stage": "^1.0.0",
-    "@<%= projectName %>/article": "^1.0.0",
-    "@<%= projectName %>/my": "^1.0.0",
+    "@<%= projectName %>/stage": "*",
+    "@<%= projectName %>/article": "*",
+    "@<%= projectName %>/my": "*",
     /*# end #*/
     "mockjs": "^1.1.0",
     "express": "^4.0.0",

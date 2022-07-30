@@ -71,6 +71,8 @@ function onPlatformSelect(platform, options) {
   options.platform = platform;
   if (platform === "rn") {
     return;
+  } else if(platform === "model") {
+    return onFrameworkSelect('react', options)
   } else {
     return {
       subject: "请选择:UI框架",
@@ -91,7 +93,7 @@ function onCssSelect(css, options) {
   options.css = css;
   return {
     subject: "请选择:模版风格",
-    choices: options.platform === "micro" || options.platform === "taro" ? ["h5|H5手机风格"] : ["h5|H5手机风格", "admin|Admin后台风格"],
+    choices: options.platform === "micro" || options.platform === "model" || options.platform === "taro" ? ["h5|H5手机风格"] : ["h5|H5手机风格", "admin|Admin后台风格"],
     onSelect: onStyleSelect,
   };
 }
@@ -122,9 +124,10 @@ return {
     return {
       subject: "请选择:平台架构",
       choices: [
-        "csr|CSR: 基于浏览器渲染的应用",
+        "csr|CSR: 基于浏览器渲染的Web应用",
         "ssr|SSR: 基于服务器渲染 + 浏览器渲染的同构应用",
         "micro|Micro: 基于Webpack5的微前端 + 微模块方案",
+        "model|Model: 基于模型驱动，React与Vue工程共用Model",
         "taro|Taro: 基于Taro的跨平台应用（各类小程序）",
         "rn|RN: 基于ReactNative的原生APP（开发中...）",
       ],
@@ -134,6 +137,20 @@ return {
   getOperation(options) {
     if (options.platform === "rn") {
       return [{ action: "copy", from: "./common-rn", to: "$" }];
+    } else if (options.platform === "model") {
+      return [
+        { action: "copy", from: "./common-web/.vscode", to: "$/.vscode" },
+        { action: "copy", from: "./common-web", to: "$/react-team" },
+        { action: "move", from: "$/react-team/mock", to: "$/app-api" },
+        { action: "copy", from: "$/react-team/src/components", to: "$/react-team/src/modules/stage/components" },
+        { action: "copy", from: "$/react-team/src/assets", to: "$/react-team/src/modules/stage/assets" },
+        { action: "copy", from: "$/react-team/src/utils", to: "$/react-team/src/modules/stage/utils" },
+        { action: "move", from: "$/react-team/src/components", to: "" },
+        { action: "move", from: "$/react-team/src/assets", to: "" },
+        { action: "move", from: "$/react-team/src/utils", to: "" },
+        { action: "copy", from: "$/react-team/", to: "$/vue-team" },
+        { action: "copy", from: "./common-model", to: "$" },
+      ];
     } else if (options.platform === "micro") {
       return [
         { action: "copy", from: "./common-web/.vscode", to: "$/.vscode" },
@@ -256,7 +273,18 @@ return {
   afterRender(options, filepath, code) {
     if (options.platform === "micro") {
       if (filepath.endsWith(".tsx") || filepath.endsWith(".ts") || filepath.endsWith(".less")) {
-        code = code.replace(/(['"])@\/(components|utils|assets)\//g, `$1@${options.projectName}/stage/$2/`);
+        code = code.replace(/(['"])@\/(components|utils|assets)\//g, (v, v1, v2) => {
+          if (filepath.indexOf("/modules/stage/") > -1) {
+            const arr = filepath
+              .split("/modules/stage/")[1]
+              .split("/")
+              .map(() => "..");
+            arr.shift();
+            return `${v1}${arr[0] ? arr.join("/") : "."}/${v2}/`;
+          } else {
+            return `${v1}@${options.projectName}/stage/${v2}/`;
+          }
+        });
         code = code.replace(/(['"])@\/modules\//g, `$1@${options.projectName}/`);
       }
       if (filepath.endsWith("package.json")) {
