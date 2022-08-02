@@ -1,13 +1,14 @@
 //定义本模块的业务模型
 import {APPState} from '@/Global';
 import {HomeUrl, LoginUrl} from '@/utils/const';
-import {CommonErrorCode, CustomError} from '@/utils/errors';
+import {CommonErrorCode, CustomError} from '@/utils/base';
 import {BaseModel, effect, ErrorCodes, LoadingState/*# =ssr?, getTplInSSR, isServer: #*/, reducer/*# =micro?, moduleExists: #*/} from '<%= elux %>';
 /*# if:taro #*/
 import {showToast} from '@tarojs/taro';
 /*# end #*/
 import /*# =taro?pathToRegexp:{pathToRegexp} #*/ from 'path-to-regexp';
-import {CurView, SubModule, api, guest} from './entity';
+import api from './api';
+import {CurView, SubModule, guest} from './entity';
 import type {CurUser, LoginParams} from './entity';
 
 //定义本模块的状态结构

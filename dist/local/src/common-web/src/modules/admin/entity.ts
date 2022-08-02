@@ -1,4 +1,4 @@
-import request, {IRequest} from '@/utils/request';
+import {IRequest} from '@/utils/base';
 
 export enum SubModule {
   /*# if:admin #*/
@@ -12,13 +12,3 @@ export interface Notices {
 }
 
 export type IGetNotices = IRequest<{}, Notices>;
-
-class API {
-  public getNotices(): Promise<IGetNotices['Response']> {
-    return request.get<Notices>('/api/session/notices').then((res) => {
-      return res.data;
-    });
-  }
-}
-
-export const api = new API();

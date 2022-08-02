@@ -2,7 +2,8 @@
 import {APPState} from '@/Global';
 import {BaseModel} from '<%= elux %>';
 import /*# =taro?pathToRegexp:{pathToRegexp} #*/ from 'path-to-regexp';
-import {api, Notices, SubModule} from './entity';
+import api from './api';
+import {Notices, SubModule} from './entity';
 
 //定义本模块的状态结构
 export interface ModuleState {

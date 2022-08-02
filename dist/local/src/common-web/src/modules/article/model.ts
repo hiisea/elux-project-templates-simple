@@ -1,10 +1,11 @@
 //定义本模块的业务模型
 import {APPState} from '@/Global';
-import {CommonErrorCode, CustomError} from '@/utils/errors';
+import {CommonErrorCode, CustomError} from '@/utils/base';
 import {mergeDefaultParams} from '@/utils/tools';
 import {BaseModel, effect, reducer} from '<%= elux %>';
 import /*# =taro?pathToRegexp:{pathToRegexp} #*/ from 'path-to-regexp';
-import {CurView, api, defaultListSearch} from './entity';
+import api from './api';
+import {CurView, defaultListSearch} from './entity';
 import type {ItemDetail, ListItem, ListSearch, ListSummary} from './entity';
 
 //定义本模块的状态结构

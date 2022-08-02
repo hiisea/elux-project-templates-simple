@@ -1,4 +1,5 @@
 //该文件可以看作应用的配置文件
+/* eslint-disable import/no-extraneous-dependencies */
 import stage from '@/modules/stage';
 import {HomeUrl} from '@/utils/const';
 import {AppConfig, setConfig} from '<%= elux %>';
