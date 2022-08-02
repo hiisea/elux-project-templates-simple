@@ -8,6 +8,7 @@
     "lock:web-vue": "elux tpl-lock ./lock/web-vue",
     "lock:micro-react": "elux tpl-lock ./lock/micro-react",
     "lock:micro-vue": "elux tpl-lock ./lock/micro-vue",
+    "lock:model-web": "elux tpl-lock ./lock/model-web",
     "lock:taro-react": "elux tpl-lock ./lock/taro-react",
     "lock:taro-vue": "elux tpl-lock ./lock/taro-vue",
     "build:local": "node build/local.js",

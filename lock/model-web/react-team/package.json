@@ -30,8 +30,8 @@
     "demo": "run-p mock dist"
   },
   "dependencies": {
-    "@elux/model": "2.6.0",
-    "@elux/react-web": "2.6.0",
+    "@elux/model": "^2.6.0",
+    "@elux/react-web": "^2.6.0",
     "react": "^17.0.0",
     "react-dom": "^17.0.0",
     "react-redux": "^7.0.0",
