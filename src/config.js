@@ -206,7 +206,7 @@ return {
   getNpmLockFile(options) {
     const { platform, framework, css } = options;
     if(platform === "model"){
-      return 'model-web';
+      return 'model-web-lock';
     }
     const arr = [];
     if (platform === "csr" || platform === "ssr") {
