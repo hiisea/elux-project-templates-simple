@@ -45,9 +45,9 @@
   },
   "dependencies": {
     /*# if:model #*/
-    "@elux/model": "^2.6.0",
+    "@elux/model": "^2.6.1",
     /*# end #*/
-    "<%= elux %>": "^2.6.0",
+    "<%= elux %>": "^2.6.1",
     /*# if:react #*/
     "react": "^17.0.0",
     "react-dom": "^17.0.0",
@@ -66,7 +66,7 @@
     /*# end #*/
     "@elux/cli": "^2.5.2",
     "@elux/cli-utils": "^2.3.1",
-    "@elux/cli-webpack": "^2.2.1",
+    "@elux/cli-webpack": "^2.3.0",
     "@elux/cli-mock": "^2.1.0",
     "@elux/babel-preset": "^1.0.2",
     "@elux/eslint-plugin": "^1.2.2",
