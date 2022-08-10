@@ -57,6 +57,8 @@ CSR浏览器项目提供了“H5”与“Admin”两种风格的模版，从中�
 
 注意：`Model`包不只是包含Model，还可以包含通用的函数、方法、TS类型、常量定义等等，总之一切可以复用的元素都可以提取到`Model`包。
 
+此案例使用`npm包`的方式共享Model，也可以改为使用`Module-Federation`模块联邦方式，参见https://github.com/hiisea/module-federation-model-demo
+
 # 更多信息
 
 更多信息请访问：[https://eluxjs.com](https://eluxjs.com)
