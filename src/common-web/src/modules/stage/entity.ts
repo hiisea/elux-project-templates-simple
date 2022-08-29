@@ -31,7 +31,7 @@ export enum CurView {
 }
 
 export const guest: CurUser = {
-  id: '',
+  id: '0',
   username: '游客',
   hasLogin: false,
   avatar: '',

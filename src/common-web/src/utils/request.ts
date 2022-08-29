@@ -1,3 +1,4 @@
+import {isServer} from '<%= elux %>';
 import {ApiPrefix} from '@/Global';
 import axios, {AxiosError, AxiosResponse} from 'axios';
 import {CustomError} from './base';
@@ -5,7 +6,8 @@ import {CustomError} from './base';
 const instance = axios.create({timeout: 15000});
 
 instance.interceptors.request.use((req) => {
-  return {...req, url: req.url!.replace('/api/', ApiPrefix)};
+  const token = isServer() ? '' : localStorage.getItem('token');
+  return {...req, headers: {Authorization: token}, url: req.url!.replace('/api/', ApiPrefix)};
 });
 
 instance.interceptors.response.use(

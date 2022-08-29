@@ -38,9 +38,7 @@ function createArticles(): {[id: string]: Article} {
 }
 
 export const database: {
-  curUser: CurUser;
   articles: {[id: string]: Article};
 } = {
-  curUser: guestUser,
   articles: createArticles(),
 };

@@ -66,7 +66,7 @@
     /*# end #*/
     "@elux/cli": "^2.5.2",
     "@elux/cli-utils": "^2.3.1",
-    "@elux/cli-webpack": "^2.3.0",
+    "@elux/cli-webpack": "^2.3.1",
     "@elux/cli-mock": "^2.1.0",
     "@elux/babel-preset": "^1.0.2",
     "@elux/eslint-plugin": "^1.2.2",

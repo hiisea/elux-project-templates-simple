@@ -1,21 +1,22 @@
 import {IGetNotices} from '@/modules/admin/entity';
-import {IGetCurUser, ILogin, ILogout} from '@/modules/stage/entity';
+import {ILogin} from '@/modules/stage/entity';
 import {Router} from 'express';
-import {adminUser, database, guestUser} from '../database';
+import {adminUser, guestUser} from '../database';
 
 const router = Router();
 
 router.get('/', function (req, res, next) {
-  const result: IGetCurUser['Response'] = database.curUser;
-  setTimeout(() => res.json(result), 500);
+  if (req.header('authorization') === '1admin') {
+    res.json(adminUser);
+  } else {
+    res.json({ ...guestUser, id: req.header('origin') ? '0' : '' });
+  }
 });
 
-router.put('/', function (req, res, next) {
-  const {username = '', password = ''}: ILogin['Request'] = req.body;
+router.put('/', function ({body}: {body: ILogin['Request']}, res, next) {
+  const {username = '', password = ''} = body;
   if (username === 'admin' && password === '123456') {
-    database.curUser = adminUser;
-    const result: ILogin['Response'] = adminUser;
-    setTimeout(() => res.json(result), 500);
+    res.json(adminUser);
   } else {
     res.status(422).json({
       message: '用户名或密码错误！',
@@ -24,14 +25,12 @@ router.put('/', function (req, res, next) {
 });
 
 router.delete('/', function (req, res, next) {
-  database.curUser = guestUser;
-  const result: ILogout['Response'] = database.curUser;
-  setTimeout(() => res.json(result), 500);
+  res.json(guestUser);
 });
 
 router.get('/notices', function (req, res, next) {
   const result: IGetNotices['Response'] = {num: Math.floor(Math.random() * 100)};
-  setTimeout(() => res.json(result), 500);
+  res.json(result);
 });
 
 export default router;

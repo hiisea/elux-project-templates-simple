@@ -74,7 +74,7 @@ export class Model extends BaseModel<ModuleState, APPState> {
     const {curUser: _curUser} = this.getPrevState() || {};
     try {
       //如果用户信息不存在(第一次)，等待获取当前用户信息
-      const curUser = _curUser || (await api.getCurUser());
+      const curUser = _curUser && _curUser.id ? _curUser : await api.getCurUser();
       const initState: ModuleState = {curUser, subModule, curView};
       //_initState是基类BaseModel中内置的一个reducer
       //this.dispatch是this.store.dispatch的快捷方式
@@ -151,7 +151,7 @@ export class Model extends BaseModel<ModuleState, APPState> {
       /*# else #*/
       if (router.location.url === redirect && window.confirm('确定要退出本站吗？')) {
         //注意: back('')可以退出本站
-        setTimeout(() => router.back('', 'window'), 0);
+        setTimeout(() => router.back(''), 0);
       } else {
         setTimeout(() => router.relaunch({url: redirect}, 'window'), 0);
       }

@@ -1,17 +1,16 @@
 import {Router} from 'express';
 import {IGetList, IGetItem, IDeleteItem, IUpdateItem, ICreateItem} from '@/modules/article/entity';
-import {extractQuery} from '../utils';
 import {database} from '../database';
+
+type Query<T> = {[K in keyof T]: string};
 
 const router = Router();
 
-router.get('/', function (req, res, next) {
-  const args = extractQuery({pageCurrent: '', keyword: ''}, req.query);
-  const query = {
-    pageCurrent: parseInt(args.pageCurrent, 10) || 1,
-    keyword: args.keyword,
+router.get('/', function ({query}: {query: Query<IGetList['Request']>}, res, next) {
+  const {pageCurrent, keyword} = {
+    pageCurrent: parseInt(query.pageCurrent || '1'),
+    keyword: query.keyword || '',
   };
-  const {pageCurrent, keyword} = query;
 
   const pageSize = 10;
   const start = (pageCurrent - 1) * pageSize;
@@ -41,8 +40,7 @@ router.get('/', function (req, res, next) {
   setTimeout(() => res.json(result), 500);
 });
 
-router.get('/:id', function (req, res, next) {
-  const params = extractQuery({id: ''}, req.params);
+router.get('/:id', function ({params}: {params: IGetItem['Request']}, res, next) {
   const {id} = params;
   const item = database.articles[id];
   if (!item) {
@@ -53,8 +51,7 @@ router.get('/:id', function (req, res, next) {
   }
 });
 
-router.delete('/:id', function (req, res, next) {
-  const params = extractQuery({id: ''}, req.params);
+router.delete('/:id', function ({params}: {params: {id: string}}, res, next) {
   const {id} = params;
   const item = database.articles[id];
   if (!item) {
@@ -66,9 +63,9 @@ router.delete('/:id', function (req, res, next) {
   }
 });
 
-router.put('/:id', function (req, res, next) {
-  const args = extractQuery({id: '', title: '', summary: '', content: ''}, req.body);
-  const {id, title, summary, content} = args;
+router.put('/:id', function ({params, body}: {params: {id: string}; body: IUpdateItem['Request']}, res, next) {
+  const {id} = params;
+  const {title, summary, content} = body;
   const item = database.articles[id];
   if (!item) {
     res.status(404).end();
@@ -79,12 +76,12 @@ router.put('/:id', function (req, res, next) {
   }
 });
 
-router.post('/', function (req, res, next) {
-  const args = extractQuery({title: '', summary: '', content: ''}, req.body);
-  const {title, summary, content} = args;
+router.post('/', function ({body}: {body: ICreateItem['Request']}, res, next) {
+  const {title, summary, content} = body;
   const id = 'n' + Object.keys(database.articles).length;
   database.articles[id] = {id, title, summary, content};
   const result: ICreateItem['Response'] = {id};
   setTimeout(() => res.json(result), 500);
 });
+
 export default router;

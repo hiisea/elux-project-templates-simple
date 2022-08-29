@@ -19,12 +19,14 @@ class API {
   }
   public login(params: ILogin['Request']): Promise<ILogin['Response']> {
     return request.put<ILogin['Response']>('/api/session', params).then((res) => {
+      localStorage.setItem('token', res.data.id + res.data.username);
       return res.data;
     });
   }
 
   public logout(): Promise<ILogout['Response']> {
     return request.delete<ILogout['Response']>('/api/session').then((res) => {
+      localStorage.removeItem('token');
       return res.data;
     });
   }
