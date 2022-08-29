@@ -1,13 +1,9 @@
-import {isServer} from '<%= elux %>';
 import request from '@/utils/request';
 import {IGetCurUser, ILogin, ILogout, guest} from './entity';
 
 
 class API {
   public getCurUser(): Promise<IGetCurUser['Response']> {
-    if (isServer()) {
-      return Promise.resolve(guest);
-    }
     return request
       .get<IGetCurUser['Response']>('/api/session')
       .then((res) => {
