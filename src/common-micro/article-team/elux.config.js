@@ -1,6 +1,6 @@
 //工程配置文件，参见 https://eluxjs.com/guide/configure.html
-const {localIP} = require('@elux/cli-utils');
-const apiHost = `http://${localIP}:3003/`;
+const {getLocalIP} = require('@elux/cli-utils');
+const apiHost = `http://${getLocalIP()}:3003/`;
 module.exports = {
   type: '<%= framework %>',
   mockServer: {port: 3003, dir: '../app-api'},
@@ -34,6 +34,7 @@ module.exports = {
     filename: 'remote.js',
     exposes: {
       './modules/article': './src/modules/article',
+      './modules/shop': './src/modules/shop',
     },
     shared: {
       /*# if:react #*/

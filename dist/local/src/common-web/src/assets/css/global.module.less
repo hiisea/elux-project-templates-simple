@@ -1,13 +1,17 @@
 @import './var.less';
 
 :global {
+  button,
   input,
   textarea {
     font-family: inherit;
+    font-size: inherit;
   }
 
   a {
+    color: inherit;
     text-decoration: none;
+    cursor: pointer;
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
     -webkit-tap-highlight-color: transparent;
   }
@@ -16,10 +20,14 @@
     color: inherit;
   }
 
-  a:link {
-    color: inherit;
+  a:hover {
+    opacity: 0.7;
   }
   /*# if:taro #*/
+
+  body {
+    font-size: 16px;
+  }
 
   page {
     display: flex;
@@ -65,18 +73,43 @@
     font-size: 12px;
     color: @errorColor;
   }
+  /*# if:admin #*/
+
+  :local(.dialog-content) {
+    margin: 20px 25px 25px;
+  }
+
+  :local(.page-content) {
+    padding-top: 20px;
+    margin: 0 30px;
+    background: #fff;
+
+    > h2 {
+      padding-bottom: 10px;
+      font-size: 16px;
+      color: @infoColor;
+      border-bottom: 1px solid @borderColor;
+
+      &::before {
+        margin-right: 5px;
+        content: '▸';
+      }
+    }
+  }
+  /*# else #*/
 
   :local(.page-content) {
     display: flex;
     flex: 1;
     flex-direction: column;
     height: 100%;
+    overflow: auto;
     background: #fff;
   }
+  /*# end #*/
 
   :local(.input) {
     padding: 9px;
-    font-size: 15px;
     background-color: @slightColor;
     border: @tipColor 1px solid;
     border-radius: 5px;
@@ -84,10 +117,11 @@
   }
 
   :local(.button) {
+    display: inline-block;
     padding: 8px;
-    font-size: 16px;
     line-height: inherit;
     color: #fff;
+    text-align: center;
     cursor: pointer;
     background-color: @tipColor;
     border: @tipColor 2px solid;
@@ -96,8 +130,83 @@
 
     &.primary {
       color: #fff;
-      background-color: @primaryColor;
-      border-color: @primaryColor;
+      background-color: @activeColor;
+      border-color: @activeColor;
     }
+  }
+
+  :local(.form) {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+
+    > .item {
+      display: flex;
+      margin-bottom: 25px;
+      line-height: 40px;
+
+      &.item-last {
+        margin-bottom: 0;
+      }
+
+      &.item-error {
+        margin-bottom: 0;
+        line-height: 30px;
+        color: @errorColor;
+
+        > .item:first-child {
+          &::after {
+            /* stylelint-disable-next-line no-irregular-whitespace */
+            content: '　';
+          }
+        }
+
+        > .item:last-child {
+          font-size: 13px;
+        }
+      }
+
+      > .item:first-child {
+        width: 3.5em;
+        font-weight: bold;
+
+        &::after {
+          content: ':';
+        }
+      }
+
+      > .item:last-child {
+        flex: 1;
+      }
+    }
+
+    .g-input {
+      box-sizing: border-box;
+      display: block;
+      width: 100%;
+      line-height: 1.5;
+    }
+  }
+
+  :local(.control) {
+    display: flex;
+
+    > .g-button {
+      flex: 1;
+      margin: 30px 10px;
+    }
+  }
+
+  :local(.ad) {
+    display: block;
+    padding: 50px 0;
+    margin: 30px;
+    font-size: 20px;
+    font-style: italic;
+    font-weight: bold;
+    color: @activeColor !important;
+    text-align: center;
+    cursor: pointer;
+    background-color: @secondaryColor;
   }
 }

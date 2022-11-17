@@ -10,7 +10,13 @@
     "rootDir": "./",
     "baseUrl": "./",
     "paths": {
+      /*# if:micro #*/
+      "@/Global": ["./Global"]
+      /*# else:model #*/
+      "@/Global": ["./Global"]
+      /*# else #*/
       "@/*": ["./*"]
+      /*# end #*/
     }
   },
   "include": ["./"]

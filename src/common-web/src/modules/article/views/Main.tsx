@@ -1,65 +1,56 @@
 //通常模块可以定义一个根视图，根视图中显示什么由模块自行决定，父级不干涉，相当于子路由
 /*# if:react #*/
 import {FC} from 'react';
-/*# else:vue #*/
-import {defineComponent, computed} from 'vue';
+/*# else #*/
+import {defineComponent} from 'vue';
 /*# end #*/
-import {Switch, /*# =react?Dispatch, connectRedux:ComputedStore, exportView #*/} from '<%= elux %>';
-import {APPState/*# =vue?, useStore: #*/} from '@/Global';
+import {/*# =react?Dispatch,:exportView, #*/ Switch, connectStore} from '<%= elux %>';
 import ErrorPage from '@/components/ErrorPage';
-import List from './List';
+import {APPState} from '@/Global';
+import {CurView, ItemDetail} from '../entity';
 import Detail from './Detail';
 import Edit from './Edit';
-import {CurrentView, ItemDetail} from '../entity';
+import List from './List';
 
 export interface StoreProps {
-  currentView?: CurrentView;
+  curView?: CurView;
   itemDetail?: ItemDetail;
 }
 
-/*# if:react #*/
 function mapStateToProps(appState: APPState): StoreProps {
-  const {currentView, itemDetail} = appState.article!;
-  return {currentView, itemDetail};
+  const {curView, itemDetail} = appState.article!;
+  return {curView, itemDetail};
 }
-/*# else:vue #*/
-//这里保持Redux的风格一致，也可以省去这一步，直接使用computed
-function mapStateToProps(appState: APPState): ComputedStore<StoreProps> {
-  const article = appState.article!;
-  return {
-    currentView: () => article.currentView,
-    itemDetail: () => article.itemDetail,
-  };
-}
-/*# end #*/
 
 /*# if:react #*/
-const Component: FC<StoreProps & {dispatch: Dispatch}> = ({currentView, itemDetail, dispatch}) => {
+const Component: FC<StoreProps & {dispatch: Dispatch}> = ({curView, itemDetail, dispatch}) => {
   return (
     <Switch elseView={<ErrorPage />}>
-      {currentView === 'list' && <List />}
-      {currentView === 'detail' && <Detail itemDetail={itemDetail/*# =post?!: #*/} />}
-      {currentView === 'edit' && <Edit itemDetail={itemDetail/*# =post?!: #*/} dispatch={dispatch} />}
+      {curView === 'list' && <List />}
+      {curView === 'detail' && <Detail itemDetail={itemDetail/*# =post?!: #*/} />}
+      {curView === 'edit' && <Edit itemDetail={itemDetail/*# =post?!: #*/} dispatch={dispatch} />}
     </Switch>
   );
 };
 
-export default connectRedux(mapStateToProps)(Component);
-/*# else:vue #*/
+//connectRedux中包含了exportView()的执行
+export default connectStore(mapStateToProps)(Component);
+/*# else #*/
 const Component = defineComponent({
   name: 'ArticleMain',
   setup() {
-    const store = useStore();
-    const computedStore = mapStateToProps(store.getState());
-    const currentView = computed(computedStore.currentView);
-    const itemDetail = computed(computedStore.itemDetail);
-    return () => (
-      <Switch elseView={<ErrorPage />}>
-        {currentView.value === 'list' && <List />}
-        {currentView.value === 'detail' && <Detail itemDetail={itemDetail.value/*# =post?!: #*/} />}
-        {currentView.value === 'edit' && <Edit itemDetail={itemDetail.value/*# =post?!: #*/} dispatch={store.dispatch} />}
-      </Switch>
-    );
+    const storeProps = connectStore(mapStateToProps);
+
+    return () => {
+      const {curView, itemDetail, dispatch} = storeProps;
+      return (
+        <Switch elseView={<ErrorPage />}>
+          {curView === 'list' && <List />}
+          {curView === 'detail' && <Detail itemDetail={itemDetail/*# =post?!: #*/} />}
+          {curView === 'edit' && <Edit itemDetail={itemDetail/*# =post?!: #*/} dispatch={dispatch} />}
+        </Switch>
+      );
+    };
   },
 });
 

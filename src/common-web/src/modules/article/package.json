@@ -3,14 +3,16 @@
   "version": "1.0.0",
   "main": "index.ts",
   "peerDependencies": {
-    "@<%= projectName %>/stage": "^1.0.0",
-    "<%= elux %>": "^2.1.0",
-    /*# if:react #*/
-    "react": "^17.0.0",
-    "react-dom": "^17.0.0",
-    /*# else:vue #*/
-    "vue": "^3.2.22",
+    "@<%= projectName %>/stage": "*",
+    /*# if:model #*/
+    "@react-team/article-model": "*",
     /*# end #*/
-    "path-to-regexp": "^6.2.0"
+    "<%= elux %>": "*",
+    /*# if:react #*/
+    "react": "*",
+    /*# else:vue #*/
+    "vue": "*",
+    /*# end #*/
+    "path-to-regexp": "*"
   }
 }

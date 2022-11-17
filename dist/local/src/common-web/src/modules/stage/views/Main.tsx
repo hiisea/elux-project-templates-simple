@@ -1,67 +1,56 @@
+import '@/assets/css/global.module.less';
 /*# if:react #*/
 import {FC} from 'react';
-/*# else:vue #*/
-import {defineComponent, computed} from 'vue';
+/*# else #*/
+import {defineComponent} from 'vue';;
 /*# end #*/
-import {LoadingState, DocumentHead, Switch, /*# =react?connectRedux:ComputedStore, exportView #*/} from '<%= elux %>';
-import {LoadComponent, APPState/*# =vue?, useStore: #*/} from '@/Global';
-import LoadingPanel from '@/components/LoadingPanel';
+import {/*# =vue?exportView,: #*/ DocumentHead, LoadingState, Switch, connectStore} from '<%= elux %>';
+import {APPState, LoadComponent} from '@/Global';
+import {CurView, SubModule} from '../entity';
 import ErrorPage from '@/components/ErrorPage';
+import LoadingPanel from '@/components/LoadingPanel';
 import LoginForm from './LoginForm';
-import {CurrentModule, CurrentView} from '../entity';
-import '@/assets/css/global.module.less';
 
-//采用LoadComponent来加载视图，可以懒执行，并自动初始化与之对应的model
-//Stage中只显示子模块的根视图，如acticle.main，具体action.main中显示什么由acticle模块自己决定，类似于子路由
-const Article = LoadComponent('article', 'main');
-const My = LoadComponent('my', 'main');
-/*# if:taro #*/
-const Shop = LoadComponent('shop', 'main');
-/*# end #*/
+//LoadComponent是懒执行的，不用担心
+const SubModuleViews: {[moduleName: string]: () => JSX.Element} = Object.keys(SubModule).reduce((cache, moduleName) => {
+  cache[moduleName] = LoadComponent(moduleName as any, 'main');
+  return cache;
+}, {});
 
 export interface StoreProps {
-  currentModule?: CurrentModule;
-  currentView?: CurrentView;
+  subModule?: SubModule;
+  curView?: CurView;
   globalLoading?: LoadingState;
   error?: string;
 }
 
-/*# if:react #*/
 function mapStateToProps(appState: APPState): StoreProps {
-  const {globalLoading, error, currentModule, currentView} = appState.stage!;
+  const {subModule, curView, globalLoading, error} = appState.stage!;
   return {
-    currentModule,
-    currentView,
+    subModule,
+    curView,
     globalLoading,
     error,
   };
 }
-/*# else:vue #*/
-//这里保持和Redux的风格一致，也可以省去这一步，直接使用computed
-function mapStateToProps(appState: APPState): ComputedStore<StoreProps> {
-  const stage = appState.stage!;
-  return {
-    currentModule: () => stage.currentModule,
-    currentView: () => stage.currentView,
-    globalLoading: () => stage.globalLoading,
-    error: () => stage.error,
-  };
-}
-/*# end #*/
 
 /*# if:react #*/
-const Component: FC<StoreProps> = ({currentModule, currentView, globalLoading, error}) => {
+const Component: FC<StoreProps> = ({subModule, curView, globalLoading, error}) => {
   return (
     <>
-      <DocumentHead title="Elux" />
+      <DocumentHead title="EluxDemo" />
       <Switch elseView={<ErrorPage />}>
         {!!error && <ErrorPage message={error} />}
-        {currentModule === 'stage' && currentView === 'login' && <LoginForm />}
-        {currentModule === 'article' && <Article />}
-        {currentModule === 'my' && <My />}
-        /*# if:taro #*/
-        {currentModule === 'shop' && <Shop />}
-        /*# end #*/
+        {subModule &&
+          Object.keys(SubModule).map((moduleName) => {
+            if (subModule === moduleName) {
+              const SubView = SubModuleViews[subModule];
+              return <SubView key={moduleName} />;
+            } else {
+              return null;
+            }
+          })}
+        {curView === 'login' && <LoginForm />}
       </Switch>
       <LoadingPanel loadingState={globalLoading} />
     </>
@@ -69,33 +58,35 @@ const Component: FC<StoreProps> = ({currentModule, currentView, globalLoading, e
 };
 
 //connectRedux中包含了exportView()的执行
-export default connectRedux(mapStateToProps)(Component);
+export default connectStore(mapStateToProps)(Component);
 /*# else:vue #*/
 const Component = defineComponent({
   name: 'StageMain',
   setup() {
-    const store = useStore();
-    const computedStore = mapStateToProps(store.getState());
-    const currentModule = computed(computedStore.currentModule);
-    const currentView = computed(computedStore.currentView);
-    const globalLoading = computed(computedStore.globalLoading);
-    const error = computed(computedStore.error);
+    const storeProps = connectStore(mapStateToProps);
 
-    return () => (
-      <>
-        <DocumentHead title="Elux" />
-        <Switch elseView={<ErrorPage />}>
-          {!!error.value && <ErrorPage message={error.value} />}
-          {currentModule.value === 'stage' && currentView.value === 'login' && <LoginForm />}
-          {currentModule.value === 'article' && <Article />}
-          {currentModule.value === 'my' && <My />}
-          /*# if:taro #*/
-          {currentModule.value === 'shop' && <Shop />}
-          /*# end #*/
-        </Switch>
-        <LoadingPanel loadingState={globalLoading.value} />
-      </>
-    );
+    return () => {
+      const {subModule, curView, globalLoading, error} = storeProps;
+      return (
+        <>
+          <DocumentHead title="EluxDemo" />
+          <Switch elseView={<ErrorPage />}>
+            {!!error && <ErrorPage message={error} />}
+            {subModule &&
+            Object.keys(SubModule).map((moduleName) => {
+              if (subModule === moduleName) {
+                const SubView = SubModuleViews[subModule];
+                return <SubView key={moduleName} />;
+              } else {
+                return null;
+              }
+            })}
+            {curView === 'login' && <LoginForm />}
+          </Switch>
+          <LoadingPanel loadingState={globalLoading} />
+        </>
+      );
+    }
   },
 });
 

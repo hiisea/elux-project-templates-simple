@@ -1,27 +1,30 @@
 //定义本模块的业务模型
-import /*# =taro?pathToRegexp:{pathToRegexp} #*/ from 'path-to-regexp';
+import {APPState} from '@/Global';
+import {HomeUrl, LoginUrl} from '@/utils/const';
+import {CommonErrorCode, CustomError} from '@/utils/base';
+import {BaseModel, effect, ErrorCodes, LoadingState/*# =ssr?, getTplInSSR, isServer: #*/, reducer/*# =micro?, moduleExists: #*/} from '<%= elux %>';
 /*# if:taro #*/
 import {showToast} from '@tarojs/taro';
 /*# end #*/
-import {BaseModel, ErrorCodes, LoadingState, effect, reducer} from '<%= elux %>';
-import {APPState} from '@/Global';
-import {HomeUrl, LoginUrl} from '@/utils/const';
-import {CustomError, CommonErrorCode} from '@/utils/errors';
-import {CurUser, CurrentModule, CurrentView, LoginParams, guest, api} from './entity';
+import /*# =taro?pathToRegexp:{pathToRegexp} #*/ from 'path-to-regexp';
+import api from './api';
+import {CurView, SubModule, guest} from './entity';
+import type {CurUser, LoginParams} from './entity';
 
 //定义本模块的状态结构
 export interface ModuleState {
   curUser: CurUser;
-  currentModule?: CurrentModule;//该字段用来记录当前路由下展示哪个子Module
-  currentView?: CurrentView; //该字段用来记录当前路由下展示本模块的哪个View
+  subModule?: SubModule; //该字段用来记录当前路由下展示哪个子Module
+  curView?: CurView; //该字段用来记录当前路由下展示本模块的哪个View
   globalLoading?: LoadingState; //该字段用来记录一个全局的loading状态
   error?: string; //该字段用来记录启动错误，如果该字段有值，则不渲染其它UI
 }
 
 //定义路由中的本模块感兴趣的信息
 export interface RouteParams {
-  currentModule?: CurrentModule;
-  currentView?: CurrentView;
+  pathname: string;
+  subModule?: SubModule;
+  curView?: CurView;
 }
 
 //定义本模块的业务模型，必需继承BaseModel
@@ -29,47 +32,63 @@ export interface RouteParams {
 export class Model extends BaseModel<ModuleState, APPState> {
   protected routeParams!: RouteParams; //保存从当前路由中提取的信息结果
 
-  //构建私有actions生成器，因为要尽量避免使用public方法，所以this.actions也引用不到私有actions
+  //因为要尽量避免使用public方法，所以构建this.privateActions来引用私有actions
   protected privateActions = this.getPrivateActions({putCurUser: this.putCurUser});
 
   //提取当前路由中的本模块感兴趣的信息
   protected getRouteParams(): RouteParams {
     const {pathname} = this.getRouter().location;
-    const [, currentModule, currentView] = pathToRegexp('/:currentModule/:currentView').exec(pathname) || [];
-    return {currentModule, currentView} as RouteParams;
+    const [, subModuleStr = '', curViewStr = ''] = pathToRegexp('/:subModule/:curView', undefined, {end: false}).exec(pathname) || [];
+    /*# if:micro #*/
+    //此处加上moduleExists判断，防止Project.ts中未配置ModuleGetter
+    const subModule: SubModule | undefined = SubModule[subModuleStr] && moduleExists(subModuleStr) ? SubModule[subModuleStr] : undefined;
+    /*# else #*/
+    const subModule: SubModule | undefined = SubModule[subModuleStr] || undefined;
+    /*# end #*/
+    const curView: CurView | undefined = CurView[curViewStr] || undefined;
+    return {pathname, subModule, curView};
   }
 
-  //初始化或路由变化时都需要重新挂载Model
-  //在此钩子中必需完成ModuleState的初始赋值(可以异步)，在此钩子执行完成之前，UI将不会Render
-  //在此钩子中并可以await子模块挂载，等待所有子模块都mount完成后，一次性Render UI
-  //也可以不await子模块挂载，这样子模块可能需要自己设计并展示Loading界面，这样就形成了2种不同的路由风格：
+  //每次路由发生变化，都会引起Model重新挂载到Store
+  //在此钩子中必需完成ModuleState的初始赋值，可以异步
+  //在此钩子执行完成之前，本模块的View将不会Render
+  //在此钩子中可以await数据请求，这样等所有数据拉取回来后，一次性Render
+  //在此钩子中也可以await子模块的mount，这样等所有子模块都挂载好了，一次性Render
+  //也可以不做任何await，直接Render，此时需要设计Loading界面
+  //这样也形成了2种不同的路由风格：
   //一种是数据前置，路由后置(所有数据全部都准备好了再跳转、展示界面)
   //一种是路由前置，数据后置(路由先跳转，展示设计好的loading界面)
   //SSR时只能使用"数据前置"风格
   public async onMount(env: 'init' | 'route' | 'update'): Promise<void> {
     this.routeParams = this.getRouteParams();
-    const {currentModule, currentView} = this.routeParams;
+    const {subModule, curView} = this.routeParams;
+    /*# if:ssr #*/
+    //需要登录的页面无需服务器渲染
+    if (isServer() && this.checkNeedsLogin(this.routeParams.pathname)) {
+      throw new CustomError(ErrorCodes.ROUTE_RETURN, '无需SSR', {body: getTplInSSR()});
+    }
+    /*# end #*/
     //getPrevState()可以获取路由跳转前的状态
     //以下意思是：如果curUser已经存在(之前获取过了)，就直接使用，不再调用API获取
     //你也可以利用这个方法，复用路由之前的任何有效状态，从而减少数据请求
     const {curUser: _curUser} = this.getPrevState() || {};
     try {
       //如果用户信息不存在(第一次)，等待获取当前用户信息
-      const curUser = _curUser || (await api.getCurUser());
-      const initState: ModuleState = {curUser, currentModule, currentView};
+      const curUser = _curUser && _curUser.id ? _curUser : await api.getCurUser();
+      const initState: ModuleState = {curUser, subModule, curView};
       //_initState是基类BaseModel中内置的一个reducer
       //this.dispatch是this.store.dispatch的快捷方式
       //以下语句等于this.store.dispatch({type: 'stage._initState', payload: initState})
       this.dispatch(this.privateActions._initState(initState));
       /*# if:post #*/
-      if (currentModule && currentModule !== 'stage') {
-        await this.store.mount(currentModule, env);
+      //使用路由后置风格时，要等待子模块数据取回来
+      if (subModule) {
+        await this.store.mount(subModule/*# =micro? as any: #*/, env);
       }
       /*# end #*/
     } catch (err: any) {
-      //如果根模块初始化中出现错误，将错误放入ModuleState.error字段中
-      //渲染其它UI将变得没有实际意义
-      const initState: ModuleState = {curUser: {...guest}, currentModule, currentView, error: err.message || err.toString()};
+      //如果根模块初始化中出现错误，将错误放入ModuleState.error字段中，此时将展示该错误信息
+      const initState: ModuleState = {curUser: {...guest}, subModule, curView, error: err.message || err.toString()};
       this.dispatch(this.privateActions._initState(initState));
     }
   }
@@ -87,7 +106,7 @@ export class Model extends BaseModel<ModuleState, APPState> {
 
   //定义一个effect，用来执行登录逻辑
   //effect(参数)，参数可以用来将该effect的执行进度注入ModuleState中，如effect('this.loginLoading')
-  //effect()参数为空，默认等于effect('stage.globalLoading')，表示将该effect的执行进度注入stage模块的globalLoading状态中
+  //effect()参数为空，默认等于effect('stage.globalLoading')，表示将执行进度注入stage模块的globalLoading状态中
   //如果不需要跟踪该effect的执行进度，请使用effect(null)
   @effect()
   public async login(args: LoginParams): Promise<void> {
@@ -99,6 +118,15 @@ export class Model extends BaseModel<ModuleState, APPState> {
   }
 
   @effect()
+  public async cancelLogin(): Promise<void> {
+    //在历史栈中找到第一条不需要登录的记录
+    //如果简单的back(1)，前一个页面需要登录时会引起循环
+    this.getRouter().back((record) => {
+      return !this.checkNeedsLogin(record.location.pathname);
+    }, 'window');
+  }
+
+  @effect()
   public async logout(): Promise<void> {
     const curUser = await api.logout();
     this.dispatch(this.privateActions.putCurUser(curUser));
@@ -107,15 +135,28 @@ export class Model extends BaseModel<ModuleState, APPState> {
   }
 
   //ActionHandler运行中的出现的任何错误都会自动派发'stage._error'的Action
-  //可以通过effect来监听这个Action，并决定是消化错误还是继续抛出
-  //如果继续抛出，则整个ActionBus链将终止执行
-  //注意：如果继续抛出，请抛出原错误，不要创建新的错误，以防止无穷递归
+  //可以通过effect来监听这个Action，用来处理错误，
+  //如果继续抛出错误，则Action停止继续传播，Handler链条将终止执行
+  //注意如果继续抛出，请抛出原错误，不要创建新的错误，以防止无穷递归
   @effect(null)
   protected async ['this._error'](error: CustomError): Promise<void> {
+    const router = this.getRouter();
     if (error.code === CommonErrorCode.unauthorized) {
-      this.getRouter().push({pathname: LoginUrl, searchQuery: {from: error.detail}}, 'window');
-    } else if (!error.quiet && error.code !== ErrorCodes.ROUTE_BACK_OVERFLOW) {
-      // ErrorCodes.ROUTE_BACK_OVERFLOW是路由后退溢出时抛出的错误，默认会回到首页，所以无需处理
+      router.push({url: LoginUrl(error.detail)}, 'window');
+    } else if (error.code === ErrorCodes.ROUTE_BACK_OVERFLOW) {
+      //用户后退溢出时会触发这个错误
+      const redirect: string = error.detail.redirect || HomeUrl;
+      /*# if:taro #*/
+      setTimeout(() => router.relaunch({url: redirect}, 'window'), 0);
+      /*# else #*/
+      if (router.location.url === redirect && window.confirm('确定要退出本站吗？')) {
+        //注意: back('')可以退出本站
+        setTimeout(() => router.back(''), 0);
+      } else {
+        setTimeout(() => router.relaunch({url: redirect}, 'window'), 0);
+      }
+      /*# end #*/
+    } else if (!error.quiet) {
       // eslint-disable-next-line no-alert
       /*# if:ssr #*/
       //SSR时server端没有window对象，不需要alert
@@ -131,28 +172,19 @@ export class Model extends BaseModel<ModuleState, APPState> {
     }
     throw error;
   }
-  /*# if:!taro #*/
+
+  private checkNeedsLogin(pathname: string): boolean {
+    return ['/admin/'/*# =!admin?, '/article/edit': #*/].some((prefix) => pathname.startsWith(prefix));
+  }
 
   //支持路由守卫
   //路由跳转前会自动派发'stage._testRouteChange'的Action
   //可以通过effect来监听这个Action，并决定是否阻止，如果想阻止跳转，可以抛出一个错误
+  //注意：小程序中如果使用原生路由跳转是无法拦截的
   @effect(null)
-  protected async ['this._testRouteChange']({pathname}: {pathname: string}): Promise<void> {
-    if (pathname.startsWith('/my/') && !this.state.curUser.hasLogin) {
-      throw new CustomError(CommonErrorCode.unauthorized, '请登录！', pathname, true);
+  protected async ['this._testRouteChange']({url, pathname}: {url: string; pathname: string}): Promise<void> {
+    if (!this.state.curUser.hasLogin && this.checkNeedsLogin(pathname)) {
+      throw new CustomError(CommonErrorCode.unauthorized, '请登录！', url, true);
     }
-  }
-  /*# end #*/
-
-  //页面被激活(变为显示页面)时调用
-  onActive(){
-    //可以执行一些激活逻辑，比如开启定时器轮询最新数据；
-    console.log('page active!')
-  }
-
-  //页面被冻结(变为历史快照)时调用
-  onInactive(){
-    //可以清除onActive中的副作用，比如清除计时器
-    console.log('page inactive!')
   }
 }

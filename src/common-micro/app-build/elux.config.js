@@ -1,7 +1,7 @@
 //工程配置文件，参见 https://eluxjs.com/guide/configure.html
-const {localIP} = require('@elux/cli-utils');
+const {getLocalIP} = require('@elux/cli-utils');
 const apiHosts = {
-  local: `http://${localIP}:3003/`,
+  local: `http://${getLocalIP()}:3003/`,
   test: 'http://10.201.0.212:31088/',
 };
 const APP_ENV = process.env.APP_ENV || 'local';

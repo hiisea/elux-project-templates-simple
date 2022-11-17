@@ -1,50 +1,27 @@
-@import '@/assets/css/var.less';
-
 :global {
   :local(.root) {
-    padding: 35px;
-    overflow: auto;
-    font-size: 16px;
+    /*# if:admin #*/
+    width: 400px;
+    font-size: 15px;
 
-    .form-body {
-      padding-top: 20px;
-      padding-bottom: 20px;
-
-      .error {
-        margin-left: 5.5em;
-        font-size: 14px;
-        color: @errorColor;
-      }
-    }
-
-    .form-item {
-      display: flex;
-      margin-bottom: 25px;
-
-      .label {
+    .g-form {
+      > .item > .item:first-child {
         width: 5em;
-        font-weight: bold;
-        line-height: 40px;
-      }
-
-      .item {
-        flex: 1;
-      }
-
-      .g-input {
-        box-sizing: border-box;
-        width: 100%;
       }
     }
+    /*# else #*/
+    padding: 40px;
 
-    .form-control {
-      display: flex;
-      border-top: 1px solid @borderColor;
-
-      > .g-button {
-        flex: 1;
-        margin: 30px 10px;
+    .g-form {
+      > .item > .item:first-child {
+        width: 5em;
       }
+    }
+    /*# end #*/
+
+    .g-ad {
+      padding: 20px 0;
+      margin: 10px;
     }
   }
 }

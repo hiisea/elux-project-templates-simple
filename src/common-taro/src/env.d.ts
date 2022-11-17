@@ -10,6 +10,13 @@ declare module '*.less';
 declare module '*.scss';
 declare module '*.sass';
 declare module '*.styl';
+/*# if:vue #*/
+declare module '*.vue' {
+  const Component: (props: any) => JSX.Element;
+  export default Component;
+}
+/*# end #*/
+
 
 declare namespace NodeJS {
   interface ProcessEnv {

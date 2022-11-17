@@ -4,7 +4,7 @@
   :local(.root) {
     overflow: hidden;
 
-    .article-list {
+    > .list {
       flex: 1;
       overflow: auto;
     }
@@ -27,20 +27,19 @@
 
     .article-summary {
       display: block;
-      font-size: 16px;
       line-height: 1.5;
       cursor: pointer;
     }
 
     .article-operation {
       margin: 10px 0;
-      font-size: 13px;
+      font-size: 14px;
       color: @tipColor;
       cursor: pointer;
 
       > .item {
         display: inline-block;
-        margin-right: 10px;
+        margin-right: 15px;
         text-decoration: underline;
       }
     }

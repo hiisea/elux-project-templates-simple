@@ -1,9 +1,9 @@
+import {useRouter} from '@/Global';
 /*# if:react #*/
 import {FC, memo, useCallback} from 'react';
 /*# else:vue #*/
 import {defineComponent} from 'vue';
 /*# end #*/
-import {useRouter} from '@/Global';
 import styles from './index.module.less';
 
 /*# if:react #*/
@@ -22,7 +22,7 @@ const props = {
 /*# if:react #*/
 const Component: FC<Props> = ({message = '(404) Not Found!'}) => {
   const router = useRouter();
-  const onBack = useCallback(() => router.back(1), [router]);
+  const onBack = useCallback(() => router.back(1, 'page'), [router]);
   return (
     <div className={styles.root}>
       <div className="message">{message}</div>
@@ -40,7 +40,7 @@ export default defineComponent({
   props,
   setup(props) {
     const router = useRouter();
-    const onBack = () => router.back(1);
+    const onBack = () => router.back(1, 'page');
     return () => {
       return (
         <div class={styles.root}>

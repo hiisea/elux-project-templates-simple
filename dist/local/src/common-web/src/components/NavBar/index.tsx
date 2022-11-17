@@ -1,9 +1,9 @@
+import {useRouter} from '@/Global';
 /*# if:react #*/
 import {FC, memo, useCallback} from 'react';
 /*# else:vue #*/
-import {PropType, defineComponent} from 'vue';
+import {defineComponent, PropType} from 'vue';
 /*# end #*/
-import {useRouter} from '@/Global';
 import styles from './index.module.less';
 
 /*# if:react #*/

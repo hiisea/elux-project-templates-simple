@@ -2,6 +2,7 @@
  * 该文件可以看作应用的先导文件，主要用来导出一些全局常用的方法、变量、和类型
  * 注意为了避免循环依赖，请保持该文件的独立性，不要引用任何其它项目文件
  */
+/// <reference path="./env.d.ts" />
 import {API, Facade, getApi} from '<%= elux %>';
 import {IModuleGetter} from './Project';
 

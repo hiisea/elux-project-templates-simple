@@ -1,20 +1,6 @@
 import Taro from '@tarojs/taro';
 import {ApiPrefix} from '@/Global';
-import {CommonErrorCode, CustomError} from './errors';
-
-export interface IRequest<Req, Res> {
-  Request: Req;
-  Response: Res;
-}
-
-function mapHttpErrorCode(code: string): CommonErrorCode {
-  const HttpErrorCode = {
-    '401': CommonErrorCode.unauthorized,
-    '403': CommonErrorCode.forbidden,
-    '404': CommonErrorCode.notFound,
-  };
-  return HttpErrorCode[code] || CommonErrorCode.unkown;
-}
+import {CustomError} from './base';
 
 function successHandler(res: any) {
   if (res.statusCode === 200 || res.statusCode === 201) {
@@ -31,10 +17,10 @@ function errorHandler(res: {url: string; statusCode?: number; status?: number; s
   return detail.then(
     (detail) => {
       const errorMessage = detail.message || unknownMessage;
-      throw new CustomError(mapHttpErrorCode(httpErrorCode.toString()), errorMessage, detail);
+      throw new CustomError(httpErrorCode, errorMessage, detail);
     },
     () => {
-      throw new CustomError(CommonErrorCode.unkown, unknownMessage);
+      throw new CustomError(500, unknownMessage);
     }
   );
 }

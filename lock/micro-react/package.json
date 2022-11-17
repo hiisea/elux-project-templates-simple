@@ -17,21 +17,13 @@
     "app-runtime",
     "basic-team",
     "article-team",
-    "user-team",
-    "app-build/public",
-    "app-runtime/public",
-    "basic-team/public",
-    "article-team/public",
-    "user-team/public",
-    "basic-team/src/modules/*",
-    "article-team/src/modules/*",
-    "user-team/src/modules/*"
+    "user-team"
   ],
   "scripts": {
-    "mock": "lerna run mock --scope @micro-react/app-runtime --parallel",
-    "dev": "lerna run dev --scope @micro-react/app-runtime --scope @micro-react/article-team --scope @micro-react/user-team --parallel",
-    "build": "lerna run build --scope @micro-react/app-runtime --scope @micro-react/article-team --scope @micro-react/user-team --parallel",
-    "dist": "lerna run dist --scope @micro-react/app-runtime --scope @micro-react/article-team --scope @micro-react/user-team --parallel",
+    "mock": "lerna run mock --scope app-runtime --parallel",
+    "dev": "lerna run dev --scope app-runtime --scope article-team --scope user-team --parallel",
+    "build": "lerna run build --scope app-runtime --scope article-team --scope user-team --parallel",
+    "dist": "lerna run dist --scope app-runtime --scope article-team --scope user-team --parallel",
     "start": "run-p mock dev",
     "demo": "run-p mock dist"
   },

@@ -1,24 +1,13 @@
-import axios, {AxiosError, AxiosResponse} from 'axios';
+import {isServer} from '<%= elux %>';
 import {ApiPrefix} from '@/Global';
-import {CommonErrorCode, CustomError} from './errors';
+import axios, {AxiosError, AxiosResponse} from 'axios';
+import {CustomError} from './base';
 
-export interface IRequest<Req, Res> {
-  Request: Req;
-  Response: Res;
-}
-
-function mapHttpErrorCode(code: string): CommonErrorCode {
-  const HttpErrorCode = {
-    '401': CommonErrorCode.unauthorized,
-    '403': CommonErrorCode.forbidden,
-    '404': CommonErrorCode.notFound,
-  };
-  return HttpErrorCode[code] || CommonErrorCode.unkown;
-}
 const instance = axios.create({timeout: 15000});
 
 instance.interceptors.request.use((req) => {
-  return {...req, url: req.url!.replace('/api/', ApiPrefix)};
+  const token = isServer() ? '' : localStorage.getItem('token');
+  return {...req, headers: {Authorization: token}, url: req.url!.replace('/api/', ApiPrefix)};
 });
 
 instance.interceptors.response.use(
@@ -30,7 +19,7 @@ instance.interceptors.response.use(
     const statusText = error.response ? error.response.statusText : '';
     const responseData: any = error.response ? error.response.data : '';
     const errorMessage = responseData.message || `${statusText}, failed to call ${error.config.url}`;
-    throw new CustomError(mapHttpErrorCode(httpErrorCode.toString()), errorMessage, responseData);
+    throw new CustomError(httpErrorCode, errorMessage, responseData);
   }
 );
 

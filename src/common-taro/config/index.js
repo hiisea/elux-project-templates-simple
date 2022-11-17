@@ -1,11 +1,10 @@
 const path = require('path');
+const {getLocalIP, getCssScopedName} = require('@elux/cli-utils');
 
 const srcPath = path.resolve(__dirname, '..', 'src');
-const {localIP, getCssScopedName} = require('@elux/cli-utils');
 
 const config = {
   projectName: '<%= projectName %>',
-  date: '2022-5-1',
   designWidth: 640,
   deviceRatio: {
     640: 3.5 / 2,
@@ -20,8 +19,8 @@ const config = {
   plugins: ['@tarojs/plugin-html'],
   defineConstants: {
     'process.env.PROJ_ENV': JSON.stringify({
-      ApiPrefix: `http://${localIP}:3003/`,
-      StaticPrefix: `http://${localIP}:3003/`,
+      ApiPrefix: `http://${getLocalIP()}:3003/`,
+      StaticPrefix: `http://${getLocalIP()}:3003/`,
     }),
   },
   copy: {

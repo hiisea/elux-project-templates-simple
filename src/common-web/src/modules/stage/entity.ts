@@ -1,22 +1,13 @@
-//定义本模块涉及的业务实体和数据API
-import {isServer} from '<%= elux %>';
-import request, {IRequest} from '@/utils/request';
+//定义本模块涉及的业务实体
+import {IRequest} from '@/utils/base';
 
 export interface CurUser {
   id: string;
   username: string;
   avatar: string;
   mobile: string;
-  hasLogin?: boolean;
+  hasLogin: boolean;
 }
-
-export const guest: CurUser = {
-  id: '',
-  username: '游客',
-  hasLogin: false,
-  avatar: '',
-  mobile: '',
-};
 
 export interface LoginParams {
   username: string;
@@ -29,35 +20,20 @@ export type ILogin = IRequest<LoginParams, CurUser>;
 
 export type ILogout = IRequest<{}, CurUser>;
 
-export type CurrentModule = 'stage' | 'article' | 'my'/*# =taro? | 'shop': #*/;
-
-export type CurrentView = 'login';
-
-class API {
-  public getCurUser(): Promise<IGetCurUser['Response']> {
-    if (isServer()) {
-      return Promise.resolve(guest);
-    }
-    return request
-      .get<CurUser>('/api/session')
-      .then((res) => {
-        return res.data;
-      })
-      .catch(() => {
-        return guest;
-      });
-  }
-  public login(params: ILogin['Request']): Promise<ILogin['Response']> {
-    return request.put<CurUser>('/api/session', params).then((res) => {
-      return res.data;
-    });
-  }
-
-  public logout(): Promise<ILogout['Response']> {
-    return request.delete<CurUser>('/api/session').then((res) => {
-      return res.data;
-    });
-  }
+export enum SubModule {
+  'article' = 'article',
+  'shop' = 'shop',
+  'admin' = 'admin',
 }
 
-export const api = new API();
+export enum CurView {
+  'login' = 'login',
+}
+
+export const guest: CurUser = {
+  id: '0',
+  username: '游客',
+  hasLogin: false,
+  avatar: '',
+  mobile: '',
+};

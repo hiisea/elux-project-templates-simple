@@ -9,7 +9,7 @@ export default defineAppConfig({
   subPackages: [
     {
       root: 'modules/shop',
-      pages: ['pages/goodsList'],
+      pages: ['pages/list'],
     },
   ],
   tabBar: {
