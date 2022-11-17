@@ -45,9 +45,9 @@
   },
   "dependencies": {
     /*# if:model #*/
-    "@elux/model": "^2.6.1",
+    "@elux/model": "^2.6.3",
     /*# end #*/
-    "<%= elux %>": "^2.6.1",
+    "<%= elux %>": "^2.6.3",
     /*# if:react #*/
     "react": "^17.0.0",
     "react-dom": "^17.0.0",

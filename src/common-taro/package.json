@@ -57,7 +57,7 @@
     "@tarojs/plugin-framework-vue3": "3.4.11",
     "vue": "^3.0.0",
     /*# end #*/
-    "<%= elux %>": "^2.6.2",
+    "<%= elux %>": "^2.6.3",
     "path-to-regexp": "^3.0.0"
   },
   "devDependencies": {
